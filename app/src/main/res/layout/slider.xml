@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="12dp"
+    android:layout_marginBottom="4dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/Slider_Value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Slider Label: 2.5"
+            android:textSize="16sp"
+            android:textColor="#111111"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/discreteSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:value="2.5"
+            android:valueFrom="0"
+            android:valueTo="5"
+            android:stepSize="0.5"
+            app:trackColorActive="#E91E63"
+            app:trackColorInactive="#FAD1E4"
+            app:thumbColor="#E91E63" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
