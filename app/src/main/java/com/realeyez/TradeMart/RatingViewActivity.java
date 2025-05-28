@@ -1,4 +1,4 @@
-package com.example.TradeMartRatingUI;
+package com.realeyez.TradeMart;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;

@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.TradeMartRatingUI'
+    namespace 'com.realeyez.TradeMart'
     compileSdk 35
 
     defaultConfig {

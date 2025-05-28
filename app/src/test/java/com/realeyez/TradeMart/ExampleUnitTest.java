@@ -1,4 +1,4 @@
-package com.example.TradeMartRatingUI;
+package com.realeyez.TradeMart;
 
 import org.junit.Test;
 

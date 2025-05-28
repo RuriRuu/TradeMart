@@ -1,4 +1,4 @@
-package com.example.TradeMartRatingUI;
+package com.realeyez.TradeMart;
 
 import android.content.Intent;
 import android.os.Bundle;
