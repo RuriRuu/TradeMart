@@ -32,13 +32,13 @@
             android:id="@+id/discreteSlider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:stepSize="0.5"
             android:value="2.5"
             android:valueFrom="0"
             android:valueTo="5"
-            android:stepSize="0.5"
-            app:trackColorActive="#E91E63"
-            app:trackColorInactive="#FAD1E4"
-            app:thumbColor="#E91E63" />
+            app:thumbColor="#E91E63"
+            app:trackColorActive="#F03C7A"
+            app:trackColorInactive="#FAD1E4" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

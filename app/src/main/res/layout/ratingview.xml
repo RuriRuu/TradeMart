@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="40dp"
-                android:backgroundTint="#FF6399"
+                android:backgroundTint="#F26594"
                 android:fontFamily="@font/poppins_bold"
                 android:text="Submit Rating"
                 android:textAllCaps="true"

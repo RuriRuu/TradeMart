@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Rating UI</string>
+
+    <string-array name="job_categories">
+        <item>Art</item>
+        <item>Programming</item>
+        <item>Cooking</item>
+        <item>Writing</item>
+        <item>Music</item>
+        <item>Design</item>
+        <item>Marketing</item>
+        <item>Engineering</item>
+        <item>Education</item>
+        <item>Fitness</item>
+    </string-array>
 </resources>

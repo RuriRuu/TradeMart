@@ -23,9 +23,15 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button ratings = findViewById(R.id.button2);
+        Button ratings = findViewById(R.id.RatingCheck);
         ratings.setOnClickListener(view -> {
             Intent explicitActivity = new Intent(MainActivity.this, RatingViewActivity.class);
+            startActivity(explicitActivity);
+        });
+
+        Button interests = findViewById(R.id.InterestCheck);
+        interests.setOnClickListener(view -> {
+            Intent explicitActivity = new Intent(MainActivity.this, InterestViewActivity.class);
             startActivity(explicitActivity);
         });
     }
