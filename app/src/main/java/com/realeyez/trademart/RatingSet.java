@@ -1,4 +1,4 @@
-package com.realeyez.TradeMart;
+package com.realeyez.trademart;
 
 public class RatingSet {
     private static int ratingCount = 0;
