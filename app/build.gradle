@@ -3,13 +3,20 @@ plugins {
     id 'eclipse'
 }
 
+eclipse {
+    classpath {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
 android {
     namespace 'com.realeyez.trademart'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.example.TradeMartRatingUI"
-        minSdk 24
+        applicationId "com.realeyez.trademart"
+        minSdk 23
         targetSdk 35
         versionCode 1
         versionName "1.0"

@@ -28,6 +28,7 @@ app/bin/
 app/.settings/
 
 app/.classpath
+app/.class.bak
 app/.project
 
 .settings/
