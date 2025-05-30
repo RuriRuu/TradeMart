@@ -9,6 +9,7 @@ import com.realeyez.trademart.encryption.Decryptor;
 import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.Request;
+import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.request.Request.RequestBuilder;
 import com.realeyez.trademart.util.Logger;
@@ -16,19 +17,21 @@ import com.realeyez.trademart.util.Logger.LogLevel;
 
 public class RequestTest {
 
+    // @Test
     public void test_getRequest(){
         Request request = new RequestBuilder()
             .setHost("127.0.0.1")
             .setGet()
             .setPath("/user/29123")
             .build();
-        String response = request.sendRequest();
-        System.out.printf("the received response: %s\n", response);
+        Response response = request.sendRequest();
+        System.out.printf("the received response code: %d, content: %s\n", response.getCode(), response.getContent());
         String expected = "{\"id\":29123,\"name\":\"RedFlameKen\",\"email\":\"example@mail.com\",\"password\":null}";
 
-        assertEquals(expected, response);
+        assertEquals(expected, response.getContent());
     }
 
+    // @Test
     public void test_postRequest(){
         String password = "ThisPasswordIsPassable";
         Encryptor encryptor = new Encryptor();
@@ -58,8 +61,8 @@ public class RequestTest {
             .setPath("/user/signup")
             .build();
 
-        String response = request.sendRequest();
-        System.out.printf("the received response: %s\n", response);
+        Response response = request.sendRequest();
+        System.out.printf("the received response: %s\n", response.getContent());
         // String expected = "{\"id\":29123,\"name\":\"RedFlameKen\",\"email\":\"example@mail.com\",\"password\":null}";
         //
         // assertEquals(expected, response);

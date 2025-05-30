@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.realeyez.trademart.request.Response.ResponseBuilder;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
@@ -40,7 +41,7 @@ public class Request {
      * @return response from the server
      *
      **/
-    public String sendRequest(){
+    public Response sendRequest(){
         try {
             URL url = new URL(buildURL());
             con = (HttpURLConnection) url.openConnection();
@@ -62,9 +63,9 @@ public class Request {
         if(method.equals("POST")){
             sendContentBody();
         }
-        String output = readResponseBody();
+        Response response = readResponse();
         con.disconnect();
-        return output;
+        return response;
     }
 
     private void sendContentBody(){
@@ -74,6 +75,21 @@ public class Request {
             Logger.log("IOException when writing request", LogLevel.CRITICAL);
             e.printStackTrace();
         }
+    }
+
+    private Response readResponse(){
+        Response response = null;
+        try {
+        response = new ResponseBuilder()
+            .setCode(con.getResponseCode())
+            .setContentType(con.getContentType())
+            .setContent(readResponseBody())
+            .build();
+        } catch (IOException e) {
+            Logger.log("Unable to read response", LogLevel.WARNING);
+            e.printStackTrace();
+        }
+        return response;
     }
 
     private String readResponseBody(){
@@ -173,6 +189,14 @@ public class Request {
             return this;
         }
 
+        /**
+         * sets the content type of the content body. To see all possible http types,
+         * check {@see <a href="https://mimetype.io/all-types">mimetype.io</a>}
+         *
+         * @param contentType type of the content body
+         *
+         * @return this RequestBuilder
+         */
         public RequestBuilder setContentType(String contentType) {
             this.contentType = contentType;
             return this;
