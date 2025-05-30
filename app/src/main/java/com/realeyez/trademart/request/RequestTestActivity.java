@@ -1,12 +1,14 @@
 package com.realeyez.trademart.request;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.request.Request.RequestBuilder;
 import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -28,20 +30,34 @@ public class RequestTestActivity extends AppCompatActivity {
     public void initComponents(){
         sendButton = findViewById(R.id.send_req_button);
         sendButton.setOnClickListener(view -> {
-            try {
-                Request request = new RequestBuilder()
-                    .setHost("10.0.2.2")
-                    .setPost("cock and balls")
-                    .setPath("/user/29123")
-                    .build();
-                String response = request.sendRequest();
-                Logger.log(response, LogLevel.CRITICAL);
-                Toast.makeText(this, response, Toast.LENGTH_LONG).show();
-                Dialogs.showMessageDialog(response, this);
-            } catch (Exception e){
-                Logger.log("something bad happened", LogLevel.CRITICAL);
-                Logger.log(e.getMessage(), LogLevel.CRITICAL);
-            }
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                try {
+                    Request request = new RequestBuilder()
+                        .setHost("10.0.2.2")
+                        .setGet()
+                        .setPath("/user/29123")
+                        .build();
+                    StringBuilder responseBuilder = new StringBuilder();
+                    responseBuilder
+                        .append("response data: ")
+                        .append(request.sendRequest());
+                    Logger.log(responseBuilder.toString(), LogLevel.CRITICAL);
+
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, responseBuilder.toString(), Toast.LENGTH_LONG).show();
+                        Dialogs.showMessageDialog(responseBuilder.toString(), this);
+                    });
+                } catch (Exception e){
+                    Logger.log("something bad happened", LogLevel.CRITICAL);
+                    StringBuilder errorBuilder = new StringBuilder();
+                    errorBuilder.append("type of exception: ")
+                        .append(e.getClass().toString())
+                        .append(" message: ")
+                        .append(e.getMessage());
+                    Logger.log(errorBuilder.toString(), LogLevel.CRITICAL);
+                }
+            });
         });
     }
 

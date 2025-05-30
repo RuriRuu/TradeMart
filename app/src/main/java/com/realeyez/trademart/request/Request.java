@@ -9,6 +9,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.Logger.LogLevel;
+
 public class Request {
     
     public static final String SERVER_HOST = "10.0.2.2";
@@ -44,14 +47,16 @@ public class Request {
             con.setRequestMethod(method);
             con.setRequestProperty("Content-Type", contentType);
             if(method.equals("POST")){
-                con.setDoInput(true);
+                con.setDoOutput(true);
             }
-            con.setDoOutput(true);
+            con.setDoInput(true);
             con.connect();
 
         } catch (MalformedURLException e) {
+            Logger.log("MalformedURLException", LogLevel.CRITICAL);
             e.printStackTrace();
         } catch (IOException e) {
+            Logger.log("IOException when making request", LogLevel.CRITICAL);
             e.printStackTrace();
         }
         if(method.equals("POST")){
@@ -66,6 +71,7 @@ public class Request {
         try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()))){
             writer.write(body);
         } catch(IOException e){
+            Logger.log("IOException when writing request", LogLevel.CRITICAL);
             e.printStackTrace();
         }
     }
@@ -78,6 +84,7 @@ public class Request {
                 builder.append(line);
             }
         } catch (IOException e) {
+            Logger.log("IOException when reading response", LogLevel.CRITICAL);
             e.printStackTrace();
         }
         return builder.toString();
