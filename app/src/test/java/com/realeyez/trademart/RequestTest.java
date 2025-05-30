@@ -31,7 +31,7 @@ public class RequestTest {
         assertEquals(expected, response.getContent());
     }
 
-    // @Test
+    @Test
     public void test_postRequest(){
         String password = "ThisPasswordIsPassable";
         Encryptor encryptor = new Encryptor();
@@ -56,13 +56,16 @@ public class RequestTest {
         Logger.log(new String("content to be sent: ").concat(content.getContentString()), LogLevel.INFO);
 
         Request request = new RequestBuilder()
-            .setHost("127.0.0.1")
+            .useSSL()
             .setPost(content.getContentString())
+            .setHost("thinkpad-x230.taila38b71.ts.net")
+            .noPort()
             .setPath("/user/signup")
             .build();
 
         Response response = request.sendRequest();
-        System.out.printf("the received response: %s\n", response.getContent());
+        System.out.printf("the received response code: %d, content: %s\n", response.getCode(), response.getContent());
+        System.out.printf("redirect to: %s\n", response.getLocation());
         // String expected = "{\"id\":29123,\"name\":\"RedFlameKen\",\"email\":\"example@mail.com\",\"password\":null}";
         //
         // assertEquals(expected, response);

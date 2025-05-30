@@ -8,6 +8,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import com.realeyez.trademart.request.Response.ResponseBuilder;
 import com.realeyez.trademart.util.Logger;
@@ -15,22 +18,27 @@ import com.realeyez.trademart.util.Logger.LogLevel;
 
 public class Request {
     
-    public static final String SERVER_HOST = "10.0.2.2";
-    public static final int SERVER_PORT = 8080;
+    public static final String DEFAULT_SERVER_HOST = "10.0.2.2";
+    public static final int DEFAULT_SERVER_PORT = 8080;
 
     private String host;
+    private int port;
     private String method;
     private String path;
     private String body;
     private String contentType;
-    private HttpURLConnection con;
+
+    private boolean usingSSL;
+    private URLConnection con;
 
     public Request(RequestBuilder builder){
         this.host = builder.host;
+        this.port = builder.port;
         this.method = builder.method;
         this.path = builder.path;
         this.body = builder.body;
         this.contentType = builder.contentType;
+        this.usingSSL = builder.usingSSL;
     }
 
     /**
@@ -42,10 +50,18 @@ public class Request {
      *
      **/
     public Response sendRequest(){
+        return sendHttpRequest();
+    }
+
+    private Response sendHttpRequest(){
+
         try {
             URL url = new URL(buildURL());
             con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod(method);
+            if(usingSSL)
+                ((HttpsURLConnection) con).setRequestMethod(method);
+            else
+                ((HttpURLConnection) con).setRequestMethod(method);
             con.setRequestProperty("Content-Type", contentType);
             if(method.equals("POST")){
                 con.setDoOutput(true);
@@ -64,8 +80,12 @@ public class Request {
             sendContentBody();
         }
         Response response = readResponse();
-        con.disconnect();
+        if(usingSSL)
+            ((HttpsURLConnection) con).disconnect();
+        else
+            ((HttpURLConnection) con).disconnect();
         return response;
+
     }
 
     private void sendContentBody(){
@@ -81,7 +101,9 @@ public class Request {
         Response response = null;
         try {
         response = new ResponseBuilder()
-            .setCode(con.getResponseCode())
+                .setCode(usingSSL == true ? ((HttpsURLConnection) con).getResponseCode()
+                        : ((HttpURLConnection) con).getResponseCode())
+            .setLocation(con.getHeaderField("Location"))
             .setContentType(con.getContentType())
             .setContent(readResponseBody())
             .build();
@@ -109,24 +131,43 @@ public class Request {
 
     private String buildURL(){
         StringBuilder builder = new StringBuilder()
-            .append("http://")
-            .append(host == null ? SERVER_HOST : host)
-            .append(":")
-            .append(SERVER_PORT)
+            .append(getLocationBase())
+            .append(getPortString())
             .append(path);
+        return builder.toString();
+    }
+
+    private String getLocationBase(){
+        StringBuilder builder = new StringBuilder()
+            .append(usingSSL ? "https://" : "http://")
+            .append(host == null ? DEFAULT_SERVER_HOST : host);
+        return builder.toString();
+    }
+
+    private String getPortString(){
+        if(port == -1){
+            return "";
+        }
+        StringBuilder builder = new StringBuilder()
+            .append(":")
+            .append(port);
         return builder.toString();
     }
 
     public static class RequestBuilder {
 
         private String host;
+        private int port;
         private String method;
         private String path;
         private String contentType;
         private String body;
+        private boolean usingSSL;
 
         public RequestBuilder(){
             host = method = path = contentType = body = null;
+            usingSSL = false;
+            port = DEFAULT_SERVER_PORT;
         }
 
         public RequestBuilder setHost(String host){
@@ -144,6 +185,21 @@ public class Request {
          **/
         public RequestBuilder setGet() {
             this.method = "GET";
+            return this;
+        }
+
+        public RequestBuilder noPort(){
+            this.port = -1;
+            return this;
+        }
+
+        public RequestBuilder setPort(int port){
+            this.port = port;
+            return this;
+        }
+
+        public RequestBuilder useSSL(){
+            this.usingSSL = true;
             return this;
         }
 

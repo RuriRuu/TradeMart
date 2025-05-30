@@ -34,14 +34,16 @@ public class RequestTestActivity extends AppCompatActivity {
             executor.execute(() -> {
                 try {
                     Request request = new RequestBuilder()
-                        .setHost("10.0.2.2")
+                        .useSSL()
+                        .setHost("thinkpad-x230.taila38b71.ts.net")
+                        .noPort()
                         .setGet()
                         .setPath("/user/29123")
                         .build();
                     StringBuilder responseBuilder = new StringBuilder();
                     responseBuilder
                         .append("response data: ")
-                        .append(request.sendRequest());
+                        .append(request.sendRequest().getContent());
                     Logger.log(responseBuilder.toString(), LogLevel.CRITICAL);
 
                     runOnUiThread(() -> {
