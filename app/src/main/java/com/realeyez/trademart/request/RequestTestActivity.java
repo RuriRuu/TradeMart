@@ -38,7 +38,7 @@ public class RequestTestActivity extends AppCompatActivity {
                         .setHost("thinkpad-x230.taila38b71.ts.net")
                         .noPort()
                         .setGet()
-                        .setPath("/user/29123")
+                        .setPath("/user/59789")
                         .build();
                     StringBuilder responseBuilder = new StringBuilder();
                     responseBuilder

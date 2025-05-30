@@ -62,7 +62,6 @@ public class RequestTest {
             .noPort()
             .setPath("/user/signup")
             .build();
-
         Response response = request.sendRequest();
         System.out.printf("the received response code: %d, content: %s\n", response.getCode(), response.getContent());
         System.out.printf("redirect to: %s\n", response.getLocation());

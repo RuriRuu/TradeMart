@@ -67,7 +67,6 @@ public class Request {
                 con.setDoOutput(true);
             }
             con.setDoInput(true);
-            con.connect();
 
         } catch (MalformedURLException e) {
             Logger.log("MalformedURLException", LogLevel.CRITICAL);
