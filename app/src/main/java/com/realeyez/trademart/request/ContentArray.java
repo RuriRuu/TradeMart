@@ -26,40 +26,297 @@ public class ContentArray {
             content = new JSONArray();
         }
 
-        public ContentArrayBuilder put(String key, String data){
+        /**
+         *
+         * Adds an item in the current ContentArray being built.
+         *
+         * For example, if we want to make the following json:
+         * 
+         * <pre>{@code
+         *
+         * { 
+         *    "subjects": [
+         *      "english",
+         *      "math",
+         *      "science"
+         *    ]
+         * }
+         *
+         * }</pre>
+         *
+         * We can use the following block of code:
+         *
+         * <pre>
+         * {@code
+         * ContentArray subjects = new ContentArrayBuilder()
+         *         .put("english")
+         *         .put("math")
+         *         .put("science")
+         *         .build();
+         *
+         * Content content = new ContentBuilder()
+         *         .put("subjects", subjects)
+         *         .build();
+         * }
+         * </pre>
+         *
+         * @param data the array item to be added
+         *
+         * @return this ContentArrayBuilder
+         */
+        public ContentArrayBuilder put(String data){
             content.put(data);
             return this;
         }
 
-        public ContentArrayBuilder put(String key, int data){
+        /**
+         *
+         * Adds an item in the current ContentArray being built.
+         *
+         * For example, if we want to make the following json:
+         * 
+         * <pre>{@code
+         *
+         * { 
+         *    "subjects": [
+         *      "english",
+         *      "math",
+         *      "science"
+         *    ]
+         * }
+         *
+         * }</pre>
+         *
+         * We can use the following block of code:
+         *
+         * <pre>
+         * {@code
+         * ContentArray subjects = new ContentArrayBuilder()
+         *         .put("english")
+         *         .put("math")
+         *         .put("science")
+         *         .build();
+         *
+         * Content content = new ContentBuilder()
+         *         .put("subjects", subjects)
+         *         .build();
+         * }
+         * </pre>
+         *
+         * @param data the array item to be added
+         *
+         * @return this ContentArrayBuilder
+         */
+        public ContentArrayBuilder put(int data){
             content.put(data);
             return this;
         }
 
-        public ContentArrayBuilder put(String key, double data){
+        /**
+         *
+         * Adds an item in the current ContentArray being built.
+         *
+         * For example, if we want to make the following json:
+         * 
+         * <pre>{@code
+         *
+         * { 
+         *    "subjects": [
+         *      "english",
+         *      "math",
+         *      "science"
+         *    ]
+         * }
+         *
+         * }</pre>
+         *
+         * We can use the following block of code:
+         *
+         * <pre>
+         * {@code
+         * ContentArray subjects = new ContentArrayBuilder()
+         *         .put("english")
+         *         .put("math")
+         *         .put("science")
+         *         .build();
+         *
+         * Content content = new ContentBuilder()
+         *         .put("subjects", subjects)
+         *         .build();
+         * }
+         * </pre>
+         *
+         * @param data the array item to be added
+         *
+         * @return this ContentArrayBuilder
+         */
+        public ContentArrayBuilder put(double data){
             try {
                 content.put(data);
             } catch (JSONException e) {
                 StringBuilder builder = new StringBuilder()
-                    .append("Could not append the entry ")
-                    .append(key);
+                    .append("Could not append the data ")
+                    .append(data)
+                    .append("to a json array");
                 Logger.log(builder.toString(), LogLevel.WARNING);
                 e.printStackTrace();
             }
             return this;
         }
 
-        public ContentArrayBuilder put(String key, boolean data){
+        /**
+         *
+         * Adds an item in the current ContentArray being built.
+         *
+         * For example, if we want to make the following json:
+         * 
+         * <pre>{@code
+         *
+         * { 
+         *    "subjects": [
+         *      "english",
+         *      "math",
+         *      "science"
+         *    ]
+         * }
+         *
+         * }</pre>
+         *
+         * We can use the following block of code:
+         *
+         * <pre>
+         * {@code
+         * ContentArray subjects = new ContentArrayBuilder()
+         *         .put("english")
+         *         .put("math")
+         *         .put("science")
+         *         .build();
+         *
+         * Content content = new ContentBuilder()
+         *         .put("subjects", subjects)
+         *         .build();
+         * }
+         * </pre>
+         *
+         * @param data the array item to be added
+         *
+         * @return this ContentArrayBuilder
+         */
+        public ContentArrayBuilder put(boolean data){
             content.put(data);
             return this;
         }
 
-        public ContentArrayBuilder put(String key, Content data){
+        /**
+         *
+         * Adds a JSONObject inside of the current ContentArray being built.
+         *
+         * For example, if we want to make the following json:
+         * 
+         * <pre>{@code
+         *
+         * { 
+         *    "pets": [
+         *      {
+         *          "name": "miming",
+         *          "type": "cat"
+         *      },
+         *      {
+         *          "name": "bruno",
+         *          "type": "marsian"
+         *      }
+         *    ]
+         * }
+         *
+         * }</pre>
+         *
+         * We can use the following block of code:
+         *
+         * <pre>
+         * {@code
+         * Content miming = new ContentBuilder()
+         *         .put("name", "miming")
+         *         .put("type", "cat")
+         *         .build();
+         *
+         * Content bruno = new ContentBuilder()
+         *         .put("name", "bruno")
+         *         .put("type", "marsian")
+         *         .build();
+         *
+         * ContentArray pets = new ContentArrayBuilder()
+         *         .put(miming)
+         *         .put(bruno)
+         *         .build();
+         *
+         * Content content = new ContentBuilder()
+         *         .put("pets", pets)
+         *         .build();
+         * }
+         * </pre>
+         *
+         * @param data the array item to be added
+         *
+         * @return this ContentArrayBuilder
+         */
+        public ContentArrayBuilder put(Content data){
             content.put(data.getContent());
             return this;
         }
 
-        public ContentArrayBuilder put(String key, ContentArray data){
+        /**
+         *
+         * Adds a JSONArray inside of the current ContentArray being built.
+         *
+         * For example, if we want to make the following json:
+         * 
+         * <pre>{@code
+         *
+         * { 
+         *    "pets": [
+         *      [
+         *          "miming",
+         *          "bruno"
+         *      ],
+         *      [
+         *          "charlie",
+         *          "chika"
+         *      ]
+         *    ]
+         * }
+         *
+         * }</pre>
+         *
+         * We can use the following block of code:
+         *
+         * <pre>
+         * {@code
+         * ContentArray pets1 = new ContentArrayBuilder()
+         *         .put("miming")
+         *         .put("bruno")
+         *         .build();
+         *
+         * ContentArray pets2 = new ContentArrayBuilder()
+         *         .put("charlie")
+         *         .put("chika")
+         *         .build();
+         *
+         * ContentArray pets = new ContentArrayBuilder()
+         *         .put(pets1)
+         *         .put(pets2)
+         *         .build();
+         *
+         * Content content = new ContentBuilder()
+         *         .put("pets", pets)
+         *         .build();
+         * }
+         * </pre>
+         *
+         * @param data the array item to be added
+         *
+         * @return this ContentArrayBuilder
+         */
+        public ContentArrayBuilder put(ContentArray data){
             content.put(data.getContent());
             return this;
         }
