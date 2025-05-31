@@ -187,6 +187,21 @@ public class Request {
             return this;
         }
 
+        /**
+         * Make the request url not include a port. This just sets the port to -1 so
+         * make sure to use this along with {@link RequestBuilder#setPort(int) setPort()}
+         * <br>
+         *
+         * This method should be used when you need to format a url to not include a
+         * port (typically when you use a proxy that forwards a port). For example,
+         * without calling noPort() while trying to connect to 127.0.0.1, the output url
+         * would be http://127.0.0.1:8080/. Calling noPort() will format the url as
+         * http://127.0.0.1/
+         *
+         *
+         * @return this RequestBuilder
+         *
+         */
         public RequestBuilder noPort(){
             this.port = -1;
             return this;
@@ -197,6 +212,12 @@ public class Request {
             return this;
         }
 
+        /**
+         * Make the request use https instead of http.
+         *
+         * @return this RequestBuilder
+         *
+         */
         public RequestBuilder useSSL(){
             this.usingSSL = true;
             return this;
