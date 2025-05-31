@@ -1,4 +1,4 @@
-package com.realeyez.TradeMart;
+package com.realeyez.trademart;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
         Button interests = findViewById(R.id.InterestCheck);
         interests.setOnClickListener(view -> {
             Intent explicitActivity = new Intent(MainActivity.this, InterestViewActivity.class);
+            startActivity(explicitActivity);
+        });
+
+        Button buypage = findViewById(R.id.buypagebtn);
+        buypage.setOnClickListener(view -> {
+            Intent explicitActivity = new Intent(MainActivity.this, JobListEditing.class);
             startActivity(explicitActivity);
         });
     }

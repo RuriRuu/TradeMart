@@ -40,4 +40,14 @@
         app:layout_constraintStart_toStartOf="@+id/RatingCheck"
         app:layout_constraintTop_toBottomOf="@+id/RatingCheck" />
 
+    <Button
+        android:id="@+id/buypagebtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="29dp"
+        android:layout_marginBottom="68dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/InterestCheck" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
