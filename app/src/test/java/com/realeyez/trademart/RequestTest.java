@@ -3,6 +3,8 @@ package com.realeyez.trademart;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import com.realeyez.trademart.encryption.Decryptor;
@@ -24,7 +26,12 @@ public class RequestTest {
             .setGet()
             .setPath("/user/29123")
             .build();
-        Response response = request.sendRequest();
+        Response response = null;
+        try {
+            response = request.sendRequest();
+        } catch (IOException e){
+            Logger.log("Unable to send the request in test_getRequest()", LogLevel.CRITICAL);
+        }
         System.out.printf("the received response code: %d, content: %s\n", response.getCode(), response.getContent());
         String expected = "{\"id\":29123,\"name\":\"RedFlameKen\",\"email\":\"example@mail.com\",\"password\":null}";
 
@@ -62,7 +69,12 @@ public class RequestTest {
             .noPort()
             .setPath("/user/signup")
             .build();
-        Response response = request.sendRequest();
+        Response response = null;
+        try {
+            response = request.sendRequest();
+        } catch (IOException e){
+            Logger.log("Unable to send the request in test_postRequest()", LogLevel.CRITICAL);
+        }
         System.out.printf("the received response code: %d, content: %s\n", response.getCode(), response.getContent());
         System.out.printf("redirect to: %s\n", response.getLocation());
         // String expected = "{\"id\":29123,\"name\":\"RedFlameKen\",\"email\":\"example@mail.com\",\"password\":null}";
