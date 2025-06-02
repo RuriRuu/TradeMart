@@ -1,4 +1,4 @@
-package com.realeyez.TradeMart;
+package com.realeyez.trademart;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;

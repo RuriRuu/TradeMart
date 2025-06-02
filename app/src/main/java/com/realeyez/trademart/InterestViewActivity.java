@@ -1,4 +1,4 @@
-package com.realeyez.TradeMart;
+package com.realeyez.trademart;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

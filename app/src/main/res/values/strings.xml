@@ -13,4 +13,10 @@
         <item>Education</item>
         <item>Fitness</item>
     </string-array>
+
+    <string-array name="job_tiers">
+        <item>Basic</item>
+        <item>Standard</item>
+        <item>Premium</item>
+    </string-array>
 </resources>
