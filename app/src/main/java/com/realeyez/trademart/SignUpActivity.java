@@ -105,7 +105,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         Content content = new ContentBuilder()
             .put("username", username)
-            .put("email", username)
+            .put("email", email)
             .put("password", encryptedPassword)
             .put("salt_iv", saltIv)
             .build();
