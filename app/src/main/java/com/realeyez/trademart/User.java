@@ -1,4 +1,4 @@
-package com.realeyez.TradeMart;
+package com.realeyez.trademart;
 
 public class User {
     public int id;
