@@ -81,7 +81,7 @@
             android:autofillHints=""
             android:ems="10"
             android:hint="Re-enter Password"
-            android:inputType="text"
+            android:inputType="textPassword"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
