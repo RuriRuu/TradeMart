@@ -24,6 +24,12 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".JobListEditing"
+            android:exported="false" />
+        <activity
+            android:name=".InterestViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".RatingViewActivity"
             android:exported="false" />
         <activity

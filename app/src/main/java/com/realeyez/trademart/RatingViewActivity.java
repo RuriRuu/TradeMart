@@ -96,14 +96,19 @@ public class RatingViewActivity extends AppCompatActivity {
         return slider.getValue();
     }
 
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     private void showRating() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.rating_confirm);
         dialog.show();
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+
         RatingBar ratingBar = dialog.findViewById(R.id.ratingBar);
+        TextView ratingNumber = dialog.findViewById(R.id.ratingTextNumber);
         ratingBar.setRating(rating.getOverall());
+        ratingNumber.setText(String.format("%.1f", rating.getOverall()));
+
 
         dialog.findViewById(R.id.closeButton).setOnClickListener(v -> dialog.dismiss());
     }
