@@ -1,4 +1,4 @@
-package com.realeyez.TradeMart;
+package com.realeyez.trademart;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,10 +14,10 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = "SignUpActivity";
     private ArrayList<User> users = new ArrayList<User>();
-    EditText name;
-    EditText email;
-    EditText password;
-    EditText reEnter;
+    EditText nameField;
+    EditText emailField;
+    EditText passwordField;
+    EditText reEnterField;
     Button signUpButton;
     Button returnToLogin;
 
@@ -26,52 +26,52 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        name = findViewById(R.id.name);
-        email = findViewById(R.id.email);
-        password = findViewById(R.id.password);
-        reEnter = findViewById(R.id.reEnter);
+        nameField = findViewById(R.id.name);
+        emailField = findViewById(R.id.email);
+        passwordField = findViewById(R.id.password);
+        reEnterField = findViewById(R.id.reEnter);
         signUpButton = findViewById(R.id.signUpButton);
+        returnToLogin = findViewById(R.id.returnToLogin);
 
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String Name = name.getText().toString();
-                String Email = email.getText().toString();
-                String Password = password.getText().toString();
-                String ReEnter = reEnter.getText().toString();
+                String name = nameField.getText().toString();
+                String email = emailField.getText().toString();
+                String password = passwordField.getText().toString();
+                String reEnter = reEnterField.getText().toString();
 
-                if (!password.equals(reEnter)) {
-                    reEnter.setError("Passwords do not match");
+                if (!passwordField.getText().toString().equals(reEnter)) {
+                    reEnterField.setError("Passwords do not match");
                 }
 
-                User newUser = new User(Name, Email, Password);
+                User newUser = new User(name, email, password);
                 users.add(newUser);
-
-                returnToLogin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(SignUpActivity.this, LoginPageActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
             }
 
-
         });
 
-/*
-        Button ratings = findViewById(R.id.RatingCheck);
-        ratings.setOnClickListener(view -> {
-            Intent explicitActivity = new Intent(SignUpActivity.this, RatingViewActivity.class);
-            startActivity(explicitActivity);
+        returnToLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignUpActivity.this, LoginPageActivity.class);
+                startActivity(intent);
+                finish();
+            }
         });
-
-        Button interests = findViewById(R.id.InterestCheck);
-        interests.setOnClickListener(view -> {
-            Intent explicitActivity = new Intent(SignUpActivity.this, InterestViewActivity.class);
-            startActivity(explicitActivity);
-        });
-*/
     }
+
+
+        // Button ratings = findViewById(R.id.RatingCheck);
+        // ratings.setOnClickListener(view -> {
+        //     Intent explicitActivity = new Intent(SignUpActivity.this, RatingViewActivity.class);
+        //     startActivity(explicitActivity);
+        // });
+
+        // Button interests = findViewById(R.id.InterestCheck);
+        // interests.setOnClickListener(view -> {
+        //     Intent explicitActivity = new Intent(SignUpActivity.this, InterestViewActivity.class);
+        //     startActivity(explicitActivity);
+        // });
+
 }
