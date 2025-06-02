@@ -16,6 +16,8 @@ import com.realeyez.trademart.request.Response.ResponseBuilder;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
+import androidx.annotation.CheckResult;
+
 public class Request {
 
     public static final String DEFAULT_SERVER_HOST = "10.0.2.2";
@@ -82,6 +84,7 @@ public class Request {
     private void sendContentBody() {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()))) {
             writer.write(body);
+            writer.flush();
         } catch (IOException e) {
             Logger.log("IOException when writing request", LogLevel.CRITICAL);
             e.printStackTrace();
