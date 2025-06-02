@@ -1,5 +1,9 @@
 package com.realeyez.trademart.request;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 public class Response {
 
     private int code;
@@ -20,6 +24,10 @@ public class Response {
 
     public String getContent() {
         return content;
+    }
+
+    public JSONObject getContentJson() throws JSONException {
+        return new JSONObject(new JSONTokener(content));
     }
 
     public String getContentType() {
