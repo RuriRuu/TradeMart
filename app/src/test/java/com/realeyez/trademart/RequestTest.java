@@ -75,6 +75,10 @@ public class RequestTest {
         } catch (IOException e){
             Logger.log("Unable to send the request in test_postRequest()", LogLevel.CRITICAL);
         }
+        if(response == null){
+            System.out.printf("Unable to reach the server\n");
+            return;
+        }
         System.out.printf("the received response code: %d, content: %s\n", response.getCode(), response.getContent());
         System.out.printf("redirect to: %s\n", response.getLocation());
         // String expected = "{\"id\":29123,\"name\":\"RedFlameKen\",\"email\":\"example@mail.com\",\"password\":null}";
