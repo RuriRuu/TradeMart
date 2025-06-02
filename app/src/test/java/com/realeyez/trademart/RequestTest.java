@@ -43,7 +43,7 @@ public class RequestTest {
 
     @Test
     public void test_postRequest() {
-        String password = "ThisPasswordIsPassable";
+        String password = "InsanelyFunnyPassword";
         Encryptor encryptor = new Encryptor();
         String saltIV = encryptor.getSaltIV();
         String encryptedPassword = encryptor.encrypt(password);
@@ -56,8 +56,8 @@ public class RequestTest {
 
         assertEquals(password, decryptedPassword);
         Content content = new ContentBuilder()
-                .put("username", "RedFlameKen")
-                .put("email", "redflameken@test.tess")
+                .put("username", "UserTwo")
+                .put("email", "seconduser@funny.haha")
                 .put("password", encryptedPassword)
                 .put("salt_iv", saltIV)
                 .build();
