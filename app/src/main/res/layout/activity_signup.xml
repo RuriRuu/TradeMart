@@ -8,6 +8,7 @@
     tools:context=".SignUpActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout4"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -25,8 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autofillHints=""
-            android:text="Sign Up"
             android:fontFamily="@font/anuphan_bold"
+            android:text="Sign Up"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -42,7 +43,6 @@
             android:ems="10"
             android:hint="Name"
             android:inputType="text"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +52,6 @@
             android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:autofillHints=""
             android:ems="10"
             android:hint="Email"
@@ -94,24 +93,35 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/pink"
             android:text="SIGN UP"
+            android:layout_marginTop="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="411dp"
+        android:layout_height="76dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
             android:id="@+id/returnToLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
+            android:fontFamily="@font/anuphan_bold"
             android:text="Already have an account? Log in"
             android:textColor="@color/grey"
-            android:fontFamily="@font/anuphan_bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
