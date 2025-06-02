@@ -26,10 +26,14 @@
         <activity
             android:name=".RatingViewActivity"
             android:exported="false" />
-        <activity android:name=".LoginPageActivity"
-            />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"/>
         <activity
             android:name=".SignUpActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".LoginPageActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
