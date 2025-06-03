@@ -10,7 +10,7 @@
     tools:context=".JobListEditing">
 
     <ImageButton
-        android:id="@+id/exitRatingView"
+        android:id="@+id/exitJobListView"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
@@ -25,7 +25,7 @@
         android:id="@+id/jobListingScroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/exitRatingView"
+        app:layout_constraintTop_toBottomOf="@id/exitJobListView"
         app:layout_constraintBottom_toTopOf="@id/JLmessageButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -88,6 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="18dp"
                     android:layout_marginRight="15dp"
+                    android:layout_marginBottom="10dp"
                     android:background="@drawable/spinner_background"
                     android:minHeight="48dp"
                     android:padding="12dp"
@@ -100,6 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="18dp"
                     android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
                     android:fontFamily="@font/poppins"
                     android:ellipsize="end"
                     android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed interdum feugiat justo, ut aliquam augue pulvinar ut. Vestibulum dignissim eros a enim commodo, at lacinia libero tempus. Phasellus quis diam metus. Sed justo risus, interdum vel rutrum vitae, congue ac ex. Nulla sit amet dui sed odio posuere elementum ut in augue."

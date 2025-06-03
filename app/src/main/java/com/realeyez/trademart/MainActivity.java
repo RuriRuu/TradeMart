@@ -40,5 +40,11 @@ public class MainActivity extends AppCompatActivity {
             Intent explicitActivity = new Intent(MainActivity.this, JobListEditing.class);
             startActivity(explicitActivity);
         });
+
+        Button skillcardpage = findViewById(R.id.skillcardbuttonview);
+        skillcardpage.setOnClickListener(view -> {
+            Intent explicitActivity = new Intent(MainActivity.this, skill_card_view.class);
+            startActivity(explicitActivity);
+        });
     }
 }
