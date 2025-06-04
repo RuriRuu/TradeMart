@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.realeyez.trademart.encryption.Decryptor;
 import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
@@ -106,17 +107,10 @@ public class RequestTest {
                 .put("salt_iv", saltIV)
                 .build();
 
-        Request request = new RequestBuilder()
-                .useSSL()
-                .setPost(content.getContentString())
-                .setHost("thinkpad-x230.taila38b71.ts.net")
-                .noPort()
-                .setPath("/user/login")
-                .build();
 
         Response response = null;
         try {
-            response = request.sendRequest();
+            response = RequestUtil.sendPostRequest("/user/login", content);
         } catch (IOException e) {
             Logger.log("Unable to send response", LogLevel.WARNING);
         }
