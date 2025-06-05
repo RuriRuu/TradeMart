@@ -43,8 +43,15 @@ public class MainActivity extends AppCompatActivity {
 
         Button skillcardpage = findViewById(R.id.skillcardbuttonview);
         skillcardpage.setOnClickListener(view -> {
-            Intent explicitActivity = new Intent(MainActivity.this, skill_card_view.class);
+            Intent explicitActivity = new Intent(MainActivity.this, SkillCardView.class);
             startActivity(explicitActivity);
         });
+
+        Button profile_button = findViewById(R.id.profile_view_button);
+        profile_button.setOnClickListener(view -> {
+            Intent explicitActivity = new Intent(MainActivity.this, ProfilePageActivity.class);
+            startActivity(explicitActivity);
+        });
+
     }
 }
