@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "RatingUI"
+rootProject.name = "TradeMart"
 include ':app'
