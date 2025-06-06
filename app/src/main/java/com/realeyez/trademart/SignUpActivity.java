@@ -9,7 +9,6 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,8 +24,6 @@ import com.realeyez.trademart.util.Dialogs;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private static final String TAG = "SignUpActivity";
-    private ArrayList<User> users = new ArrayList<User>();
     EditText nameField;
     EditText emailField;
     EditText passwordField;

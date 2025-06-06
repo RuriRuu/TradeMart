@@ -26,7 +26,7 @@
 
         <activity
             android:name=".request.RequestTestActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".JobListEditing"
             android:exported="false" />
@@ -41,14 +41,14 @@
 
         <activity
             android:name=".ProfilePageActivity"
-            android:exported="true"/>
+            android:exported="false"/>
 
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".SignUpActivity"
-            android:exported="true"/>
+            android:exported="false"/>
         <activity
             android:name=".LoginPageActivity"
             android:exported="true">

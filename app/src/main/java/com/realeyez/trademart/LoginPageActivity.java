@@ -11,6 +11,8 @@ import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.resource.ResourceRepository;
+import com.realeyez.trademart.user.User;
 import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
@@ -52,20 +54,20 @@ public class LoginPageActivity extends AppCompatActivity {
         });
     }
 
-    private void loginButtonAction(){
+    private void loginButtonAction() {
         String username = enteredName.getText().toString();
         String password = enteredPassword.getText().toString();
 
         boolean noBuenoInput = false;
-        if(username.isBlank()){
+        if (username.isBlank()) {
             enteredName.setError("Do not leave empty");
             noBuenoInput = true;
         }
-        if(password.isBlank()){
+        if (password.isBlank()) {
             enteredPassword.setError("Do not leave empty");
             noBuenoInput = true;
         }
-        if(noBuenoInput){
+        if (noBuenoInput) {
             return;
         }
 
@@ -76,11 +78,12 @@ public class LoginPageActivity extends AppCompatActivity {
                 JSONObject json = response.getContentJson();
                 String status = json.getString("status");
                 String message = json.getString("message");
-                if(status.equals("failed")){
+                if (status.equals("failed")) {
                     showSignupFailedDialog(message);
                     return;
                 }
-                if(status.equals("success")){
+                if (status.equals("success")) {
+                    setupUser(json.getJSONObject("user_data"));
                     showMainPage();
                 }
             } catch (JSONException e) {
@@ -90,25 +93,42 @@ public class LoginPageActivity extends AppCompatActivity {
 
     }
 
+    private void setupUser(JSONObject userJson) {
+        try {
+            int userId = userJson.getInt("user_id");
+            String username = userJson.getString("username");
+            String email = userJson.getString("email");
+
+            ResourceRepository resources = ResourceRepository.getResources();
+            resources.setCurrentUser(new User.UserBuilder()
+                    .setId(userId)
+                    .setUsername(username)
+                    .setEmail(email)
+                    .build());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private Response sendLoginRequest(String username, String password) {
         Encryptor encryptor = new Encryptor();
         String encryptedPassword = encryptor.encrypt(password);
         String saltIv = encryptor.getSaltIV();
 
         Content content = new Content.ContentBuilder()
-            .put("username", username)
-            .put("password", encryptedPassword)
-            .put("salt_iv", saltIv)
-            .build();
+                .put("username", username)
+                .put("password", encryptedPassword)
+                .put("salt_iv", saltIv)
+                .build();
 
         Request request = new Request.RequestBuilder()
-            .setPost(content.getContentString())
-            .useSSL()
-            .setHost(getResources().getString(R.string.host_url))
-            .noPort()
-            .setPath("/user/login")
-            .setContentType("application/json")
-            .build();
+                .setPost(content.getContentString())
+                .useSSL()
+                .setHost(getResources().getString(R.string.host_url))
+                .noPort()
+                .setPath("/user/login")
+                .setContentType("application/json")
+                .build();
 
         Response response = null;
         try {
@@ -119,14 +139,14 @@ public class LoginPageActivity extends AppCompatActivity {
         return response;
     }
 
-    private void showMainPage(){
+    private void showMainPage() {
         runOnUiThread(() -> {
             Intent explicitActivity = new Intent(LoginPageActivity.this, MainActivity.class);
             startActivity(explicitActivity);
         });
     }
 
-    private void showSignupFailedDialog(String message){
+    private void showSignupFailedDialog(String message) {
         runOnUiThread(() -> {
             Dialogs.showDialog("Oops!", message, this);
         });

@@ -1,5 +1,7 @@
 package com.realeyez.trademart;
 
+import com.realeyez.trademart.resource.ResourceRepository;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         Button profile_button = findViewById(R.id.profile_view_button);
         profile_button.setOnClickListener(view -> {
             Intent explicitActivity = new Intent(MainActivity.this, ProfilePageActivity.class);
+            explicitActivity.putExtra("user_id", ResourceRepository.getResources().getCurrentUser().getId());
             startActivity(explicitActivity);
         });
 
