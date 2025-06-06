@@ -17,8 +17,8 @@ local.properties
 .idea/
 .DS_Store
 /build
-/captures
 build
+/captures
 captures
 .externalNativeBuild
 .cxx
@@ -34,3 +34,6 @@ app/.project
 .settings/
 .classpath
 .project
+.ignore
+
+*.class

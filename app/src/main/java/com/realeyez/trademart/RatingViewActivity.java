@@ -49,7 +49,7 @@ public class RatingViewActivity extends AppCompatActivity {
 
         //Rating View > Home
         ExitMenu.setOnClickListener(view -> {
-            Intent explicitActivity = new Intent(RatingViewActivity.this, MainActivity.class);
+            Intent explicitActivity = new Intent(RatingViewActivity.this, LoginPageActivity.class);
             startActivity(explicitActivity);
         });
 
