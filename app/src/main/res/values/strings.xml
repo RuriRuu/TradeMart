@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Rating UI</string>
+    <string name="app_name">TradeMart</string>
 
     <string-array name="job_categories">
         <item>Art</item>
