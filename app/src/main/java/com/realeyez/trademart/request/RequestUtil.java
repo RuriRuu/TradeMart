@@ -49,6 +49,7 @@ public class RequestUtil {
     public static Response sendPostRequest(String path, Content content) throws IOException {
         Request request = new Request.RequestBuilder()
             .setPost(content.getContentString())
+            .setContentType("application/json")
             .useSSL()
             .setHost(DEFAULT_HTTPS_HOST)
             .noPort()
