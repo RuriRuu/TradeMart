@@ -127,4 +127,40 @@ public class RequestTest {
         assertEquals("success", responseStatus);
     }
 
+    // @Test
+    public void test_post(){
+        String title = "cool post";
+        String description = "Ok, I don't know about you, but TradeMart is awesome!";
+        int userId = 32378;
+        Content content = new Content.ContentBuilder()
+            .put("title", title)
+            .put("description", description)
+            .put("user_id", userId)
+            .build();
+        Response response = null;
+        try {
+            response = RequestUtil.sendPostRequest("/post/publish", content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String r_title = null;
+        String r_description = null;
+        int r_userId = 0;
+        int r_postId = 0;
+        System.out.printf("received response: %s\n", response.getContent());
+        try {
+            JSONObject json = response.getContentJson();
+            r_title = json.getString("title");
+            r_description = json.getString("description");
+            r_userId = json.getInt("user_id");
+            r_postId = json.getInt("post_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.printf("post_id: %s\n", r_postId);
+        assertEquals(title, r_title);
+        assertEquals(description, r_description);
+        assertEquals(userId, r_userId);
+    }
+
 }
