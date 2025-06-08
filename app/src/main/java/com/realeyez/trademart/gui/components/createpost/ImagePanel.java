@@ -75,4 +75,8 @@ public class ImagePanel {
         return image_panel_layout;
     }
 
+    public Uri getImageUri() {
+        return imageUri;
+    }
+
 }

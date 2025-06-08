@@ -8,10 +8,14 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.realeyez.trademart.gui.components.createpost.ImagePanel;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.Encoder;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
@@ -72,6 +76,24 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     private void postButtonAction(View view) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.execute(() -> {
+            Response response = sendPublishPostRequest();
+            int postId = -1;
+            try {
+                JSONObject json = response.getContentJson();
+                postId = json.getInt("post_id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(postId == -1) return;
+            for (ImagePanel panel : imagePanels) {
+                Uri imageUri = panel.getImageUri();
+                // TODO: display if uploading image failed
+                sendPublishPostImageRequest(imageUri, postId);
+            }
+            runOnUiThread(() -> {finish();});
+        });
     }
 
     private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(
@@ -96,44 +118,64 @@ public class CreatePostActivity extends AppCompatActivity {
 
         Uri imageUri = data.getData();
         addImageRow(imageUri);
-        // byte[] bytes = null;
-        // ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-        // try (InputStream stream = getContentResolver().openInputStream(imageUri)) {
-        //     byte[] buffer = new byte[4096];
-        //     int bytesRead;
-        //     while ((bytesRead = stream.read(buffer)) != -1) {
-        //         outstream.write(buffer, 0, bytesRead);
-        //     }
-        // } catch (FileNotFoundException e) {
-        //     e.printStackTrace();
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
-        // bytes = outstream.toByteArray();
-
-        // String filename = getFileNameFromUri(imageUri);
-        // String fileData = Encoder.encodeBase64(bytes);
-        // ExecutorService service = Executors.newSingleThreadExecutor();
-        // service.execute(() -> {
-        // Content content = new Content.ContentBuilder()
-        // .put("filename", filename)
-        // .put("data", fileData)
-        // .build();
-        // Logger.log("log data:\n" + content.getContentString(), LogLevel.CRITICAL);
-        // try {
-        // Response response = RequestUtil.sendPostRequest("/media/upload", content);
-        // int status = response.getCode();
-        // Logger.log("status: " + status, LogLevel.CRITICAL);
-        // } catch (IOException e) {
-        // e.printStackTrace();
-        // }
-        // });
     }
 
     private void addImageRow(Uri imageUri){
         ImagePanel imagePanel = new ImagePanel(this, image_parent_panel, imageUri, imagePanels);
         imagePanels.add(imagePanel);
         image_parent_panel.addView(imagePanel.getLayout());
+    }
+
+    private Response sendPublishPostRequest(){
+        String title = titleField.getText().toString();
+        String description = descField.getText().toString();
+
+        Content content = new Content.ContentBuilder()
+            .put("title", title)
+            .put("description", description)
+            .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
+            .build();
+        Response response = null;
+        try {
+            response = RequestUtil.sendPostRequest("/post/publish", content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    private Response sendPublishPostImageRequest(Uri imageUri, int postId){
+        byte[] bytes = readImageData(imageUri);
+
+        String filename = getFileNameFromUri(imageUri);
+        String fileData = Encoder.encodeBase64(bytes);
+        Content content = new Content.ContentBuilder()
+            .put("filename", filename)
+            .put("data", fileData)
+            .build();
+        Response response = null;
+        try {
+            response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    private byte[] readImageData(Uri uri){
+        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+        try (InputStream stream = getContentResolver().openInputStream(uri)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = stream.read(buffer)) != -1) {
+                outstream.write(buffer, 0, bytesRead);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outstream.toByteArray();
     }
 
     private String getFileNameFromUri(Uri uri) {
