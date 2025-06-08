@@ -3,6 +3,9 @@ package com.realeyez.trademart;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.json.JSONException;
@@ -18,6 +21,7 @@ import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.request.Request.RequestBuilder;
+import com.realeyez.trademart.util.Encoder;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
@@ -161,6 +165,36 @@ public class RequestTest {
         assertEquals(title, r_title);
         assertEquals(description, r_description);
         assertEquals(userId, r_userId);
+    }
+
+    // @Test
+    public void test_fetchMedia(){
+        Response response = null;
+        try {
+            response = RequestUtil.sendGetRequest("/media/93490");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.printf("received response: %s\n", response.getContent());
+        String filename = null;
+        String encodedData = null;
+        try {
+            JSONObject json = response.getContentJson();
+            filename = json.getString("filename");
+            encodedData = json.getString("data");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        
+        File file = new File(".tempfile-" + filename);
+        try (FileOutputStream outstream = new FileOutputStream(file)) {
+            byte[] bytes = Encoder.decodeBase64(encodedData);
+            outstream.write(bytes);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
