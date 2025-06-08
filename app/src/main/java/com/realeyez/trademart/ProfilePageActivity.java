@@ -1,6 +1,7 @@
 package com.realeyez.trademart;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -8,6 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.realeyez.trademart.gui.components.profile.ShowcasePanel;
+import com.realeyez.trademart.gui.components.profile.ShowcaseRow;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.user.User;
@@ -16,12 +19,15 @@ import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 public class ProfilePageActivity extends AppCompatActivity {
 
@@ -31,9 +37,17 @@ public class ProfilePageActivity extends AppCompatActivity {
     private TextView ratingLabel;
     private TextView completedJobLabel;
     private ImageView profileImageView;
+    private LinearLayout mediaPanel;
+
+    private ShowcasePanel showcasePanel;
+    private ArrayList<ShowcaseRow> showcaseRows;
 
     private User user;
     private int userId;
+
+    private int postCount;
+    private int completedJobCount;
+    private double rating;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -52,6 +66,12 @@ public class ProfilePageActivity extends AppCompatActivity {
         initProfile();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        initProfile();
+    }
+
     private void initProfile(){
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
@@ -63,6 +83,7 @@ public class ProfilePageActivity extends AppCompatActivity {
                 Response response = RequestUtil.sendGetRequest(path);
                 JSONObject json = response.getContentJson();
                 initUser(json);
+                postCount = json.getInt("post_count");
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
                 showUnableToLoad();
@@ -76,6 +97,9 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     private void initProfileComponents(){
         usernameLabel.setText(user.getUsername());
+        postsLabel.setText(new StringBuilder().append(postCount).toString());
+        ratingLabel.setText(new StringBuilder().append(String.format("%.1f", rating)).toString());
+        completedJobLabel.setText(new StringBuilder().append(completedJobCount).toString());
     }
 
     private void initUser(JSONObject json){
@@ -105,6 +129,11 @@ public class ProfilePageActivity extends AppCompatActivity {
         ratingLabel = findViewById(R.id.profile_rating_view);
         completedJobLabel = findViewById(R.id.profile_jobs_completed_count);
         profileImageView = findViewById(R.id.profile_image_view);
+        mediaPanel = findViewById(R.id.media_panel);
+        rating = postCount = completedJobCount = 0;
+        showcaseRows = new ArrayList<>();
+        showcasePanel = new ShowcasePanel(this, mediaPanel);
+
         addOnClickListeners();
     }
 

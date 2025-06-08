@@ -36,7 +36,6 @@ public class LoginPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Logger.log("test", LogLevel.CRITICAL);
         enteredName = findViewById(R.id.enteredName);
         enteredPassword = findViewById(R.id.enteredPassword);
         goToSignUp = findViewById(R.id.goToSignUp);
