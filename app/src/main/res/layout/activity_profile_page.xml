@@ -26,18 +26,25 @@
             android:layout_marginStart="15dp"
             android:text="burger" />
 
-        <Button
+        <ImageButton
             android:id="@+id/profile_settings_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:text="settings"
             android:layout_marginEnd="15dp"
+            android:src="@drawable/cogwheel"
+            android:background="none"
+            android:scaleType="fitCenter"
             android:layout_gravity="end|center_vertical" />
 
-        <Button
+        <ImageButton
             android:id="@+id/profile_notif_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/envelope"
+            android:background="none"
+            android:layout_marginEnd="15dp"
+            android:scaleType="fitCenter"
             android:layout_gravity="end|center_vertical"
             android:text="notif" />
 
