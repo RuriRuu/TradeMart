@@ -29,6 +29,8 @@ import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -262,6 +264,8 @@ public class ProfilePageActivity extends AppCompatActivity {
         showcasePanel = new ShowcasePanel(this, mediaPanel);
         loadedPostIds = new ArrayList<>();
         // scrollY = scrollView.getScrollY();
+
+        // ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#E91E63"));
 
         addOnClickListeners();
         // scrollView.setOnScrollChangeListener((view, x, y, ox, oy) -> {

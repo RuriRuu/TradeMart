@@ -5,4 +5,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background_white">#FAF5F5</color>
     <color name="pink">#F26594</color>
+    <color name="trademart_accent">#E91E63</color>
 </resources>
