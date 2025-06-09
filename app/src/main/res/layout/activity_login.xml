@@ -51,21 +51,20 @@
 
             <TextView
                 android:id="@+id/login"
-                android:layout_width="110dp"
+                android:layout_width="200dp"
                 android:layout_height="75dp"
-                android:layout_marginStart="150dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="563dp"
                 android:fontFamily="@font/anuphan_bold"
                 android:gravity="center"
-                android:text="Login"
+                android:text="LOGIN"
                 android:textColor="@color/white"
                 android:textSize="40sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-
         </LinearLayout>
 
         <LinearLayout
@@ -107,6 +106,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/button_bg"
                 android:text="LOGIN"
+                app:backgroundTint="@null"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
