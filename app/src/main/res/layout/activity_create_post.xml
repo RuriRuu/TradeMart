@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAF5F5"
+    android:background="@color/background_white"
     tools:context=".CreatePostActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -31,7 +31,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#ffffff"
+            android:textColor="#000000"
             android:paddingStart="15dp"
             android:layout_gravity="center|start"
             android:textSize="11pt"
@@ -74,13 +74,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="#000000"
                     android:text="Title" />
 
                 <EditText
                     android:id="@+id/createpost_title_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:background="@drawable/rounded_white_inputfield"
+                    android:textColor="@color/black" />
 
             </LinearLayout>
 
@@ -92,6 +95,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="#000000"
                     android:text="Description" />
 
                 <EditText
@@ -99,6 +103,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="false"
+                    android:background="@drawable/rounded_white_inputfield"
+                    android:textColor="@color/black" 
                     android:inputType="text|textMultiLine" />
 
             </LinearLayout>

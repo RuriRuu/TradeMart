@@ -129,21 +129,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:gravity="center"
                 android:background="@drawable/rounded_card_background"
                 android:padding="16dp"
                 android:elevation="4dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="Communication Ability"
                         android:textSize="14sp"
                         android:textColor="#333333" />
@@ -159,19 +152,10 @@
                         android:scaleX="0.9"
                         android:scaleY="0.9"
                         android:stepSize="1" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="Speed of Transaction"
                         android:textSize="14sp"
                         android:textColor="#333333" />
@@ -187,19 +171,10 @@
                         android:scaleX="0.9"
                         android:scaleY="0.9"
                         android:stepSize="1" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="Quality of Product"
                         android:textSize="14sp"
                         android:textColor="#333333" />
@@ -215,18 +190,10 @@
                         android:scaleX="0.9"
                         android:scaleY="0.9"
                         android:stepSize="1" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="Value for Price"
                         android:textSize="14sp"
                         android:textColor="#333333" />
@@ -242,7 +209,7 @@
                         android:scaleX="0.9"
                         android:scaleY="0.9"
                         android:stepSize="1" />
-                </LinearLayout>
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -29,7 +29,7 @@ public class ShowcasePanel {
                 LayoutParams.MATCH_PARENT, 
                 LayoutParams.MATCH_PARENT, 
                 0.5f);
-        image_params.gravity = Gravity.START;
+        image_params.gravity = Gravity.CENTER;
         image.setLayoutParams(image_params);
         image.setImageURI(imageUri);
         image.setAdjustViewBounds(true);

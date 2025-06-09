@@ -94,10 +94,9 @@ public class ProfilePageActivity extends AppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             loadProfile();
-            loadPosts();
-
             runOnUiThread(() -> { initProfileComponents(); });
 
+            loadPosts();
         });
 
     }

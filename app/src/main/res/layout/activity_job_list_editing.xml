@@ -6,7 +6,7 @@
     android:id="@+id/activity_job_list_editing"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAF5F5"
+    android:background="@color/background_white"
     tools:context=".JobListEditing">
 
     <ImageButton
