@@ -18,6 +18,8 @@ import org.json.JSONObject;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.realeyez.trademart.gui.components.profile.ShowcasePanel;
 import com.realeyez.trademart.gui.components.profile.ShowcaseRow;
+import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentArray;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.user.User;
@@ -32,6 +34,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +48,8 @@ public class ProfilePageActivity extends AppCompatActivity {
     private TextView ratingLabel;
     private TextView completedJobLabel;
     private ImageView profileImageView;
+    private ScrollView scrollView;
+
     private LinearLayout mediaPanel;
 
     private ShowcasePanel showcasePanel;
@@ -56,6 +61,10 @@ public class ProfilePageActivity extends AppCompatActivity {
     private int postCount;
     private int completedJobCount;
     private double rating;
+
+    private ArrayList<Integer> loadedPostIds;
+
+    private int scrollY;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -71,7 +80,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile_page);
         initComponents();
-        initProfile();
+        // initProfile();
     }
 
     @Override
@@ -109,33 +118,88 @@ public class ProfilePageActivity extends AppCompatActivity {
     }
 
     private void loadPosts(){
-        Response response = null;
+        Response postIdResponse = sendLoadMorePostRequest();
         try {
-            response = RequestUtil.sendGetRequest("/media/" + 93490);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String encodedData = null;
-        try {
-            JSONObject json = response.getContentJson();
-            encodedData = json.getString("data");
+            JSONObject postIdResponseJson = postIdResponse.getContentJson();
+            Logger.log("received response for loading more posts: " + postIdResponseJson.toString(), LogLevel.INFO);
+            JSONArray arr = postIdResponseJson.getJSONArray("post_ids");
+            Logger.log("THE LENGTH OF THE ARRAY WAS: " + arr.length(), LogLevel.INFO);
+            for (int i = 0; i < arr.length(); i++) {
+                int mediaId = getPostMediaId(arr.getInt(i)).get(0);
+                Logger.log(String.format("mediaId for iteration %d: %d", i, mediaId), LogLevel.INFO);
+                File imageFile = getFileFromMedia(mediaId);
+                loadedPostIds.add(arr.getInt(i));
+                runOnUiThread(() -> {
+                    Uri uri = Uri.fromFile(imageFile);
+                    showcasePanel.addImage(uri);
+                });
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
-        byte[] data = Encoder.decodeBase64(encodedData);
-        File file = new File(getCacheDir(), "temp");
+    private File getFileFromMedia(int mediaId){
+        File file = null;
+        try {
+            Response response = RequestUtil.sendGetRequest("/media/" + mediaId);
+            JSONObject json = response.getContentJson();
+            String filename = json.getString("filename");
+            String encodedData = json.getString("data");
 
-        try (FileOutputStream writer = new FileOutputStream(file)) {
-            writer.write(data);
+            byte[] data = Encoder.decodeBase64(encodedData);
+            file = new File(getCacheDir(), "temp_"+filename);
+
+            try (FileOutputStream writer = new FileOutputStream(file)) {
+                writer.write(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        runOnUiThread(() -> {
-            Uri uri = Uri.fromFile(file);
-            profileImageView.setImageURI(uri);
-        });
+        return file;
+    }
 
+    private ArrayList<Integer> getPostMediaId(int postId){
+        ArrayList<Integer> ids = new ArrayList<>();
+        String path = new StringBuilder()
+            .append("/post/")
+            .append(postId)
+            .append("/media")
+            .toString();
+        try {
+            Response response = RequestUtil.sendGetRequest(path);
+            JSONArray arr = response.getContentJson().getJSONArray("media_ids");
+            for (int i = 0; i < arr.length(); i++) {
+                ids.add(arr.getInt(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ids;
+    }
+
+    private Response sendLoadMorePostRequest(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("post_ids", new JSONArray(loadedPostIds));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Content content = new Content.ContentBuilder()
+            .parseJson(json.toString());
+        Response response = null;
+        try {
+            response = RequestUtil.sendPostRequest("/post/user/" + userId, content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     private void loadPostMedia(int postId){
@@ -192,11 +256,19 @@ public class ProfilePageActivity extends AppCompatActivity {
         completedJobLabel = findViewById(R.id.profile_jobs_completed_count);
         profileImageView = findViewById(R.id.profile_image_view);
         mediaPanel = findViewById(R.id.media_panel);
+        scrollView = findViewById(R.id.profile_media_scroll_view);
         rating = postCount = completedJobCount = 0;
         showcaseRows = new ArrayList<>();
         showcasePanel = new ShowcasePanel(this, mediaPanel);
+        loadedPostIds = new ArrayList<>();
+        // scrollY = scrollView.getScrollY();
 
         addOnClickListeners();
+        // scrollView.setOnScrollChangeListener((view, x, y, ox, oy) -> {
+        //     if(!scrollView.canScrollVertically(1)){
+        //         loadPosts();
+        //     }
+        // });
     }
 
     private void newPostButtonAction(View view){

@@ -35,7 +35,7 @@ public class ShowcaseRow {
          rowPanel = new LinearLayout(context);
          LinearLayout.LayoutParams row_params = new LinearLayout.LayoutParams(
                  LayoutParams.MATCH_PARENT,
-                 LayoutParams.WRAP_CONTENT
+                 150
                  );
          row_params.gravity = Gravity.START;
          rowPanel.setOrientation(LinearLayout.HORIZONTAL);

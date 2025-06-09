@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ImageView.ScaleType;
 
 public class ShowcasePanel {
 
@@ -31,6 +32,8 @@ public class ShowcasePanel {
         image_params.gravity = Gravity.START;
         image.setLayoutParams(image_params);
         image.setImageURI(imageUri);
+        image.setAdjustViewBounds(true);
+        image.setScaleType(ScaleType.CENTER_CROP);
         ShowcaseRow row = null;
         if(rows.size() == 0){
             row = addRow();
