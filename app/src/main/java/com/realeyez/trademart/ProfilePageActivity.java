@@ -79,7 +79,6 @@ public class ProfilePageActivity extends AppCompatActivity {
         if(userId == -1){
             showUnableToLoad();
         }
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile_page);
         initComponents();
         // initProfile();

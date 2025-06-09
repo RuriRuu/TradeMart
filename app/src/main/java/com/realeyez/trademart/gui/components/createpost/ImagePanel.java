@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -16,6 +17,7 @@ public class ImagePanel {
     private LinearLayout images_panel;
     private LinearLayout image_panel_layout;
     private ImageView imageView;
+    private FrameLayout panelFrame;
     private Button removeButton;
     private Uri imageUri;
     private ArrayList<ImagePanel> imagePanels;
@@ -33,7 +35,7 @@ public class ImagePanel {
         image_panel_layout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams linear_params = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT,
+                100,
                 1.0f
                 );
         image_panel_layout.setLayoutParams(linear_params);
@@ -42,10 +44,12 @@ public class ImagePanel {
         imageView.setImageURI(imageUri);
         LinearLayout.LayoutParams image_params = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT,
-                0.25f);
+                LayoutParams.WRAP_CONTENT);
         image_params.gravity = Gravity.CENTER_VERTICAL;
         imageView.setLayoutParams(image_params);
+
+        panelFrame = new FrameLayout(context);
+        initFrame(panelFrame);
 
         removeButton = new Button(context);
         removeButton.setText("X");
@@ -60,8 +64,18 @@ public class ImagePanel {
         setButtonOnClickListener();
 
         image_panel_layout.setWeightSum(1.0f);
-        image_panel_layout.addView(imageView);
+        panelFrame.addView(imageView);
+        image_panel_layout.addView(panelFrame);
         image_panel_layout.addView(removeButton);
+    }
+
+    private void initFrame(FrameLayout frame){
+         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                 LayoutParams.MATCH_PARENT,
+                 LayoutParams.WRAP_CONTENT,
+                 0.25f
+                 );
+         frame.setLayoutParams(params);
     }
 
     private void setButtonOnClickListener(){
