@@ -1,0 +1,91 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:backgroundTint="@android:color/white"
+    android:elevation="8dp"
+    android:padding="24dp"
+    android:background="@drawable/rating_background">
+
+
+    <LinearLayout
+        android:id="@+id/reportLayout"
+        android:layout_width="361dp"
+        android:layout_height="503dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:background="@drawable/rating_background"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/titleAndCancellation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <ImageButton
+                android:id="@+id/cancelReportPrompt"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Exit"
+                android:paddingBottom="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+            <TextView
+                android:id="@+id/reportTitle"
+                android:layout_width="249dp"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center"
+                android:paddingBottom="12dp"
+                android:text="Report Content/User"
+                android:textColor="#3B4F70"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/reportReasonEditText"
+            android:layout_width="313dp"
+            android:layout_height="321dp"
+            android:layout_gravity="center"
+            android:background="@drawable/rating_background"
+            android:gravity="top"
+            android:hint="Describe the issue (harassment, spam, etc.)"
+            android:inputType="textMultiLine"
+            android:maxLines="6"
+            android:minLines="4"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#999999" />
+
+        <Button
+            android:id="@+id/submitReportButton"
+            android:layout_width="222dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#E91E63"
+            android:fontFamily="@font/poppins_bold"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="Submit Report"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
