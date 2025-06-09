@@ -13,22 +13,28 @@
         android:id="@+id/createpost_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/grey"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <ImageButton
             android:id="@+id/createpost_back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="back" />
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent"
+        android:layout_gravity="center|start"
+            android:scaleType="centerInside"
+            android:src="@drawable/arrow_left_dark" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#ffffff"
+        android:paddingStart="15dp"
+        android:layout_gravity="center|start"
+        android:textSize="11pt"
             android:text="Create Post" />
 
         <Button
@@ -36,8 +42,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="POST"
+            android:backgroundTint="@color/pink"
             android:layout_marginEnd="15dp"
-            android:layout_gravity="end" />
+        android:textSize="9pt"
+            android:layout_gravity="end|center" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -45,6 +53,7 @@
         android:id="@+id/createpost_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+    android:paddingTop="15dp"
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/createpost_toolbar"
         app:layout_constraintStart_toStartOf="parent">
@@ -98,15 +107,15 @@
                 android:id="@+id/createpost_add_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/pink"
+                android:textSize="7pt"
                 android:text="Add Image" />
 
             <LinearLayout
                 android:id="@+id/createpost_images_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            </LinearLayout>
+                android:orientation="vertical" />
 
         </LinearLayout>
 
