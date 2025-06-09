@@ -6,13 +6,14 @@
     android:id="@+id/profile_page_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:color="@color/background_main"
     tools:context=".ProfilePageActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/profile_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/grey"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +91,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="5dp"
-                        app:cardCornerRadius="70dp">
+                        app:cardCornerRadius="50dp">
 
                         <ImageView
                             android:id="@+id/profile_image_view"
@@ -233,12 +234,12 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_margin="5dp"
-                        app:cardCornerRadius="70dp">
+                        app:cardCornerRadius="50dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_launcher_foreground" />
+                            android:src="@drawable/profile_picture_placeholder" />
 
                     </androidx.cardview.widget.CardView>
 
@@ -246,12 +247,12 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_margin="5dp"
-                        app:cardCornerRadius="70dp">
+                        app:cardCornerRadius="50dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_launcher_background" />
+                            android:src="@drawable/profile_picture_placeholder" />
 
                     </androidx.cardview.widget.CardView>
 
@@ -259,12 +260,12 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_margin="5dp"
-                        app:cardCornerRadius="70dp">
+                        app:cardCornerRadius="50dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_launcher_foreground" />
+                            android:src="@drawable/profile_picture_placeholder" />
 
                     </androidx.cardview.widget.CardView>
 
@@ -272,12 +273,12 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_margin="5dp"
-                        app:cardCornerRadius="70dp">
+                        app:cardCornerRadius="50dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_launcher_background" />
+                            android:src="@drawable/profile_picture_placeholder" />
 
                     </androidx.cardview.widget.CardView>
 
@@ -285,12 +286,12 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_margin="5dp"
-                        app:cardCornerRadius="70dp">
+                        app:cardCornerRadius="50dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_launcher_foreground" />
+                            android:src="@drawable/profile_picture_placeholder" />
 
                     </androidx.cardview.widget.CardView>
 
@@ -298,12 +299,12 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_margin="5dp"
-                        app:cardCornerRadius="70dp">
+                        app:cardCornerRadius="50dp">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_launcher_background" />
+                            android:src="@drawable/profile_picture_placeholder" />
 
                     </androidx.cardview.widget.CardView>
 
@@ -324,6 +325,7 @@
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:text="images"
+                    android:background="@drawable/button_bg"
                     app:layout_constraintEnd_toStartOf="@id/profile_videos_button"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -334,6 +336,7 @@
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:text="videos"
+                    android:background="@drawable/button_bg"
                     app:layout_constraintStart_toEndOf="@id/profile_images_button"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
