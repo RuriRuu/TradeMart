@@ -60,7 +60,7 @@ public class RequestUtil {
 
     /**
      * DO NOT use this method. Only use this if you need to temporarily override the
-     * current {@link RequestUtil#sendGetRequest(String, Content)} functionality
+     * current {@link RequestUtil#sendGetRequest(String)} functionality
      * without editing this file.
      *
      * @param host the desired host override
