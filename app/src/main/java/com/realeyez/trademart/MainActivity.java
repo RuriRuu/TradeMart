@@ -56,5 +56,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(explicitActivity);
         });
 
+        Button vid_view_button = findViewById(R.id.video_view_button);
+        vid_view_button.setOnClickListener(view -> {
+            Intent explicitActivity = new Intent(MainActivity.this, VideoPlayerActivity.class);
+            startActivity(explicitActivity);
+        });
+
     }
 }

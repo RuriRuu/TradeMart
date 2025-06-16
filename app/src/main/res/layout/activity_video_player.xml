@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_video_player"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFAFAFA"
+    tools:context=".VideoPlayerActivity">
+
+    <VideoView
+        android:id="@+id/videoplayer_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/videoplayer_home_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/home"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/videoplayer_desc_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/videoplayer_control_panel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/videoplayer_name_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Person, Human"
+            android:textSize="12pt"
+            app:layout_constraintBottom_toTopOf="@id/videoplayer_role_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/videoplayer_role_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Life Engineer"
+            android:textSize="8pt"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/videoplayer_control_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/videoplayer_prev_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/previous"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/videoplayer_like_button" />
+
+        <ImageButton
+            android:id="@+id/videoplayer_like_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/heart"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/videoplayer_prev_button"
+            app:layout_constraintEnd_toEndOf="@id/videoplayer_next_button" />
+
+        <ImageButton
+            android:id="@+id/videoplayer_next_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/next"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@id/videoplayer_like_button"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

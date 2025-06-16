@@ -50,6 +50,9 @@
             android:name=".SignUpActivity"
             android:exported="false"/>
         <activity
+            android:name=".VideoPlayerActivity"
+            android:exported="false"/>
+        <activity
             android:name=".LoginPageActivity"
             android:exported="true">
             <intent-filter>

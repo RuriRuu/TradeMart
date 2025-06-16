@@ -3,7 +3,9 @@ package com.realeyez.trademart;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +18,7 @@ import org.junit.Test;
 import com.realeyez.trademart.encryption.Decryptor;
 import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentRange;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.Response;
@@ -111,7 +114,6 @@ public class RequestTest {
                 .put("salt_iv", saltIV)
                 .build();
 
-
         Response response = null;
         try {
             response = RequestUtil.sendPostRequest("/user/login", content);
@@ -195,6 +197,31 @@ public class RequestTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void test_contentRange(){
+        String rangeString = "bytes 100-278/448";
+        ContentRange range = ContentRange.parse(rangeString);
+        assertEquals(100, range.getStart());
+        assertEquals(278, range.getEnd());
+        assertEquals(448, range.getSize());
+    }
+
+    @Test
+    public void test_contentRangeNoSize(){
+        String rangeString = "bytes 100-278";
+        ContentRange range = ContentRange.parse(rangeString);
+        assertEquals(100, range.getStart());
+        assertEquals(278, range.getEnd());
+        assertEquals(0, range.getSize());
+    }
+
+    @Test
+    public void test_byteStringConversion(){
+        String text = "Hello, world!";
+        byte[] bytes = text.getBytes();
+        assertEquals(text, new String(bytes));
     }
 
 }
