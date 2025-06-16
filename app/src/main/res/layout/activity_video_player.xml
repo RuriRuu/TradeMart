@@ -9,7 +9,7 @@
     android:background="#FFFAFAFA"
     tools:context=".VideoPlayerActivity">
 
-    <VideoView
+    <androidx.media3.ui.PlayerView
         android:id="@+id/videoplayer_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

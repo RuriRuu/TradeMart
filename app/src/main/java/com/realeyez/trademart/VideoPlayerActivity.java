@@ -18,10 +18,14 @@ import android.os.Bundle;
 import android.widget.VideoView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.media3.common.MediaItem;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.PlayerView;
 
 public class VideoPlayerActivity extends AppCompatActivity {
 
-    private VideoView vidView;
+    private PlayerView vidView;
+    private ExoPlayer player;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -34,6 +38,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     
     private void initComponents(){
         vidView = findViewById(R.id.videoplayer_video_view);
+        player = new ExoPlayer.Builder(this).build();
     }
 
     private void loadVideo(){
@@ -41,8 +46,11 @@ public class VideoPlayerActivity extends AppCompatActivity {
         executor.execute(() -> {
             Uri vidUri = Uri.fromFile(createTempVidFile());
             runOnUiThread(() -> {
-                vidView.setVideoURI(vidUri);
-                vidView.start();
+                player.setMediaItem(MediaItem.fromUri(vidUri));
+                player.prepare();
+                player.play();
+                // vidView.setVideoURI(vidUri);
+                // vidView.start();
             });
         });
     }

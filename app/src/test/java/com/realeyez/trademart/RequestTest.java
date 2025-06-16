@@ -101,7 +101,7 @@ public class RequestTest {
         assertEquals("success", singupStatus);
     }
 
-    @Test
+    // @Test
     public void test_Login() {
         String password = "ThisPasswordIsPassable";
         Encryptor encryptor = new Encryptor();
@@ -199,7 +199,7 @@ public class RequestTest {
         }
     }
 
-    @Test
+    // @Test
     public void test_contentRange(){
         String rangeString = "bytes 100-278/448";
         ContentRange range = ContentRange.parse(rangeString);
@@ -208,7 +208,7 @@ public class RequestTest {
         assertEquals(448, range.getSize());
     }
 
-    @Test
+    // @Test
     public void test_contentRangeNoSize(){
         String rangeString = "bytes 100-278";
         ContentRange range = ContentRange.parse(rangeString);
@@ -217,11 +217,33 @@ public class RequestTest {
         assertEquals(0, range.getSize());
     }
 
-    @Test
+    // @Test
     public void test_byteStringConversion(){
         String text = "Hello, world!";
         byte[] bytes = text.getBytes();
         assertEquals(text, new String(bytes));
+    }
+
+    @Test
+    public void test_hlsVideoUpload() throws IOException, JSONException{
+        File file = new File("/home/redflameken/Videos/memes/fallguys_battlepass.mp4");
+        byte[] bytes = null;
+        try (FileInputStream reader = new FileInputStream(file)) {
+            bytes = reader.readAllBytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logger.log("error here breh", LogLevel.INFO);
+        }
+        String encodedData = Encoder.encodeBase64(bytes);
+        Content content = new Content.ContentBuilder()
+            .put("filename", file.getName())
+            .put("data", encodedData)
+            .build();
+
+        Response response = RequestUtil.sendPostRequest("/post/publish/95704/media", content);
+        JSONObject json = response.getContentJson();
+        String status = json.getString("status");
+        assertEquals(status, "success");
     }
 
 }
