@@ -1,8 +1,12 @@
 package com.realeyez.trademart.request;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -29,6 +33,8 @@ public class Request {
     private String path;
     private String body;
     private String contentType;
+    private long contentLength;
+    private ContentRange contentRange;
 
     private boolean usingSSL;
     private URLConnection con;
@@ -39,6 +45,7 @@ public class Request {
         this.method = builder.method;
         this.path = builder.path;
         this.body = builder.body;
+        this.contentLength = builder.contentLength;
         this.contentType = builder.contentType;
         this.usingSSL = builder.usingSSL;
     }
@@ -94,18 +101,57 @@ public class Request {
     private Response readResponse() {
         Response response = null;
         try {
-            response = new ResponseBuilder()
+            ContentRange contentRange = ContentRange.parse(con.getHeaderField("Content-Range"));
+            byte[] content = null;
+            int contentLength = con.getContentLength();
+            ResponseBuilder builder = new ResponseBuilder()
                     .setCode(usingSSL == true ? ((HttpsURLConnection) con).getResponseCode()
                             : ((HttpURLConnection) con).getResponseCode())
                     .setLocation(con.getHeaderField("Location"))
-                    .setContentType(con.getContentType())
-                    .setContent(readResponseBody())
-                    .build();
+                    .setContentLength(contentLength)
+                    .setContentType(con.getContentType());
+            if(contentRange == null){
+                content = readAllResponseBytes(contentLength);
+            } else {
+                builder.setContentRange(contentRange);
+                content = readNResponseBytes(
+                        (int) contentRange.getStart(),
+                        (int) contentRange.getEnd(),
+                        contentLength
+                        );
+            }
+            builder.setContent(content);
+            response = builder.build();
         } catch (IOException e) {
             Logger.log("Unable to read response", LogLevel.WARNING);
             e.printStackTrace();
         }
         return response;
+    }
+
+    private byte[] readNResponseBytes(int start, int end, int length){
+        byte[] bytes = new byte[length];
+        try (BufferedInputStream reader = new BufferedInputStream(con.getInputStream())) {
+            int read = reader.read(bytes, start, end);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
+    }
+
+    private byte[] readAllResponseBytes(int length){
+        byte[] bytes = new byte[length];
+        try (BufferedInputStream reader = new BufferedInputStream(con.getInputStream())) {
+            int totalRead = 0;
+            while(totalRead < length){
+                int read = reader.read(bytes, totalRead, length-totalRead);
+                if(read == -1) break;
+                totalRead += read;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     private String readResponseBody() {
@@ -154,13 +200,17 @@ public class Request {
         private String method;
         private String path;
         private String contentType;
+        private long contentLength;
         private String body;
         private boolean usingSSL;
+        private ContentRange contentRange;
 
         public RequestBuilder() {
             host = method = path = contentType = body = null;
             usingSSL = false;
             port = DEFAULT_SERVER_PORT;
+            contentLength = 0;
+            contentRange = null;
         }
 
         public RequestBuilder setHost(String host) {
@@ -270,6 +320,21 @@ public class Request {
          */
         public RequestBuilder setContentType(String contentType) {
             this.contentType = contentType;
+            return this;
+        }
+
+        public RequestBuilder setContentLength(long contentLength){
+            this.contentLength = contentLength;
+            return this;
+        }
+
+        public RequestBuilder setContentRange(long start, long end, long size){
+            this.contentRange = new ContentRange(start, end, size);
+            return this;
+        }
+
+        public RequestBuilder setContentRange(long start, long end){
+            this.contentRange = new ContentRange(start, end);
             return this;
         }
 

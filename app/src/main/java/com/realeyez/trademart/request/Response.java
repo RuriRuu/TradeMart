@@ -7,47 +7,67 @@ import org.json.JSONTokener;
 public class Response {
 
     private int code;
-    private String content;
+    private byte[] content;
     private String contentType;
+    private long contentLength;
     private String location;
+    private ContentRange contentRange;
     
     public Response(ResponseBuilder builder){
         this.code = builder.code;
         this.content = builder.content;
+        this.contentLength = builder.contentLength;
         this.contentType = builder.contentType;
         this.location = builder.location;
+        this.contentRange = builder.contentRange;
     }
 
     public int getCode() {
         return code;
     }
 
-    public String getContent() {
+    public byte[] getContentBytes() {
         return content;
     }
 
+    public String getContent() {
+        return new String(content);
+    }
+
     public JSONObject getContentJson() throws JSONException {
-        return new JSONObject(new JSONTokener(content));
+        return new JSONObject(new JSONTokener(new String(content)));
     }
 
     public String getContentType() {
         return contentType;
     }
 
+    public long getContentLength() {
+        return contentLength;
+    }
+
     public String getLocation() {
         return location;
+    }
+
+    public ContentRange getContentRange() {
+        return contentRange;
     }
 
     public static class ResponseBuilder {
 
         private int code;
-        private String content;
+        private byte[] content;
         private String contentType;
+        private long contentLength;
         private String location;
+        private ContentRange contentRange;
 
         public ResponseBuilder() {
             code = 0;
-            location = contentType = content = null;
+            location = contentType = null;
+            content = null;
+            contentRange = null;
         }
 
         public ResponseBuilder setCode(int code) {
@@ -55,7 +75,7 @@ public class Response {
             return this;
         }
 
-        public ResponseBuilder setContent(String content) {
+        public ResponseBuilder setContent(byte[] content) {
             this.content = content;
             return this;
         }
@@ -65,8 +85,18 @@ public class Response {
             return this;
         }
 
+        public ResponseBuilder setContentLength(long contentLength) {
+            this.contentLength = contentLength;
+            return this;
+        }
+
         public ResponseBuilder setContentType(String contentType) {
             this.contentType = contentType;
+            return this;
+        }
+
+        public ResponseBuilder setContentRange(ContentRange contentRange) {
+            this.contentRange = contentRange;
             return this;
         }
 
