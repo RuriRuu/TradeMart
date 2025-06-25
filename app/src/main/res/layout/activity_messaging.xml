@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAF5F5"
+    tools:context=".MessagingActivity">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/message_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_main"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/message_back_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center|start"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            android:src="@drawable/arrow_left_dark" />
+
+        <ImageView
+            android:id="@+id/message_profile_image_view"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/profile_picture_placeholder" />
+
+        <TextView
+            android:id="@+id/message_profile_name_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
+            android:fontFamily="@font/poppins_bold"
+            android:paddingStart="15dp"
+            android:text="Mirai Yuki"
+            android:textColor="#FFFFFF"
+            android:textSize="11pt"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="86dp"
+            tools:layout_editor_absoluteY="15dp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/materialToolbar"
+        android:layout_width="412dp"
+        android:layout_height="71dp"
+        android:background="@color/background_main"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/message_attachButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="11dp"
+            android:backgroundTint="#E91E63"
+            app:layout_constraintEnd_toStartOf="@+id/message_editText"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/baseline_add_24"
+            tools:layout_editor_absoluteY="670dp" />
+
+        <EditText
+            android:id="@+id/message_editText"
+            android:layout_width="266dp"
+            android:layout_height="48dp"
+            android:ems="10"
+            android:fontFamily="@font/poppins"
+            android:hint="Message..."
+            android:inputType="text"
+            android:text=""
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF"
+            tools:layout_editor_absoluteX="72dp"
+            tools:layout_editor_absoluteY="671dp" />
+
+        <ImageButton
+            android:id="@+id/message_submitButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:backgroundTint="#E91E63"
+            app:layout_constraintEnd_toEndOf="@+id/materialToolbar"
+            app:layout_constraintStart_toEndOf="@+id/message_editText"
+            app:srcCompat="@android:drawable/ic_menu_send"
+            app:tint="#FFFFFF"
+            tools:layout_editor_absoluteY="668dp" />
+
+
+    </com.google.android.material.appbar.MaterialToolbar>
+</androidx.constraintlayout.widget.ConstraintLayout>
