@@ -143,20 +143,17 @@ public class ProfilePageActivity extends AppCompatActivity {
         File file = null;
         try {
             Response response = RequestUtil.sendGetRequest("/media/" + mediaId);
-            JSONObject json = response.getContentJson();
-            String filename = json.getString("filename");
-            String encodedData = json.getString("data");
+            String filename = response.getContentDispositionField("filename");
+            byte[] data = response.getContentBytes();
 
-            byte[] data = Encoder.decodeBase64(encodedData);
             file = new File(getCacheDir(), "temp_"+filename);
-
-            try (FileOutputStream writer = new FileOutputStream(file)) {
-                writer.write(data);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(!file.exists()){
+                try (FileOutputStream writer = new FileOutputStream(file)) {
+                    writer.write(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -273,14 +270,20 @@ public class ProfilePageActivity extends AppCompatActivity {
         // });
     }
 
-    private void newPostButtonAction(View view){
+    private void viewImageAction(String imageUri){
+        Intent explicitActivity = new Intent(ProfilePageActivity.this, CreatePostActivity.class);
+        // explicitActivity.putExtra("image_data", ResourceRepository.getResources().getCurrentUser().getId());
+        startActivity(explicitActivity);
+    }
+
+    private void newPostButtonAction(){
         Intent explicitActivity = new Intent(ProfilePageActivity.this, CreatePostActivity.class);
         startActivity(explicitActivity);
     }
 
     private void addOnClickListeners(){
         newPostButton.setOnClickListener(view -> {
-            newPostButtonAction(view);
+            newPostButtonAction();
         });
     }
 
