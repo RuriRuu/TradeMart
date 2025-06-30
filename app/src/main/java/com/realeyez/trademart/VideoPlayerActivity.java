@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.util.Encoder;
@@ -20,6 +21,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.ui.PlayerView;
 
 public class VideoPlayerActivity extends AppCompatActivity {
@@ -35,44 +37,29 @@ public class VideoPlayerActivity extends AppCompatActivity {
         initComponents();
         loadVideo();
     }
-    
+
     private void initComponents(){
         vidView = findViewById(R.id.videoplayer_video_view);
         player = new ExoPlayer.Builder(this).build();
+        vidView.setPlayer(player);
     }
 
     private void loadVideo(){
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            Uri vidUri = Uri.fromFile(createTempVidFile());
+            Request request = null;
+            try {
+                request = RequestUtil.createGetRequest("/media/video/Z1diR3lXQTJmaUlVaUUvRmVGT0ZXZz09.m3u8");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Uri vidUri = request.getUri();
             runOnUiThread(() -> {
                 player.setMediaItem(MediaItem.fromUri(vidUri));
                 player.prepare();
                 player.play();
-                // vidView.setVideoURI(vidUri);
-                // vidView.start();
             });
         });
-    }
-
-
-    private File createTempVidFile(){
-        File file = null;
-        try {
-            Response response = RequestUtil.sendGetRequest("/videothing");
-            byte[] data = response.getContentBytes();
-
-            file = new File(getCacheDir(), "temp_vid_placeholder.mp4");
-
-            try (FileOutputStream writer = new FileOutputStream(file)) {
-                writer.write(data);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return file;
     }
 
 
