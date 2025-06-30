@@ -12,6 +12,7 @@ public class Response {
     private long contentLength;
     private String location;
     private ContentRange contentRange;
+    private ContentDisposition contentDisposition;
     
     public Response(ResponseBuilder builder){
         this.code = builder.code;
@@ -20,6 +21,7 @@ public class Response {
         this.contentType = builder.contentType;
         this.location = builder.location;
         this.contentRange = builder.contentRange;
+        this.contentDisposition = builder.contentDisposition;
     }
 
     public int getCode() {
@@ -54,6 +56,15 @@ public class Response {
         return contentRange;
     }
 
+    public ContentDisposition getContentDisposition() {
+        return contentDisposition;
+    }
+
+    public String getContentDispositionField(String key) {
+        return contentDisposition.getField(key);
+    }
+
+
     public static class ResponseBuilder {
 
         private int code;
@@ -62,12 +73,14 @@ public class Response {
         private long contentLength;
         private String location;
         private ContentRange contentRange;
+        private ContentDisposition contentDisposition;
 
         public ResponseBuilder() {
             code = 0;
             location = contentType = null;
             content = null;
             contentRange = null;
+            contentDisposition = null;
         }
 
         public ResponseBuilder setCode(int code) {
@@ -97,6 +110,13 @@ public class Response {
 
         public ResponseBuilder setContentRange(ContentRange contentRange) {
             this.contentRange = contentRange;
+            return this;
+        }
+
+        public ResponseBuilder setContentDisposition(String contentDispositionString) {
+            if(contentDispositionString != null && !contentDispositionString.equals("")){
+                this.contentDisposition = new ContentDisposition(contentDispositionString);
+            }
             return this;
         }
 

@@ -18,6 +18,7 @@ import org.junit.Test;
 import com.realeyez.trademart.encryption.Decryptor;
 import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.ContentRange;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Request;
@@ -244,6 +245,15 @@ public class RequestTest {
         JSONObject json = response.getContentJson();
         String status = json.getString("status");
         assertEquals(status, "success");
+    }
+
+    @Test
+    public void test_contentDisposition() throws IOException {
+        Response response = RequestUtil.sendGetRequest("/media/image/god_totem.png");
+        String filename = response.getContentDispositionField("filename");
+        System.out.printf("filename: %s\n", filename);
+        assertEquals("god_totem.png", filename);
+
     }
 
 }

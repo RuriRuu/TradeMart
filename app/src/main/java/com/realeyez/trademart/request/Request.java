@@ -15,12 +15,17 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.xml.transform.URIResolver;
 
 import com.realeyez.trademart.request.Response.ResponseBuilder;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
+import android.net.Uri;
 import androidx.annotation.CheckResult;
+import androidx.media3.datasource.ByteArrayDataSource;
+import androidx.media3.datasource.HttpDataSource;
+import androidx.media3.datasource.ByteArrayDataSource.UriResolver;
 
 public class Request {
 
@@ -62,6 +67,10 @@ public class Request {
         return sendHttpRequest();
     }
 
+    public Uri getUri(){
+        return Uri.parse(buildURL());
+    }
+
     private Response sendHttpRequest() throws IOException {
 
         URL url = new URL(buildURL());
@@ -71,6 +80,8 @@ public class Request {
         else
             ((HttpURLConnection) con).setRequestMethod(method);
         con.setRequestProperty("Content-Type", contentType);
+        // HttpParams params = con.getPar
+        // con.getHeaderField("Content");
         if (method.equals("POST")) {
             con.setDoOutput(true);
         }
@@ -109,6 +120,7 @@ public class Request {
                             : ((HttpURLConnection) con).getResponseCode())
                     .setLocation(con.getHeaderField("Location"))
                     .setContentLength(contentLength)
+                    .setContentDisposition(con.getHeaderField("Content-Disposition"))
                     .setContentType(con.getContentType());
             if(contentRange == null){
                 content = readAllResponseBytes(contentLength);

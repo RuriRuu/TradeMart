@@ -36,6 +36,18 @@ public class RequestUtil {
         return request.sendRequest();
     }
 
+    public static Request createGetRequest(String path) throws IOException {
+        Request request = new Request.RequestBuilder()
+            .setGet()
+            .useSSL()
+            .setHost(DEFAULT_HTTPS_HOST)
+            .noPort()
+            .setPath(path)
+            .build();
+        return request;
+    }
+
+
     /**
      * This is a convenience method for making a POST request. Make sure to USE THIS
      * when making a request so that when there needs to be a change with the host,
