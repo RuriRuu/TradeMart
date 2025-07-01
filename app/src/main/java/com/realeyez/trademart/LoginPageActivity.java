@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.Request;
+import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.user.User;
@@ -120,18 +121,9 @@ public class LoginPageActivity extends AppCompatActivity {
                 .put("salt_iv", saltIv)
                 .build();
 
-        Request request = new Request.RequestBuilder()
-                .setPost(content.getContentString())
-                .useSSL()
-                .setHost(getResources().getString(R.string.host_url))
-                .noPort()
-                .setPath("/user/login")
-                .setContentType("application/json")
-                .build();
-
         Response response = null;
         try {
-            response = request.sendRequest();
+            response = RequestUtil.sendPostRequest("/user/login", content);
         } catch (IOException e) {
             e.printStackTrace();
         }
