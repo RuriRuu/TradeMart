@@ -28,7 +28,7 @@
             android:scaleType="centerInside"
             android:src="@drawable/arrow_left_dark" />
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/message_profile_image_view"
             android:layout_width="48dp"
             android:layout_height="48dp"
