@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -19,8 +20,8 @@ public class ShowcaseRow {
     private FrameLayout frame1;
     private FrameLayout frame2;
 
-    private ImageView image1;
-    private ImageView image2;
+    private MediaButton image1;
+    private MediaButton image2;
 
     private Context context;
     private ArrayList<ShowcaseRow> rows;
@@ -59,15 +60,15 @@ public class ShowcaseRow {
         frame.setLayoutParams(params);
     }
 
-    public boolean AddImage(ImageView image) {
+    public boolean addImage(MediaButton image) {
         if (image1 != null && image2 != null)
             return false;
         if (image1 == null) {
             image1 = image;
-            frame1.addView(image1);
+            frame1.addView(image1.getImageView());
         } else if (image1 != null && image2 == null) {
             image2 = image;
-            frame2.addView(image2);
+            frame2.addView(image2.getImageView());
         }
         return true;
     }
