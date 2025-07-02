@@ -18,13 +18,16 @@ import org.json.JSONObject;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.realeyez.trademart.gui.components.profile.ShowcasePanel;
 import com.realeyez.trademart.gui.components.profile.ShowcaseRow;
+import com.realeyez.trademart.post.PostData;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.ContentArray;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.user.User;
+import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Encoder;
+import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
@@ -125,13 +128,17 @@ public class ProfilePageActivity extends AppCompatActivity {
             JSONArray arr = postIdResponseJson.getJSONArray("post_ids");
             Logger.log("THE LENGTH OF THE ARRAY WAS: " + arr.length(), LogLevel.INFO);
             for (int i = 0; i < arr.length(); i++) {
-                int mediaId = getPostMediaId(arr.getInt(i)).get(0);
-                Logger.log(String.format("mediaId for iteration %d: %d", i, mediaId), LogLevel.INFO);
-                File imageFile = getFileFromMedia(mediaId);
+                ArrayList<Integer> mediaIds = getPostMediaId(arr.getInt(i));
+                int postId = arr.getInt(i);
+                PostData postData = new PostData.Builder()
+                    .setPostId(postId)
+                    .setMediaIds(mediaIds)
+                    .build();
+                File imageFile = getFileFromMedia(mediaIds.get(0));
                 loadedPostIds.add(arr.getInt(i));
                 runOnUiThread(() -> {
                     Uri uri = Uri.fromFile(imageFile);
-                    showcasePanel.addImage(uri);
+                    showcasePanel.addImage(uri, postData);
                 });
             }
         } catch (JSONException e) {
@@ -146,14 +153,9 @@ public class ProfilePageActivity extends AppCompatActivity {
             String filename = response.getContentDispositionField("filename");
             byte[] data = response.getContentBytes();
 
-            file = new File(getCacheDir(), "temp_"+filename);
-            if(!file.exists()){
-                try (FileOutputStream writer = new FileOutputStream(file)) {
-                    writer.write(data);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            CacheFile cacheFile = CacheFile.cache(getCacheDir(), filename, data);
+            file = cacheFile.getFile();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
