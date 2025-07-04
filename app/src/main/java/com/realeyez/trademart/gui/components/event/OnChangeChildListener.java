@@ -1,6 +1,6 @@
 package com.realeyez.trademart.gui.components.event;
 
-public interface OnChangeChildEvent {
+public interface OnChangeChildListener {
 
     public void onChangeChild(int curChild);
     

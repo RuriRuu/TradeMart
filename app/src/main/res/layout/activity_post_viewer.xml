@@ -48,8 +48,7 @@
                     android:id="@+id/postviewer_media_scroll_panel"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                />
+                    android:orientation="horizontal" />
 
             </HorizontalScrollView>
 
@@ -69,44 +68,7 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                    <ImageView
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/dot"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginRight="2dp" />
-
-                    <ImageView
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/dot_dim"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginRight="2dp" />
-
-                    <ImageView
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/dot_dim"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginRight="2dp" />
-
-                    <ImageView
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/dot_dim"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginRight="2dp" />
-
-                    <ImageView
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/dot_dim"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginRight="2dp" />
-
-                </LinearLayout>
+                    app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

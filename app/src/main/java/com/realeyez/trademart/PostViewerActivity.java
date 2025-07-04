@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.realeyez.trademart.gui.components.scroll.ScrollDotPanel;
 import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
@@ -35,6 +36,8 @@ public class PostViewerActivity extends AppCompatActivity {
 
     private HorizontalScrollView mediaScroll;
     private SnapScrollH snapScroll;
+    private ScrollDotPanel dotsPanel;
+    private LinearLayout mediaDots;
     private LinearLayout mediaScrollPanel;
     private LinearLayout mediaCountPanel;
 
@@ -71,9 +74,9 @@ public class PostViewerActivity extends AppCompatActivity {
 
         likeButton = findViewById(R.id.postviewer_like_button);
         backButton = findViewById(R.id.postviewer_back_button);
+        mediaDots = findViewById(R.id.postviewer_media_dots_panel);
 
-        this.snapScroll = new SnapScrollH(mediaScroll);
-
+        snapScroll = new SnapScrollH(mediaScroll);
         addActionListeners();
     }
 
@@ -94,6 +97,7 @@ public class PostViewerActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+            dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
         });
     }
 
@@ -136,6 +140,9 @@ public class PostViewerActivity extends AppCompatActivity {
             finish();
         });
         likeButton.setOnClickListener(view -> {
+        });
+        snapScroll.setOnCangeChildListener(curChild -> {
+            dotsPanel.setActive(curChild);
         });
     }
 };
