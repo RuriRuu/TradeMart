@@ -11,8 +11,6 @@ import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.util.CacheFile;
-import com.realeyez.trademart.util.Dimension;
-import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
@@ -21,7 +19,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -99,13 +96,6 @@ public class PostViewerActivity extends AppCompatActivity {
             }
             dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
         });
-    }
-
-    private Dimension getMediaScrollDimensions(){
-        return new Dimension(
-                mediaScroll.getWidth(),
-                mediaScroll.getHeight()
-                );
     }
 
     private void addImageMedia(File image){

@@ -1,9 +1,7 @@
 package com.realeyez.trademart;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,12 +11,10 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.junit.Test;
 
 import com.realeyez.trademart.encryption.Decryptor;
 import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
-import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.ContentRange;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Request;

@@ -28,9 +28,9 @@ public class RequestUtil {
     public static Response sendGetRequest(String path) throws IOException {
         Request request = new Request.RequestBuilder()
             .setGet()
-            .useSSL()
-            .setHost(DEFAULT_HTTPS_HOST)
-            .noPort()
+            // .useSSL()
+            .setHost(DEFAULT_HTTP_HOST)
+            // .noPort()
             .setPath(path)
             .build();
         return request.sendRequest();
@@ -39,9 +39,9 @@ public class RequestUtil {
     public static Request createGetRequest(String path) throws IOException {
         Request request = new Request.RequestBuilder()
             .setGet()
-            .useSSL()
-            .setHost(DEFAULT_HTTPS_HOST)
-            .noPort()
+            // .useSSL()
+            .setHost(DEFAULT_HTTP_HOST)
+            // .noPort()
             .setPath(path)
             .build();
         return request;
@@ -62,9 +62,9 @@ public class RequestUtil {
         Request request = new Request.RequestBuilder()
             .setPost(content.getContentString())
             .setContentType("application/json")
-            .useSSL()
-            .setHost(DEFAULT_HTTPS_HOST)
-            .noPort()
+            // .useSSL()
+            .setHost(DEFAULT_HTTP_HOST)
+            // .noPort()
             .setPath(path)
             .build();
         return request.sendRequest();

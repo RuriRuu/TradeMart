@@ -1,12 +1,9 @@
 package com.realeyez.trademart.gui.components.profile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.realeyez.trademart.PostViewerActivity;
 import com.realeyez.trademart.post.PostData;
-import com.realeyez.trademart.request.RequestUtil;
-import com.realeyez.trademart.request.Response;
 
 import android.content.Context;
 import android.content.Intent;
