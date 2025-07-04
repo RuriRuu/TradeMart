@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class PostData {
 
     private ArrayList<Integer> mediaIds;
+    private String username;
     private int postId;
     private String title;
     private String description;
@@ -14,6 +15,7 @@ public class PostData {
         this.title = builder.title;
         this.description = builder.description;
         this.mediaIds = builder.mediaIds;
+        this.username = builder.username;
     }
 
     public String getTitle() {
@@ -36,16 +38,21 @@ public class PostData {
         return description;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public static class Builder {
 
         private ArrayList<Integer> mediaIds;
         private int postId;
+        private String username;
         private String title;
         private String description;
 
         public Builder(){
             postId = 0;
-            title = description = "";
+            username = title = description = "";
             mediaIds = null;
         }
 
@@ -66,6 +73,11 @@ public class PostData {
 
         public Builder setDescription(String description) {
             this.description = description;
+            return this;
+        }
+
+        public Builder setUsername(String username) {
+            this.username = username;
             return this;
         }
 

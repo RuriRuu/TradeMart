@@ -14,21 +14,14 @@ public class MediaButton {
     private Context context;
     private ImageView imageView;
     private PostData postData;
-    private ArrayList<Integer> mediaIds;
-    private int postId;
     
     public MediaButton(Context context, ImageView imageView, PostData postData){
         this.context = context;
         this.imageView = imageView;
-        this.postId = postData.getPostId();
-        this.mediaIds = postData.getMediaIds();
+        this.postData = postData;
         setOnClickEvents();
     }
     
-    public ArrayList<Integer> getMediaIds() {
-        return mediaIds;
-    }
-
     public ImageView getImageView() {
         return imageView;
     }
@@ -36,8 +29,9 @@ public class MediaButton {
     private void setOnClickEvents(){
         imageView.setOnClickListener(view -> {
             Intent intent = new Intent(context, PostViewerActivity.class);
-            intent.putExtra("post_id", postId);
-            intent.putExtra("media_ids", mediaIds);
+            intent.putExtra("post_id", postData.getPostId());
+            intent.putExtra("media_ids", postData.getMediaIds());
+            intent.putExtra("username", postData.getUsername());
             context.startActivity(intent);
         });
     }

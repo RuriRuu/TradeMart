@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.realeyez.trademart.gui.components.scroll.ScrollDotPanel;
 import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
 import com.realeyez.trademart.request.RequestUtil;
@@ -46,6 +49,8 @@ public class PostViewerActivity extends AppCompatActivity {
     private ImageButton likeButton;
     private ImageButton backButton;
 
+    private String username;
+
     private int postId;
     private ArrayList<Integer> mediaIds;
 
@@ -55,6 +60,7 @@ public class PostViewerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         postId = intent.getIntExtra("post_id", -1);
         mediaIds = intent.getIntegerArrayListExtra("media_ids");
+        username = intent.getStringExtra("username");
         setContentView(R.layout.activity_post_viewer);
         initComponents();
         loadPost();
@@ -78,8 +84,18 @@ public class PostViewerActivity extends AppCompatActivity {
     }
 
     private void loadPost(){
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
+        ExecutorService postDataExecutor = Executors.newSingleThreadExecutor();
+        ExecutorService mediaExecutor = Executors.newSingleThreadExecutor();
+        postDataExecutor.execute(() -> {
+            try {
+                loadPostData();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Logger.log("unable to load post data", LogLevel.WARNING);
+                finish();
+            }
+        });
+        mediaExecutor.execute(() -> {
             for(int mediaId : mediaIds ){
                 String path = new StringBuilder()
                     .append("/media/").append(mediaId).toString();
@@ -96,6 +112,21 @@ public class PostViewerActivity extends AppCompatActivity {
             }
             dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
         });
+    }
+
+    private void loadPostData() throws IOException {
+        String path = new StringBuilder()
+            .append("/post/").append(postId).toString();
+        Response response = RequestUtil.sendGetRequest(path);
+        try {
+            JSONObject json = response.getContentJson();
+            titleLabel.setText(json.getString("title"));
+            nameLabel.setText(username);
+            descLabel.setText(json.getString("description"));
+            likesLabel.setText(json.getString("likes"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addImageMedia(File image){

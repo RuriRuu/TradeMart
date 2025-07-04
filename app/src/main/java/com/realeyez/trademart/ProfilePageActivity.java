@@ -1,12 +1,7 @@
 package com.realeyez.trademart;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,30 +15,22 @@ import com.realeyez.trademart.gui.components.profile.ShowcasePanel;
 import com.realeyez.trademart.gui.components.profile.ShowcaseRow;
 import com.realeyez.trademart.post.PostData;
 import com.realeyez.trademart.request.Content;
-import com.realeyez.trademart.request.ContentArray;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.user.User;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Encoder;
-import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 public class ProfilePageActivity extends AppCompatActivity {
 
@@ -133,6 +120,7 @@ public class ProfilePageActivity extends AppCompatActivity {
                 PostData postData = new PostData.Builder()
                     .setPostId(postId)
                     .setMediaIds(mediaIds)
+                    .setUsername(user.getUsername())
                     .build();
                 File imageFile = getFileFromMedia(mediaIds.get(0));
                 loadedPostIds.add(arr.getInt(i));
@@ -270,12 +258,6 @@ public class ProfilePageActivity extends AppCompatActivity {
         //         loadPosts();
         //     }
         // });
-    }
-
-    private void viewImageAction(String imageUri){
-        Intent explicitActivity = new Intent(ProfilePageActivity.this, CreatePostActivity.class);
-        // explicitActivity.putExtra("image_data", ResourceRepository.getResources().getCurrentUser().getId());
-        startActivity(explicitActivity);
     }
 
     private void newPostButtonAction(){
