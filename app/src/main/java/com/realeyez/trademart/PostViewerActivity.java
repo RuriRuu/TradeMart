@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.util.CacheFile;
@@ -19,6 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,6 +34,7 @@ import androidx.media3.ui.PlayerView;
 public class PostViewerActivity extends AppCompatActivity {
 
     private HorizontalScrollView mediaScroll;
+    private SnapScrollH snapScroll;
     private LinearLayout mediaScrollPanel;
     private LinearLayout mediaCountPanel;
 
@@ -68,6 +71,8 @@ public class PostViewerActivity extends AppCompatActivity {
 
         likeButton = findViewById(R.id.postviewer_like_button);
         backButton = findViewById(R.id.postviewer_back_button);
+
+        this.snapScroll = new SnapScrollH(mediaScroll);
 
         addActionListeners();
     }
@@ -132,33 +137,5 @@ public class PostViewerActivity extends AppCompatActivity {
         });
         likeButton.setOnClickListener(view -> {
         });
-        // mediaScroll.setOnTouchListener((view, motionEvent) -> {
-        //     if(motionEvent.get){
-        //     }
-        //     return false;
-        // });
-        // mediaScroll.setOnScrollChangeListener((view, x, y, oldX, oldY) -> {
-        //     // int half = view.getWidth();
-        //     try {
-        //     if(oldX == x){
-        //         return;
-        //     }
-        //     if(oldX < x){
-        //         if(x < oldX+view.getWidth()){
-        //             mediaScroll.scrollTo(oldX, oldY);
-        //         }
-        //         return;
-        //     } 
-        //     if(oldX > x){
-        //         if(x+view.getWidth() > oldX){
-        //             mediaScroll.scrollTo(oldX, oldY);
-        //         }
-        //     }
-        //     }catch (Exception e) {
-        //         // e.printStackTrace();
-        //         System.out.printf("[CRASH]: %s", e.getMessage());
-        //         System.exit(0);
-        //     }
-        // });
     }
 };
