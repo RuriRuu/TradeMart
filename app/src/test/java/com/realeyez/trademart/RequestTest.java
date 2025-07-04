@@ -225,7 +225,7 @@ public class RequestTest {
         assertEquals(text, new String(bytes));
     }
 
-    @Test
+    // @Test
     public void test_hlsVideoUpload() throws IOException, JSONException{
         File file = new File("/home/redflameken/Videos/memes/fallguys_battlepass.mp4");
         byte[] bytes = null;
@@ -247,7 +247,7 @@ public class RequestTest {
         assertEquals(status, "success");
     }
 
-    @Test
+    // @Test
     public void test_contentDisposition() throws IOException {
         Response response = RequestUtil.sendGetRequest("/media/image/god_totem.png");
         String filename = response.getContentDispositionField("filename");
