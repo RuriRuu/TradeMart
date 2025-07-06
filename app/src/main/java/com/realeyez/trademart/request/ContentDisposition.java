@@ -1,8 +1,14 @@
 package com.realeyez.trademart.request;
 
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.Logger.LogLevel;
+
 public class ContentDisposition {
 
     private String data;
+
+    private ContentDisposition() {
+    }
 
     public ContentDisposition(String data) {
         this.data = data;
@@ -10,6 +16,23 @@ public class ContentDisposition {
 
     public String getField(String key) {
         return extractSection(key);
+    }
+
+    public String getHeader(){
+        return data;
+    }
+
+    public ContentDisposition addDisposition(String key, String value){
+        data = new StringBuilder()
+            .append(data)
+            .append(data.length() > 1 ? "; " : "")
+            .append(key)
+            .append("=\"")
+            .append(value)
+            .append("\"")
+            .toString();
+        Logger.log("disposition updated: " + data, LogLevel.INFO);
+        return this;
     }
 
     private String extractSection(String key) {
@@ -41,6 +64,12 @@ public class ContentDisposition {
                 return "";
         }
         return builder.toString();
+    }
+
+    public static ContentDisposition attachment(){
+        ContentDisposition disposition = new ContentDisposition();
+        disposition.data = "attachment";
+        return disposition;
     }
 
 }

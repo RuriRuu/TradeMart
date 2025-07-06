@@ -11,10 +11,12 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.junit.Test;
 
 import com.realeyez.trademart.encryption.Decryptor;
 import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.ContentRange;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Request;
@@ -250,6 +252,19 @@ public class RequestTest {
         System.out.printf("filename: %s\n", filename);
         assertEquals("god_totem.png", filename);
 
+    }
+
+    // @Test
+    public void test_disposition() throws IOException {
+        String content = "blabby blabby blabyy";
+        String filename = "silly_goobus.txt";
+        ContentDisposition disposition = ContentDisposition.attachment()
+            .addDisposition("filename", filename);
+        Response response = RequestUtil.sendPostRequest("/disposition", content.getBytes(), disposition);
+        String rString = response.getContent();
+        System.out.printf("%s\n", rString);
+        assertEquals(filename, response.getContentDispositionField("filename"));
+        assertEquals(content, response.getContent());
     }
 
 }

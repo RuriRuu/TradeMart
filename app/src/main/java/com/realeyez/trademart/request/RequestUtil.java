@@ -47,6 +47,30 @@ public class RequestUtil {
         return request;
     }
 
+    public static Response sendPostRequest(String path, byte[] content, ContentDisposition disposition) throws IOException {
+        Request request = new Request.RequestBuilder()
+            .setPost(content)
+            .setContentType("application/json")
+            // .useSSL()
+            .setHost(DEFAULT_HTTP_HOST)
+            // .noPort()
+            .setPath(path)
+            .setContentDisposition(disposition)
+            .build();
+        return request.sendRequest();
+    }
+
+    public static Response sendPostRequest(String path, byte[] content) throws IOException {
+        Request request = new Request.RequestBuilder()
+            .setPost(content)
+            .setContentType("application/json")
+            // .useSSL()
+            .setHost(DEFAULT_HTTP_HOST)
+            // .noPort()
+            .setPath(path)
+            .build();
+        return request.sendRequest();
+    }
 
     /**
      * This is a convenience method for making a POST request. Make sure to USE THIS

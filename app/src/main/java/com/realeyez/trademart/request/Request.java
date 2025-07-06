@@ -2,30 +2,20 @@ package com.realeyez.trademart.request;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.xml.transform.URIResolver;
 
 import com.realeyez.trademart.request.Response.ResponseBuilder;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.net.Uri;
-import androidx.annotation.CheckResult;
-import androidx.media3.datasource.ByteArrayDataSource;
-import androidx.media3.datasource.HttpDataSource;
-import androidx.media3.datasource.ByteArrayDataSource.UriResolver;
 
 public class Request {
 
@@ -36,10 +26,11 @@ public class Request {
     private int port;
     private String method;
     private String path;
-    private String body;
+    private byte[] body;
     private String contentType;
     private long contentLength;
     private ContentRange contentRange;
+    private ContentDisposition disposition;
 
     private boolean usingSSL;
     private URLConnection con;
@@ -52,6 +43,8 @@ public class Request {
         this.body = builder.body;
         this.contentLength = builder.contentLength;
         this.contentType = builder.contentType;
+        this.contentRange = builder.contentRange;
+        this.disposition = builder.disposition;
         this.usingSSL = builder.usingSSL;
     }
 
@@ -80,6 +73,9 @@ public class Request {
         else
             ((HttpURLConnection) con).setRequestMethod(method);
         con.setRequestProperty("Content-Type", contentType);
+        if(disposition != null){
+            con.setRequestProperty("Content-Disposition", disposition.getHeader());
+        }
         // HttpParams params = con.getPar
         // con.getHeaderField("Content");
         if (method.equals("POST")) {
@@ -100,9 +96,8 @@ public class Request {
     }
 
     private void sendContentBody() {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()))) {
-            writer.write(body);
-            writer.flush();
+        try (OutputStream os = con.getOutputStream()) {
+            os.write(body);
         } catch (IOException e) {
             Logger.log("IOException when writing request", LogLevel.CRITICAL);
             e.printStackTrace();
@@ -114,7 +109,7 @@ public class Request {
         try {
             ContentRange contentRange = ContentRange.parse(con.getHeaderField("Content-Range"));
             byte[] content = null;
-            int contentLength = con.getContentLength();
+            int contentLength = con.getHeaderFieldInt("Content-Length", 0);
             ResponseBuilder builder = new ResponseBuilder()
                     .setCode(usingSSL == true ? ((HttpsURLConnection) con).getResponseCode()
                             : ((HttpURLConnection) con).getResponseCode())
@@ -144,7 +139,7 @@ public class Request {
     private byte[] readNResponseBytes(int start, int end, int length){
         byte[] bytes = new byte[length];
         try (BufferedInputStream reader = new BufferedInputStream(con.getInputStream())) {
-            int read = reader.read(bytes, start, end);
+            reader.read(bytes, start, end);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -213,16 +208,19 @@ public class Request {
         private String path;
         private String contentType;
         private long contentLength;
-        private String body;
+        private byte[] body;
         private boolean usingSSL;
         private ContentRange contentRange;
+        private ContentDisposition disposition;
 
         public RequestBuilder() {
-            host = method = path = contentType = body = null;
+            host = method = path = contentType = null;
+            body = null;
             usingSSL = false;
             port = DEFAULT_SERVER_PORT;
             contentLength = 0;
             contentRange = null;
+            disposition = null;
         }
 
         public RequestBuilder setHost(String host) {
@@ -289,12 +287,27 @@ public class Request {
          * @return this RequestBuilder
          *
          **/
+        public RequestBuilder setPost(byte[] body) {
+            this.method = "POST";
+            this.body = body;
+            return this;
+        }
+
+        /**
+         * sets the requeset to a POST request. this requires a body to be sent to the
+         * server.
+         *
+         * @param the body of the request to be sent to the server.
+         *
+         * @return this RequestBuilder
+         *
+         **/
         public RequestBuilder setPost(String body) {
             this.method = "POST";
             if (body == null)
-                this.body = "";
+                this.body = "".getBytes();
             else
-                this.body = body;
+                this.body = body.getBytes();
             return this;
         }
 
@@ -310,10 +323,10 @@ public class Request {
         public RequestBuilder setPost(String body, String contentType) {
             this.method = "POST";
             if (body == null) {
-                this.body = "";
+                this.body = "".getBytes();
                 this.contentType = "application/octet-stream";
             } else {
-                this.body = body;
+                this.body = body.getBytes();
                 if (contentType == null)
                     this.contentType = "application/octet-stream";
                 else
@@ -347,6 +360,11 @@ public class Request {
 
         public RequestBuilder setContentRange(long start, long end){
             this.contentRange = new ContentRange(start, end);
+            return this;
+        }
+
+        public RequestBuilder setContentDisposition(ContentDisposition disposition) {
+            this.disposition = disposition;
             return this;
         }
 
