@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import com.realeyez.trademart.gui.components.createpost.ImagePanel;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
@@ -87,7 +88,7 @@ public class CreatePostActivity extends AppCompatActivity {
                 // TODO: display if uploading image failed
                 sendPublishPostImageRequest(imageUri, postId);
             }
-            runOnUiThread(() -> {finish();});
+            runOnUiThread(() -> finish());
         });
     }
 
@@ -99,7 +100,9 @@ public class CreatePostActivity extends AppCompatActivity {
 
     private void addImageButtonAction(View view) {
         Intent pickerIntent = new Intent(Intent.ACTION_PICK);
-        pickerIntent.setType("image/*");
+        pickerIntent.setType("*/*");
+        String[] mimetypes = {"image/*", "video/*"};
+        pickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
         launcher.launch(pickerIntent);
     }
 
@@ -143,14 +146,11 @@ public class CreatePostActivity extends AppCompatActivity {
         byte[] bytes = readImageData(imageUri);
 
         String filename = getFileNameFromUri(imageUri);
-        String fileData = Encoder.encodeBase64(bytes);
-        Content content = new Content.ContentBuilder()
-            .put("filename", filename)
-            .put("data", fileData)
-            .build();
         Response response = null;
         try {
-            response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), content);
+            ContentDisposition disposition = ContentDisposition.attachment()
+                .addDisposition("filename", filename);
+            response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), bytes, disposition);
         } catch (IOException e) {
             e.printStackTrace();
         }

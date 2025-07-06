@@ -110,7 +110,9 @@ public class PostViewerActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
+            runOnUiThread(() -> {
+                dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
+            });
         });
     }
 

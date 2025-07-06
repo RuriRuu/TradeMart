@@ -56,8 +56,6 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     private ArrayList<Integer> loadedPostIds;
 
-    private int scrollY;
-
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -122,7 +120,7 @@ public class ProfilePageActivity extends AppCompatActivity {
                     .setMediaIds(mediaIds)
                     .setUsername(user.getUsername())
                     .build();
-                File imageFile = getFileFromMedia(mediaIds.get(0));
+                File imageFile = getThumbnailFileFromMedia(mediaIds.get(0));
                 loadedPostIds.add(arr.getInt(i));
                 runOnUiThread(() -> {
                     Uri uri = Uri.fromFile(imageFile);
@@ -132,6 +130,22 @@ public class ProfilePageActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private File getThumbnailFileFromMedia(int mediaId){
+        File file = null;
+        try {
+            Response response = RequestUtil.sendGetRequest("/media/thumbnail/" + mediaId);
+            String filename = response.getContentDispositionField("filename");
+            byte[] data = response.getContentBytes();
+
+            CacheFile cacheFile = CacheFile.cache(getCacheDir(), filename, data);
+            file = cacheFile.getFile();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
     }
 
     private File getFileFromMedia(int mediaId){
