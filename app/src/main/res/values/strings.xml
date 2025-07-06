@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">TradeMart</string>
     <string name="host_url">thinkpad-x230.taila38b71.ts.net</string>
+    <string name="loading_dialog_message">Loading...</string>
 
     <string-array name="job_categories">
         <item>Art</item>

@@ -1,8 +1,10 @@
 package com.realeyez.trademart;
 
+import com.realeyez.trademart.gui.dialogs.LoadingDialog;
 import com.realeyez.trademart.resource.ResourceRepository;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -24,7 +26,10 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        initButtons();
+    }
 
+    private void initButtons(){
         Button ratings = findViewById(R.id.RatingCheck);
         ratings.setOnClickListener(view -> {
             Intent explicitActivity = new Intent(MainActivity.this, RatingViewActivity.class);
@@ -61,6 +66,5 @@ public class MainActivity extends AppCompatActivity {
             Intent explicitActivity = new Intent(MainActivity.this, VideoPlayerActivity.class);
             startActivity(explicitActivity);
         });
-
     }
 }
