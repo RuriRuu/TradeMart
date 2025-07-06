@@ -10,10 +10,12 @@ public class ScrollDotPanel {
     private Context context;
     private LinearLayout panel;
     private ArrayList<ScrollDot> dots;
+    private int lastActive;
 
     public ScrollDotPanel(Context context, LinearLayout panel, int size){
         this.context = context;
         this.panel = panel;
+        lastActive = 0;
         dots = new ArrayList<>(size);
         for(int i = 0; i < size; i++){
             addDot();
@@ -28,12 +30,9 @@ public class ScrollDotPanel {
     }
 
     public void setActive(int index){
-        for (int i = 0; i < dots.size(); i++) {
-            if(i == index)
-                dots.get(i).setActive(true);
-            else
-                dots.get(i).setActive(false);
-        }
+        dots.get(lastActive).setActive(false);
+        dots.get(index).setActive(true);
+        lastActive = index;
     }
 
 
