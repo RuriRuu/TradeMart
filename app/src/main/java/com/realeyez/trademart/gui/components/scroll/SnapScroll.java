@@ -1,5 +1,7 @@
 package com.realeyez.trademart.gui.components.scroll;
 
+import com.realeyez.trademart.gui.components.event.OnChangeChildListener;
+
 import android.view.MotionEvent;
 import android.widget.ScrollView;
 
@@ -8,6 +10,7 @@ public class SnapScroll {
     private ScrollView scrollView;
     private int lastY;
     private int curChild;
+    private OnChangeChildListener onChangeChildListener;
 
     public SnapScroll(ScrollView scrollView) {
         this.scrollView = scrollView;
@@ -20,11 +23,14 @@ public class SnapScroll {
     }
 
     private boolean snap() {
+        int lastChild = curChild;
         // snap to prev
         if (scrollView.getScrollY() > lastY + (scrollView.getWidth() / 2)) {
             int y = ++curChild * scrollView.getWidth();
             scrollView.smoothScrollTo(scrollView.getWidth(), y);
             lastY = y;
+            if(onChangeChildListener != null)
+                onChangeChildListener.onChangeChild(lastChild, curChild);
             return true;
         }
         // snap to next
@@ -32,6 +38,8 @@ public class SnapScroll {
             int y = --curChild * scrollView.getWidth();
             scrollView.smoothScrollTo(scrollView.getWidth(), y);
             lastY = y;
+            if(onChangeChildListener != null)
+                onChangeChildListener.onChangeChild(lastChild, curChild);
             return true;
         }
         // snap back
@@ -51,6 +59,10 @@ public class SnapScroll {
 
     public int getCurChild(){
         return curChild;
+    }
+
+    public void setOnCangeChildListener(OnChangeChildListener onChangeChildListener) {
+        this.onChangeChildListener = onChangeChildListener;
     }
 
 }

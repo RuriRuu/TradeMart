@@ -9,11 +9,16 @@ import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.gui.components.post.PostMediaPanel;
+import com.realeyez.trademart.gui.components.post.PostMediaPanelImage;
+import com.realeyez.trademart.gui.components.post.PostMediaPanelVideo;
 import com.realeyez.trademart.gui.components.scroll.ScrollDotPanel;
 import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
+import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.util.CacheFile;
+import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
@@ -24,13 +29,9 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.ui.PlayerView;
 
 public class PostViewerActivity extends AppCompatActivity {
 
@@ -53,6 +54,7 @@ public class PostViewerActivity extends AppCompatActivity {
 
     private int postId;
     private ArrayList<Integer> mediaIds;
+    private ArrayList<PostMediaPanel> mediaPanels;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -61,6 +63,7 @@ public class PostViewerActivity extends AppCompatActivity {
         postId = intent.getIntExtra("post_id", -1);
         mediaIds = intent.getIntegerArrayListExtra("media_ids");
         username = intent.getStringExtra("username");
+        mediaPanels = new ArrayList<>();
         setContentView(R.layout.activity_post_viewer);
         initComponents();
         loadPost();
@@ -100,18 +103,33 @@ public class PostViewerActivity extends AppCompatActivity {
                 String path = new StringBuilder()
                     .append("/media/").append(mediaId).toString();
                 try {
-                    Response response = RequestUtil.sendGetRequest(path);
+                    Request request = RequestUtil.createGetRequest(path);
+                    Response response = request.sendRequest();
                     String filename = response.getContentDisposition().getField("filename");
-                    CacheFile cacheFile = CacheFile.cache(getCacheDir(), filename, response.getContentBytes());
-                    runOnUiThread(() -> {
-                        addImageMedia(cacheFile.getFile());
-                    });
+                    if(FileUtil.getExtension(filename).equals("m3u8")){
+                        runOnUiThread(() -> {
+                            String location = new StringBuilder()
+                                .append(response.getHost())
+                                .append(response.getLocation())
+                                .toString();
+                            addVideoMedia(Uri.parse(location));
+                        });
+                    } else {
+                        CacheFile cacheFile = CacheFile.cache(getCacheDir(), filename, response.getContentBytes());
+                        File file = cacheFile.getFile();
+                        runOnUiThread(() -> {
+                            addImageMedia(file);
+                        });
+                    }
                 } catch (IOException e){
                     e.printStackTrace();
                 }
             }
             runOnUiThread(() -> {
                 dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
+                if(mediaPanels.get(0) instanceof PostMediaPanelVideo){
+                    ((PostMediaPanelVideo)mediaPanels.get(0)).start();
+                }
             });
         });
     }
@@ -131,31 +149,24 @@ public class PostViewerActivity extends AppCompatActivity {
         }
     }
 
-    private void addImageMedia(File image){
-        ImageView imageView = new ImageView(this);
-        LayoutParams params = new LayoutParams(
-                mediaScroll.getWidth(), 
-                mediaScroll.getHeight(), 
+    private LayoutParams createMediaPanelLayoutParams(){
+        return new LayoutParams(
+                mediaScroll.getWidth(),
+                mediaScroll.getHeight(),
                 Gravity.CENTER);
-        Logger.log("media scroll width: " + mediaScroll.getWidth() , LogLevel.INFO);
-        Logger.log("media scroll height: " + mediaScroll.getHeight() , LogLevel.INFO);
-        imageView.setScaleType(ScaleType.FIT_CENTER);
-        imageView.setLayoutParams(params);
-        imageView.setImageURI(Uri.fromFile(image));
-        mediaScrollPanel.addView(imageView);
     }
 
-    // probably should make something to make player have persistent access
-    private void addVideoMedia(File image){
-        PlayerView playerView = new PlayerView(this);
-        ExoPlayer player = new ExoPlayer.Builder(this).build();
-        ImageView imageView = new ImageView(this);
-        LayoutParams params = new LayoutParams(
-                mediaScroll.getWidth(), 
-                mediaScroll.getHeight(), 
-                Gravity.CENTER);
-        imageView.setLayoutParams(params);
-        imageView.setImageURI(Uri.fromFile(image));
+    private void addImageMedia(File image){
+        PostMediaPanelImage panel = new PostMediaPanelImage(this, createMediaPanelLayoutParams(), Uri.fromFile(image));
+        mediaPanels.add(panel);
+        mediaScrollPanel.addView(panel.getImageView());
+    }
+
+    private void addVideoMedia(Uri video){
+        PostMediaPanelVideo panel = new PostMediaPanelVideo(this, createMediaPanelLayoutParams());
+        mediaPanels.add(panel);
+        panel.setMediaUri(video);
+        mediaScrollPanel.addView(panel.getPlayerView());
     }
 
     private void addActionListeners(){
@@ -164,8 +175,16 @@ public class PostViewerActivity extends AppCompatActivity {
         });
         likeButton.setOnClickListener(view -> {
         });
-        snapScroll.setOnCangeChildListener(curChild -> {
+        snapScroll.setOnCangeChildListener((lastChild, curChild) -> {
             dotsPanel.setActive(curChild);
+            PostMediaPanel lastPanel = mediaPanels.get(lastChild);
+            if(lastPanel instanceof PostMediaPanelVideo){
+                ((PostMediaPanelVideo)lastPanel).reset();
+            }
+            PostMediaPanel panel = mediaPanels.get(curChild);
+            if(panel instanceof PostMediaPanelVideo){
+                ((PostMediaPanelVideo)panel).start();
+            }
         });
     }
 };

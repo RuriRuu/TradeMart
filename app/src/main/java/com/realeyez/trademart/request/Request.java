@@ -20,6 +20,7 @@ import android.net.Uri;
 public class Request {
 
     public static final String DEFAULT_SERVER_HOST = "10.0.2.2";
+    public static final String DEFAULT_SERVER_HOST_SSL = "thinkpad-x230.taila38b71.ts.net";
     public static final int DEFAULT_SERVER_PORT = 8080;
 
     private String host;
@@ -114,6 +115,7 @@ public class Request {
                     .setCode(usingSSL == true ? ((HttpsURLConnection) con).getResponseCode()
                             : ((HttpURLConnection) con).getResponseCode())
                     .setLocation(con.getHeaderField("Location"))
+                    .setHost(createResponseHost())
                     .setContentLength(contentLength)
                     .setContentDisposition(con.getHeaderField("Content-Disposition"))
                     .setContentType(con.getContentType());
@@ -180,6 +182,18 @@ public class Request {
                 .append(getLocationBase())
                 .append(getPortString())
                 .append(path);
+        return builder.toString();
+    }
+
+    private String createResponseHost() {
+        StringBuilder builder = new StringBuilder()
+                .append(usingSSL ? "https://" : "http://")
+                .append(host == null ? 
+                        usingSSL ?
+                        DEFAULT_SERVER_HOST_SSL :
+                        DEFAULT_SERVER_HOST 
+                        : host)
+                .append(getPortString());
         return builder.toString();
     }
 

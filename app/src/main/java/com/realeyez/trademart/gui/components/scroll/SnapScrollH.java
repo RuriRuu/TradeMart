@@ -10,7 +10,7 @@ public class SnapScrollH {
     private HorizontalScrollView scrollView;
     private int lastX;
     private int curChild;
-    private OnChangeChildListener onCangeChildListener;
+    private OnChangeChildListener onChangeChildListener;
 
     public SnapScrollH(HorizontalScrollView scrollView) {
         this.scrollView = scrollView;
@@ -19,18 +19,19 @@ public class SnapScrollH {
 
     private void initComponents() {
         curChild = 0;
-        onCangeChildListener = null;
+        onChangeChildListener = null;
         applyScrollEvent();
     }
 
     private boolean snap() {
         // snap to prev
+        int lastChild = curChild;
         if (scrollView.getScrollX() > lastX + (scrollView.getWidth() / 2)) {
             int x = ++curChild * scrollView.getWidth();
             scrollView.smoothScrollTo(x, scrollView.getHeight());
             lastX = x;
-            if(onCangeChildListener != null)
-                onCangeChildListener.onChangeChild(curChild);
+            if(onChangeChildListener != null)
+                onChangeChildListener.onChangeChild(lastChild, curChild);
             return true;
         }
         // snap to next
@@ -38,8 +39,8 @@ public class SnapScrollH {
             int x = --curChild * scrollView.getWidth();
             scrollView.smoothScrollTo(x, scrollView.getHeight());
             lastX = x;
-            if(onCangeChildListener != null)
-                onCangeChildListener.onChangeChild(curChild);
+            if(onChangeChildListener != null)
+                onChangeChildListener.onChangeChild(lastChild, curChild);
             return true;
         }
         // snap back
@@ -61,8 +62,8 @@ public class SnapScrollH {
         return curChild;
     }
 
-    public void setOnCangeChildListener(OnChangeChildListener onCangeChildListener) {
-        this.onCangeChildListener = onCangeChildListener;
+    public void setOnChangeChildListener(OnChangeChildListener onChangeChildListener) {
+        this.onChangeChildListener = onChangeChildListener;
     }
 
 }
