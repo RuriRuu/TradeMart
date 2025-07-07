@@ -109,9 +109,9 @@ public class ProfilePageActivity extends AppCompatActivity {
         Response postIdResponse = sendLoadMorePostRequest();
         try {
             JSONObject postIdResponseJson = postIdResponse.getContentJson();
-            Logger.log("received response for loading more posts: " + postIdResponseJson.toString(), LogLevel.INFO);
+            Logger.log("received response for loading more posts: ".concat(postIdResponseJson.toString()), LogLevel.INFO);
             JSONArray arr = postIdResponseJson.getJSONArray("post_ids");
-            Logger.log("THE LENGTH OF THE ARRAY WAS: " + arr.length(), LogLevel.INFO);
+            Logger.log(String.format("THE LENGTH OF THE ARRAY WAS: %d", arr.length()), LogLevel.INFO);
             for (int i = 0; i < arr.length(); i++) {
                 ArrayList<Integer> mediaIds = getPostMediaId(arr.getInt(i));
                 int postId = arr.getInt(i);
@@ -135,7 +135,7 @@ public class ProfilePageActivity extends AppCompatActivity {
     private File getThumbnailFileFromMedia(int mediaId){
         File file = null;
         try {
-            Response response = RequestUtil.sendGetRequest("/media/thumbnail/" + mediaId);
+            Response response = RequestUtil.sendGetRequest(String.format("/media/thumbnail/%d", mediaId));
             String filename = response.getContentDispositionField("filename");
             byte[] data = response.getContentBytes();
 
@@ -151,7 +151,7 @@ public class ProfilePageActivity extends AppCompatActivity {
     private File getFileFromMedia(int mediaId){
         File file = null;
         try {
-            Response response = RequestUtil.sendGetRequest("/media/" + mediaId);
+            Response response = RequestUtil.sendGetRequest(String.format("/media/%d", mediaId));
             String filename = response.getContentDispositionField("filename");
             byte[] data = response.getContentBytes();
 
@@ -196,7 +196,7 @@ public class ProfilePageActivity extends AppCompatActivity {
             .parseJson(json.toString());
         Response response = null;
         try {
-            response = RequestUtil.sendPostRequest("/post/user/" + userId, content);
+            response = RequestUtil.sendPostRequest(String.format("/post/user/%d", userId), content);
         } catch (IOException e) {
             e.printStackTrace();
         }

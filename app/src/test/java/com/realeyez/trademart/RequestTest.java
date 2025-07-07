@@ -187,7 +187,7 @@ public class RequestTest {
             e.printStackTrace();
         }
         
-        File file = new File(".tempfile-" + filename);
+        File file = new File(".tempfile-".concat(filename));
         try (FileOutputStream outstream = new FileOutputStream(file)) {
             byte[] bytes = Encoder.decodeBase64(encodedData);
             outstream.write(bytes);

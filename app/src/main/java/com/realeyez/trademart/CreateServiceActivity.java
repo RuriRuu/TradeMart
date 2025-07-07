@@ -29,7 +29,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -87,7 +86,7 @@ public class CreateServiceActivity extends AppCompatActivity {
                 // TODO: display if uploading image failed
                 sendPublishPostImageRequest(imageUri, postId);
             }
-            runOnUiThread(() -> {finish();});
+            runOnUiThread(() -> finish());
         });
     }
 

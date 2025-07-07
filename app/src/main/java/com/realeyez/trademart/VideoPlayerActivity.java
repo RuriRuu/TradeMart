@@ -1,27 +1,17 @@
 package com.realeyez.trademart;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
-import com.realeyez.trademart.request.Response;
-import com.realeyez.trademart.util.Encoder;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.VideoView;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.ui.PlayerView;
 
 public class VideoPlayerActivity extends AppCompatActivity {

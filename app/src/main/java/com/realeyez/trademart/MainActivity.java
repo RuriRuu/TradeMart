@@ -1,10 +1,8 @@
 package com.realeyez.trademart;
 
-import com.realeyez.trademart.gui.dialogs.LoadingDialog;
 import com.realeyez.trademart.resource.ResourceRepository;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 

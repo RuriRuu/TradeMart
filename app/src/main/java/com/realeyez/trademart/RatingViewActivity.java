@@ -64,11 +64,11 @@ public class RatingViewActivity extends AppCompatActivity {
 
             // Update the label
             TextView label = sliderCard.findViewById(R.id.Slider_Value);
-            label.setText(name + ": 2.5");
+            label.setText(name.concat(": 2.5"));
 
             // Add change listener to update value dynamically
             Slider slider = sliderCard.findViewById(R.id.discreteSlider);
-            slider.addOnChangeListener((s, value, fromUser) -> label.setText(name + ": " + (double) value));
+            slider.addOnChangeListener((s, value, fromUser) -> label.setText(String.format("%s: %d", name, (double) value)));
 
             // Add to container
             sliderContainer.addView(sliderCard);

@@ -31,7 +31,7 @@ public class ContentDisposition {
             .append(value)
             .append("\"")
             .toString();
-        Logger.log("disposition updated: " + data, LogLevel.INFO);
+        Logger.log("disposition updated: ".concat(data), LogLevel.INFO);
         return this;
     }
 

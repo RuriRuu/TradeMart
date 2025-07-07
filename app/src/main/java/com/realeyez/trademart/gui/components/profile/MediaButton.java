@@ -1,7 +1,5 @@
 package com.realeyez.trademart.gui.components.profile;
 
-import java.util.ArrayList;
-
 import com.realeyez.trademart.PostViewerActivity;
 import com.realeyez.trademart.post.PostData;
 
