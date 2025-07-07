@@ -12,11 +12,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.realeyez.trademart.gui.components.createpost.ImagePanel;
+import com.realeyez.trademart.gui.dialogs.LoadingDialog;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
+import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Encoder;
 
 import android.app.Activity;
@@ -88,7 +90,6 @@ public class CreatePostActivity extends AppCompatActivity {
                 // TODO: display if uploading image failed
                 sendPublishPostImageRequest(imageUri, postId);
             }
-            runOnUiThread(() -> finish());
         });
     }
 
@@ -191,7 +192,15 @@ public class CreatePostActivity extends AppCompatActivity {
             backButtonAction(view);
         });
         postButton.setOnClickListener(view -> {
+            if(imagePanels.size() == 0){
+                Dialogs.showMessageDialog("Posts must have media attached", this);
+                return;
+            }
+            LoadingDialog dialog = new LoadingDialog(this);
+            dialog.show();
             postButtonAction(view);
+            dialog.close();
+            finish();
         });
         addImageButton.setOnClickListener(view -> {
             addImageButtonAction(view);
