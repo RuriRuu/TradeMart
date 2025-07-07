@@ -100,7 +100,7 @@ public class CreatePostActivity extends AppCompatActivity {
             });
 
     private void addImageButtonAction() {
-        Intent pickerIntent = new Intent(Intent.ACTION_PICK);
+        Intent pickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         pickerIntent.setType("*/*");
         String[] mimetypes = {"image/*", "video/*"};
         pickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
