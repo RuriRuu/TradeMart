@@ -304,6 +304,13 @@ public class Request {
         public RequestBuilder setPost(byte[] body) {
             this.method = "POST";
             this.body = body;
+            if (body == null) {
+                this.body = "".getBytes();
+                this.contentType = "application/octet-stream";
+            } else {
+                this.body = body;
+                this.contentType = "application/octet-stream";
+            }
             return this;
         }
 
