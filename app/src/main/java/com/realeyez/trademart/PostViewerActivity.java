@@ -140,10 +140,16 @@ public class PostViewerActivity extends AppCompatActivity {
         Response response = RequestUtil.sendGetRequest(path);
         try {
             JSONObject json = response.getContentJson();
-            titleLabel.setText(json.getString("title"));
-            nameLabel.setText(username);
-            descLabel.setText(json.getString("description"));
-            likesLabel.setText(json.getString("likes"));
+            runOnUiThread(() -> {
+                try{ 
+                    titleLabel.setText(json.getString("title"));
+                    nameLabel.setText(username);
+                    descLabel.setText(json.getString("description"));
+                    likesLabel.setText(json.getString("likes"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
