@@ -94,6 +94,7 @@ public class RequestUtil {
     public static Response sendPostRequest(String path, Content content) throws IOException {
         Request request = createBaseRequestBuilder(path)
             .setPost(content.getContentString())
+            .setContentType("application/json")
             .build();
         return request.sendRequest();
     }
@@ -180,6 +181,7 @@ public class RequestUtil {
     public static Request createPostRequest(String path, Content content) throws IOException {
         Request request = createBaseRequestBuilder(path)
             .setPost(content.getContentString())
+            .setContentType("application/json")
             .build();
         return request;
     }
@@ -189,10 +191,11 @@ public class RequestUtil {
      * current {@link RequestUtil#sendGetRequest(String)} functionality
      * without editing this file.
      *
-     * @param host the desired host override
-     * @param port the desired port override
-     * @param useSSL whether or not the override URI is http or https (true if https)
-     * @param path the path of the requested resource
+     * @param host   The desired host override
+     * @param port   The desired port override
+     * @param useSSL whether or not the override URI is http or https (true if
+     *               https)
+     * @param path   The path of the requested resource
      *
      * @return the resulting {@link Response} of the sent request
      */
@@ -217,12 +220,13 @@ public class RequestUtil {
      * current {@link RequestUtil#sendPostRequest(String, Content)} functionality
      * without editing this file.
      *
-     * @param host the desired host override
-     * @param port the desired port override
-     * @param useSSL wether or not the override URI is http or https (true if https)
-     * @param path the path of the requested resource
-     * @param disposition the {@link ContentDisposition} header of the request
-     * @param content the {@link Content} to be sent to the server
+     * @param host        The desired host override
+     * @param port        The desired port override
+     * @param useSSL      wether or not the override URI is http or https (true if
+     *                    https)
+     * @param path        The path of the requested resource
+     * @param disposition The {@link ContentDisposition} header of the request
+     * @param content     The {@link Content} to be sent to the server
      *
      * @return the resulting {@link Response} of the sent request
      */
@@ -245,4 +249,38 @@ public class RequestUtil {
         return builder.build().sendRequest();
     }
 
+
+    /**
+     * DO NOT use this method. Only use this if you need to temporarily override the
+     * current {@link RequestUtil#sendPostRequest(String, Content)} functionality
+     * without editing this file.
+     *
+     * @param host        The desired host override
+     * @param port        The desired port override
+     * @param useSSL      Wether or not the override URI is http or https (true if
+     *                    https)
+     * @param path        The path of the requested resource
+     * @param disposition The {@link ContentDisposition} header of the request
+     * @param content     The raw byte data to be sent to the server
+     *
+     * @return The resulting {@link Response} of the sent request
+     */
+    public static Response sendPostRequest(String host, String path, int port, boolean useSSL, ContentDisposition disposition, byte[] content)
+            throws IOException {
+
+        Request.RequestBuilder builder = new Request.RequestBuilder()
+            .setPost(content)
+            .setHost(host)
+            .setContentDisposition(disposition)
+            .setPath(path);
+        if(useSSL){
+            builder.useSSL();
+        }
+        if(port == -1){
+            builder.noPort();
+        } else {
+            builder.setPort(port);
+        }
+        return builder.build().sendRequest();
+    }
 }
