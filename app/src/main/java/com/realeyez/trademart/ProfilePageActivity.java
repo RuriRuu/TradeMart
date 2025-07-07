@@ -113,8 +113,12 @@ public class ProfilePageActivity extends AppCompatActivity {
             JSONArray arr = postIdResponseJson.getJSONArray("post_ids");
             Logger.log(String.format("THE LENGTH OF THE ARRAY WAS: %d", arr.length()), LogLevel.INFO);
             for (int i = 0; i < arr.length(); i++) {
-                ArrayList<Integer> mediaIds = getPostMediaId(arr.getInt(i));
                 int postId = arr.getInt(i);
+                ArrayList<Integer> mediaIds = getPostMediaId(postId);
+                // TODO: this woudn't be necessary if posts were finished getting setup before they are loaded here. probs should figure that out.
+                if(mediaIds.size() == 0){
+                    continue;
+                }
                 PostData postData = new PostData.Builder()
                     .setPostId(postId)
                     .setMediaIds(mediaIds)
@@ -201,25 +205,6 @@ public class ProfilePageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return response;
-    }
-
-    private void loadPostMedia(int postId){
-        String path = new StringBuilder()
-            .append("/post/")
-            .append(postId)
-            .append("/media")
-            .toString();
-        try {
-            Response response = RequestUtil.sendGetRequest(path);
-            JSONObject json = response.getContentJson();
-            JSONArray ids = json.getJSONArray("media_ids");
-            for (int i = 0; i < ids.length(); i++) {
-                int id = ids.getInt(i);
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            showUnableToLoad();
-        }
     }
 
     private void initProfileComponents(){

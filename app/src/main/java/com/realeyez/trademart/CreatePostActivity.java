@@ -73,7 +73,7 @@ public class CreatePostActivity extends AppCompatActivity {
         finish();
     }
 
-    private void postButtonAction(View view) {
+    private void postButtonAction() {
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
             Response response = sendPublishPostRequest();
@@ -99,7 +99,7 @@ public class CreatePostActivity extends AppCompatActivity {
                 pickedImageAction(result);
             });
 
-    private void addImageButtonAction(View view) {
+    private void addImageButtonAction() {
         Intent pickerIntent = new Intent(Intent.ACTION_PICK);
         pickerIntent.setType("*/*");
         String[] mimetypes = {"image/*", "video/*"};
@@ -198,12 +198,12 @@ public class CreatePostActivity extends AppCompatActivity {
             }
             LoadingDialog dialog = new LoadingDialog(this);
             dialog.show();
-            postButtonAction(view);
+            postButtonAction();
             dialog.close();
             finish();
         });
         addImageButton.setOnClickListener(view -> {
-            addImageButtonAction(view);
+            addImageButtonAction();
         });
     }
 
