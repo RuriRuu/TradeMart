@@ -61,7 +61,7 @@ public class SnapScroll {
         return curChild;
     }
 
-    public void setOnCangeChildListener(OnChangeChildListener onChangeChildListener) {
+    public void setOnChangeChildListener(OnChangeChildListener onChangeChildListener) {
         this.onChangeChildListener = onChangeChildListener;
     }
 

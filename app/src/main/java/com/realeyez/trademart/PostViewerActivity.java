@@ -175,7 +175,7 @@ public class PostViewerActivity extends AppCompatActivity {
         });
         likeButton.setOnClickListener(view -> {
         });
-        snapScroll.setOnCangeChildListener((lastChild, curChild) -> {
+        snapScroll.setOnChangeChildListener((lastChild, curChild) -> {
             dotsPanel.setActive(curChild);
             PostMediaPanel lastPanel = mediaPanels.get(lastChild);
             if(lastPanel instanceof PostMediaPanelVideo){
