@@ -13,85 +13,175 @@ public class RequestUtil {
      */
     public static final String DEFAULT_HTTPS_HOST = "thinkpad-x230.taila38b71.ts.net";
 
-    RequestUtil(){
+    private RequestUtil(){}
+
+    /**
+     * This will be the base of all of the main utility methods here. EDIT THIS if
+     * there needs to be a change in how requests are made.
+     *
+     * @param path the HTTP endpoint to be accessed
+     *
+     * @return {@link Request.RequestBuilder}
+     */
+    private static Request.RequestBuilder createBaseRequestBuilder(String path){
+        return new Request.RequestBuilder()
+            .useSSL()
+            .setHost(DEFAULT_HTTPS_HOST)
+            .noPort()
+            .setPath(path);
     }
 
     /**
      * This is a convenience method for making a GET request. Make sure to USE THIS
-     * when making a request so that when there needs to be a change with the host,
-     * you only need to edit this method.
+     * when making a GET request.
      *
      * @param path the path of the requested resource
      *
      * @return the resulting {@link Response} of the sent request
      */
     public static Response sendGetRequest(String path) throws IOException {
-        Request request = new Request.RequestBuilder()
+        Request request = createBaseRequestBuilder(path)
             .setGet()
-            // .useSSL()
-            .setHost(DEFAULT_HTTP_HOST)
-            // .noPort()
-            .setPath(path)
-            .build();
-        return request.sendRequest();
-    }
-
-    public static Request createGetRequest(String path) throws IOException {
-        Request request = new Request.RequestBuilder()
-            .setGet()
-            // .useSSL()
-            .setHost(DEFAULT_HTTP_HOST)
-            // .noPort()
-            .setPath(path)
-            .build();
-        return request;
-    }
-
-    public static Response sendPostRequest(String path, byte[] content, ContentDisposition disposition) throws IOException {
-        Request request = new Request.RequestBuilder()
-            .setPost(content)
-            .setContentType("application/json")
-            // .useSSL()
-            .setHost(DEFAULT_HTTP_HOST)
-            // .noPort()
-            .setPath(path)
-            .setContentDisposition(disposition)
-            .build();
-        return request.sendRequest();
-    }
-
-    public static Response sendPostRequest(String path, byte[] content) throws IOException {
-        Request request = new Request.RequestBuilder()
-            .setPost(content)
-            .setContentType("application/json")
-            // .useSSL()
-            .setHost(DEFAULT_HTTP_HOST)
-            // .noPort()
-            .setPath(path)
             .build();
         return request.sendRequest();
     }
 
     /**
      * This is a convenience method for making a POST request. Make sure to USE THIS
-     * when making a request so that when there needs to be a change with the host,
-     * you only need to edit this method.
+     * when making a POST request that contains raw bytes content and
+     * {@link ContentDisposition}
      *
-     * @param path the path of the requested resource
-     * @param content the {@link Content} to be sent to the server
+     * @param path        The HTTP endpoint to be accessed
+     * @param content     The byte data to be sent to the server
+     * @param disposition The Content-Disposition header of the request. Usually
+     *                    contains a filename.
+     *
+     * @return the resulting {@link Response} of the sent request
+     */
+    public static Response sendPostRequest(String path, byte[] content, ContentDisposition disposition) throws IOException {
+        Request request = createBaseRequestBuilder(path)
+            .setPost(content)
+            .setContentDisposition(disposition)
+            .build();
+        return request.sendRequest();
+    }
+
+    /**
+     * This is a convenience method for making a POST request. Make sure to USE THIS
+     * when making a POST request that contains raw bytes content.
+     *
+     * @param path        The path of the requested resource
+     * @param content     The byte data to be sent to the server
+     *
+     * @return the resulting {@link Response} of the sent request
+     */
+    public static Response sendPostRequest(String path, byte[] content) throws IOException {
+        Request request = createBaseRequestBuilder(path)
+            .setPost(content)
+            .build();
+        return request.sendRequest();
+    }
+
+    /**
+     * This is a convenience method for making a POST request. Make sure to USE THIS
+     * when making a POST request that contains JSON data.
+     *
+     * @param path    The HTTP endpoint to be accessed
+     * @param content The {@link Content} to be sent to the server
      *
      * @return the resulting {@link Response} of the sent request
      */
     public static Response sendPostRequest(String path, Content content) throws IOException {
-        Request request = new Request.RequestBuilder()
+        Request request = createBaseRequestBuilder(path)
             .setPost(content.getContentString())
-            .setContentType("application/json")
-            // .useSSL()
-            .setHost(DEFAULT_HTTP_HOST)
-            // .noPort()
-            .setPath(path)
             .build();
         return request.sendRequest();
+    }
+
+    /**
+     * This is a convenience method for making a POST request. Make sure to USE THIS
+     * when making a POST request that contains raw bytes content and
+     * {@link ContentDisposition}
+     *
+     * @param path        The HTTP endpoint to be accessed
+     * @param content     The {@link Content} to be sent to the server
+     * @param disposition The Content-Disposition header of the request. Usually
+     *                    contains a filename.
+     *
+     * @return the resulting {@link Response} of the sent request
+     */
+    public static Response sendPostRequest(String path, Content content, ContentDisposition disposition) throws IOException {
+        Request request = createBaseRequestBuilder(path)
+            .setPost(content.getContentString())
+            .setContentDisposition(disposition)
+            .build();
+        return request.sendRequest();
+    }
+
+    /**
+     * Creates a GET request but doesn't send it. Useful when when trying to access
+     * information about the request before sending it.
+     *
+     * @param path The HTTP endpoint to be accessed
+     *
+     * @return {@link Request}
+     */
+    public static Request createGetRequest(String path) throws IOException {
+        Request request = createBaseRequestBuilder(path)
+            .setGet()
+            .build();
+        return request;
+    }
+
+    /**
+     * Creates a POST request but doesn't send it. Useful when when trying to access
+     * information about the request before sending it.
+     *
+     * @param path        The HTTP endpoint to be accessed
+     * @param content     The byte data to be sent to the server
+     * @param disposition The Content-Disposition header of the request. Usually
+     *                    contains a filename.
+     *
+     * @return {@link Request}
+     */
+    public static Request createPostRequest(String path, byte[] content, ContentDisposition disposition) throws IOException {
+        Request request = createBaseRequestBuilder(path)
+            .setPost(content)
+            .setContentDisposition(disposition)
+            .build();
+        return request;
+    }
+
+    /**
+     * Creates a POST request but doesn't send it. Useful when when trying to access
+     * information about the request before sending it.
+     *
+     * @param path    The HTTP endpoint to be accessed
+     * @param content The byte data to be sent to the server
+     *
+     * @return {@link Request}
+     */
+    public static Request createPostRequest(String path, byte[] content) throws IOException {
+        Request request = createBaseRequestBuilder(path)
+            .setPost(content)
+            .build();
+        return request;
+    }
+
+    /**
+     * Creates a POST request but doesn't send it. Useful when when trying to access
+     * information about the request before sending it.
+     *
+     * @param path    The HTTP endpoint to be accessed
+     * @param content The {@link Content} to be sent to the server
+     *
+     * @return {@link Request}
+     */
+    public static Request createPostRequest(String path, Content content) throws IOException {
+        Request request = createBaseRequestBuilder(path)
+            .setPost(content.getContentString())
+            .build();
+        return request;
     }
 
     /**
@@ -101,7 +191,7 @@ public class RequestUtil {
      *
      * @param host the desired host override
      * @param port the desired port override
-     * @param useSSL wether or not the override URI is http or https (true if https)
+     * @param useSSL whether or not the override URI is http or https (true if https)
      * @param path the path of the requested resource
      *
      * @return the resulting {@link Response} of the sent request
@@ -131,16 +221,18 @@ public class RequestUtil {
      * @param port the desired port override
      * @param useSSL wether or not the override URI is http or https (true if https)
      * @param path the path of the requested resource
+     * @param disposition the {@link ContentDisposition} header of the request
      * @param content the {@link Content} to be sent to the server
      *
      * @return the resulting {@link Response} of the sent request
      */
-    public static Response sendPostRequest(String host, String path, int port, boolean useSSL, Content content)
+    public static Response sendPostRequest(String host, String path, int port, boolean useSSL, ContentDisposition disposition, Content content)
             throws IOException {
 
         Request.RequestBuilder builder = new Request.RequestBuilder()
             .setPost(content.getContentString())
             .setHost(host)
+            .setContentDisposition(disposition)
             .setPath(path);
         if(useSSL){
             builder.useSSL();
