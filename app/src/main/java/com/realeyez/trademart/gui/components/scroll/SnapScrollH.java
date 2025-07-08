@@ -25,13 +25,12 @@ public class SnapScrollH {
 
     private boolean snap() {
         // snap to prev
-        int lastChild = curChild;
         if (scrollView.getScrollX() > lastX + (scrollView.getWidth() / 2)) {
             int x = ++curChild * scrollView.getWidth();
             scrollView.smoothScrollTo(x, scrollView.getHeight());
             lastX = x;
             if(onChangeChildListener != null)
-                onChangeChildListener.onChangeChild(lastChild, curChild);
+                onChangeChildListener.onChangeChild(curChild-1, curChild);
             return true;
         }
         // snap to next
@@ -40,7 +39,7 @@ public class SnapScrollH {
             scrollView.smoothScrollTo(x, scrollView.getHeight());
             lastX = x;
             if(onChangeChildListener != null)
-                onChangeChildListener.onChangeChild(lastChild, curChild);
+                onChangeChildListener.onChangeChild(curChild+1, curChild);
             return true;
         }
         // snap back
