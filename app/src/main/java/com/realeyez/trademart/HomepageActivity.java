@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import com.realeyez.trademart.gui.components.feed.FeedView;
 import com.realeyez.trademart.gui.components.scroll.SnapScroll;
+import com.realeyez.trademart.resource.ResourceRepository;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -42,6 +44,8 @@ public class HomepageActivity extends AppCompatActivity {
 
         feedViews = new ArrayList<>();
         snapScroll = new SnapScroll(feedScroll);
+
+        addOnClickListeners();
     }
 
     private void loadPlaceholders(){
@@ -61,6 +65,14 @@ public class HomepageActivity extends AppCompatActivity {
 
         feedViews.add(feedView);
         scrollPanel.addView(feedView);
+    }
+
+    private void addOnClickListeners(){
+        profileButton.setOnClickListener(view -> {
+            Intent explicitActivity = new Intent(HomepageActivity.this, ProfilePageActivity.class);
+            explicitActivity.putExtra("user_id", ResourceRepository.getResources().getCurrentUser().getId());
+            startActivity(explicitActivity);
+        });
     }
 
 }
