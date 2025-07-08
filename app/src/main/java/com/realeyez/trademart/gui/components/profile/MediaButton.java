@@ -24,6 +24,7 @@ public class MediaButton {
         return imageView;
     }
 
+    // TODO: load the PostViewer media here then send it through something like a parcel maybe.
     private void setOnClickEvents(){
         imageView.setOnClickListener(view -> {
             Intent intent = new Intent(context, PostViewerActivity.class);
