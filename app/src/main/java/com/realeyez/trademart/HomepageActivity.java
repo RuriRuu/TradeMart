@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.realeyez.trademart.gui.components.feed.FeedView;
 import com.realeyez.trademart.gui.components.scroll.SnapScroll;
+import com.realeyez.trademart.gui.sheets.HomepageCreateSheet;
 import com.realeyez.trademart.resource.ResourceRepository;
 
 import android.content.Intent;
@@ -56,6 +57,11 @@ public class HomepageActivity extends AppCompatActivity {
         });
     }
 
+    private void displayCreateOptions(){
+        HomepageCreateSheet bottomSheet = new HomepageCreateSheet();
+        bottomSheet.show(getSupportFragmentManager(), HomepageCreateSheet.TAG);
+    }
+
     private void addFeedView(){
         LayoutParams params = new LayoutParams(
                 feedScroll.getWidth(),
@@ -68,6 +74,9 @@ public class HomepageActivity extends AppCompatActivity {
     }
 
     private void addOnClickListeners(){
+        createButton.setOnClickListener(view -> {
+            displayCreateOptions();
+        });
         profileButton.setOnClickListener(view -> {
             Intent explicitActivity = new Intent(HomepageActivity.this, ProfilePageActivity.class);
             explicitActivity.putExtra("user_id", ResourceRepository.getResources().getCurrentUser().getId());

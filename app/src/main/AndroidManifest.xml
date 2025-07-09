@@ -34,6 +34,9 @@
             android:name=".CreatePostActivity"
             android:exported="true" />
         <activity
+            android:name=".CreateServiceActivity"
+            android:exported="true" />
+        <activity
             android:name=".request.RequestTestActivity"
             android:exported="true" />
         <activity
