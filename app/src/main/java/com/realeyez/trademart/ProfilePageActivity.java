@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.realeyez.trademart.gui.components.profile.ShowcasePanel;
 import com.realeyez.trademart.gui.components.profile.ShowcaseRow;
+import com.realeyez.trademart.gui.sheets.ProfilePictureSheet;
 import com.realeyez.trademart.post.PostData;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
@@ -82,6 +83,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             loadProfile();
+            loadProfilePicture();
             runOnUiThread(() -> { initProfileComponents(); });
 
             loadPosts();
@@ -102,6 +104,26 @@ public class ProfilePageActivity extends AppCompatActivity {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             showUnableToLoad();
+        }
+    }
+
+    private void loadProfilePicture(){
+        String path = new StringBuilder()
+            .append("/user/")
+            .append(userId)
+            .append("/avatar")
+            .toString();
+        try {
+            Response response = RequestUtil.sendGetRequest(path);
+            CacheFile cacheFile = CacheFile.newFile(getCacheDir(),
+                    response.getContentDispositionField("filename"), 
+                    response.getContentBytes());
+            File file = cacheFile.getFile();
+            runOnUiThread(() -> {
+                profileImageView.setImageURI(Uri.fromFile(file));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -264,9 +286,17 @@ public class ProfilePageActivity extends AppCompatActivity {
         startActivity(explicitActivity);
     }
 
+    private void showProfilePictureSheet(){
+        ProfilePictureSheet sheet = new ProfilePictureSheet(this, userId);
+        sheet.show(getSupportFragmentManager(), ProfilePictureSheet.TAG);
+    }
+
     private void addOnClickListeners(){
         newPostButton.setOnClickListener(view -> {
             newPostButtonAction();
+        });
+        profileImageView.setOnClickListener(view -> {
+            showProfilePictureSheet();
         });
     }
 

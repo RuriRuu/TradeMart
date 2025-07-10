@@ -24,6 +24,7 @@ import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.request.Request.RequestBuilder;
 import com.realeyez.trademart.util.Encoder;
+import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
@@ -265,6 +266,30 @@ public class RequestTest {
         System.out.printf("%s\n", rString);
         assertEquals(filename, response.getContentDispositionField("filename"));
         assertEquals(content, response.getContent());
+    }
+
+    // @Test
+    public void test_profilePictureUpload(){
+
+        String filepath = "/home/redflameken/Pictures/RedFlameKen.jpg";
+        ContentDisposition disposition = ContentDisposition.attachment()
+            .addDisposition("filename", "RedFlameKen.jpg");
+        byte[] data = FileUtil.readFile(filepath);
+        for (byte b : data) {
+            System.out.print(b);
+        }
+        String path = new StringBuilder()
+            .append("/user/")
+            .append(84335)
+            .append("/avatar/update")
+            .toString();
+        try {
+            Response response = RequestUtil.sendPostRequest(path, data, disposition);
+            Logger.log("status: " + response.getCode(), LogLevel.INFO);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] result = FileUtil.readFile("/home/redflameken/Storage/media/images/pfp_84335.jpg");
     }
 
 }
