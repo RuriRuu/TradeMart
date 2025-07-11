@@ -23,27 +23,26 @@ public class SnapScroll {
     }
 
     private boolean snap() {
-        int lastChild = curChild;
         // snap to prev
-        if (scrollView.getScrollY() > lastY + (scrollView.getWidth() / 2)) {
-            int y = ++curChild * scrollView.getWidth();
+        if (scrollView.getScrollY() > lastY + (scrollView.getHeight() / 2)) {
+            int y = ++curChild * scrollView.getHeight();
             scrollView.smoothScrollTo(scrollView.getWidth(), y);
             lastY = y;
             if(onChangeChildListener != null)
-                onChangeChildListener.onChangeChild(lastChild, curChild);
+                onChangeChildListener.onChangeChild(curChild-1, curChild);
             return true;
         }
         // snap to next
-        if (scrollView.getScrollY() < lastY - (scrollView.getWidth() / 2)) {
-            int y = --curChild * scrollView.getWidth();
+        if (scrollView.getScrollY() < lastY - (scrollView.getHeight() / 2)) {
+            int y = --curChild * scrollView.getHeight();
             scrollView.smoothScrollTo(scrollView.getWidth(), y);
             lastY = y;
             if(onChangeChildListener != null)
-                onChangeChildListener.onChangeChild(lastChild, curChild);
+                onChangeChildListener.onChangeChild(curChild+1, curChild);
             return true;
         }
         // snap back
-        scrollView.smoothScrollTo(lastY, scrollView.getScrollY());
+        scrollView.smoothScrollTo(scrollView.getScrollX(), lastY);
         return false;
     }
 

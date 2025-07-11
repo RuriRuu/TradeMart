@@ -133,7 +133,7 @@ public class LoginPageActivity extends AppCompatActivity {
 
     private void showMainPage(LoadingDialog dialog) {
         runOnUiThread(() -> {
-            Intent explicitActivity = new Intent(LoginPageActivity.this, MainActivity.class);
+            Intent explicitActivity = new Intent(LoginPageActivity.this, HomepageActivity.class);
             startActivity(explicitActivity);
             dialog.close();
         });

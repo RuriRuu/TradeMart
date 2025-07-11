@@ -14,21 +14,18 @@ public class CacheFile {
     private CacheFile(){
     }
 
+    public static String buildCacheFilename(String filename){
+        return String.format(FILE_NAME_FORMAT, filename);
+    }
+
     private static CacheFile createCacheFile(File cacheDir, String filename, byte[] data){
         CacheFile cacheFile = new CacheFile();
-        String cacheFileName = String.format(FILE_NAME_FORMAT, filename);
+        String cacheFileName = buildCacheFilename(filename);
         cacheFile.filename = filename;
         cacheFile.file = new File(cacheDir, cacheFileName);
         if(data == null)
             return cacheFile;
-        if(!cacheFile.file.exists()){
-            try(FileOutputStream os = new FileOutputStream(cacheFile.file)) {
-                os.write(data);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
+        FileUtil.writeToFile(cacheFile.file, data);
         return cacheFile;
     }
 
