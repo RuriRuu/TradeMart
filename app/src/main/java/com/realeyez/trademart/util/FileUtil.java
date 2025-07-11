@@ -1,6 +1,9 @@
 package com.realeyez.trademart.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -24,11 +27,25 @@ public class FileUtil {
         return file;
     }
 
+    public static byte[] readFile(String filename){
+        File file = new File(filename);
+        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+        try (FileInputStream stream = new FileInputStream(file)){
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = stream.read(buffer)) != -1) {
+                outstream.write(buffer, 0, bytesRead);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outstream.toByteArray();
+    }
+
     public static File writeToFile(File file, byte[] data){
         try (FileOutputStream os = new FileOutputStream(file)) {
-            if(!file.exists()){
-                file.createNewFile();
-            }
             os.write(data);
         } catch (IOException e) {
             e.printStackTrace();
