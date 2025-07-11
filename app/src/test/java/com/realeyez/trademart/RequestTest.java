@@ -292,4 +292,40 @@ public class RequestTest {
         byte[] result = FileUtil.readFile("/home/redflameken/Storage/media/images/pfp_84335.jpg");
     }
 
+    // @Test
+    public void test_serviceCreate() throws JSONException, IOException{
+        String path = "/service/create"; 
+        Content content = new Content.ContentBuilder()
+            .put("job_id", 69420)
+            .put("job_title", "Test")
+            .put("job_description", "lorem ipsum dolor sit amet")
+            .put("job_type", "GIG")
+            .put("job_category", "PROGRAMMING")
+            .put("date_posted", "2025-07-10T20:34")
+            .put("user_id", 84335)
+            .build();
+
+        Response response = RequestUtil.sendPostRequest(path, content);
+
+        assertEquals("success", response.getContentJson().getString("status"));
+
+    }
+
+    // @Test
+    public void test_serviceFetch()throws JSONException, IOException{
+        String path = new StringBuilder()
+            .append("/service/")
+            .append(33330)
+            .toString();
+
+        Response response = RequestUtil.sendGetRequest(path);
+        JSONObject json = response.getContentJson();
+        assertEquals(33330, json.getInt("job_id"));
+        assertEquals("Test", json.getString("job_title"));
+        assertEquals("lorem ipsum dolor sit amet", json.getString("job_description"));
+        assertEquals("GIG", json.getString("job_type"));
+        assertEquals("PROGRAMMING", json.getString("job_category"));
+        assertEquals("2025-07-10T20:34", json.getString("date_posted"));
+        assertEquals(84335, json.getInt("user_id"));
+    }
 }
