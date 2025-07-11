@@ -54,13 +54,13 @@ public class CreateServiceActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
-        backButton = findViewById(R.id.createpost_back_button);
-        postButton = findViewById(R.id.createpost_post_button);
-        addImageButton = findViewById(R.id.createpost_add_image_button);
+        backButton = findViewById(R.id.createservice_back_button);
+        postButton = findViewById(R.id.createservice_post_button);
+        addImageButton = findViewById(R.id.createservice_add_image_button);
 
-        titleField = findViewById(R.id.createpost_title_field);
-        descField = findViewById(R.id.createpost_description_field);
-        image_parent_panel = findViewById(R.id.createpost_images_panel);
+        titleField = findViewById(R.id.createservice_title_field);
+        descField = findViewById(R.id.createservice_description_field);
+        image_parent_panel = findViewById(R.id.createservice_images_panel);
         imagePanels = new ArrayList<>();
         addOnClickListeners();
     }
@@ -126,7 +126,7 @@ public class CreateServiceActivity extends AppCompatActivity {
 
         Content content = new Content.ContentBuilder()
             .put("title", title)
-            .put("description", description)
+                .put("description", description)
             .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
             .build();
         Response response = null;
