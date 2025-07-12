@@ -128,10 +128,10 @@ public class CreateServiceActivity extends AppCompatActivity {
         String price = priceField.getText().toString();
 
         Content content = new Content.ContentBuilder()
-            .put("title", title)
-                .put("description", description)
-                .put("price", price)
-            .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
+            .put("job_title", title)
+                .put("job_description", description)
+                .put("job_price", price)
+            .put("job_user_id", ResourceRepository.getResources().getCurrentUser().getId())
             .build();
         Response response = null;
         try {
