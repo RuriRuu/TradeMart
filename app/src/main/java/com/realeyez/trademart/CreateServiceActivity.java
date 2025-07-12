@@ -41,6 +41,7 @@ public class CreateServiceActivity extends AppCompatActivity {
     private Button addImageButton;
     private EditText titleField;
     private EditText descField;
+    private EditText priceField;
 
     private LinearLayout image_parent_panel;
 
@@ -60,6 +61,7 @@ public class CreateServiceActivity extends AppCompatActivity {
 
         titleField = findViewById(R.id.createservice_title_field);
         descField = findViewById(R.id.createservice_description_field);
+        priceField = findViewById(R.id.createservice_price);
         image_parent_panel = findViewById(R.id.createservice_images_panel);
         imagePanels = new ArrayList<>();
         addOnClickListeners();
@@ -123,10 +125,12 @@ public class CreateServiceActivity extends AppCompatActivity {
     private Response sendPublishPostRequest(){
         String title = titleField.getText().toString();
         String description = descField.getText().toString();
+        String price = priceField.getText().toString();
 
         Content content = new Content.ContentBuilder()
             .put("title", title)
                 .put("description", description)
+                .put("price", price)
             .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
             .build();
         Response response = null;
