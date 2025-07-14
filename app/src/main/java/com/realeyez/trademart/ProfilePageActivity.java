@@ -1,12 +1,7 @@
 package com.realeyez.trademart;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,29 +13,25 @@ import org.json.JSONObject;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.realeyez.trademart.gui.components.profile.ShowcasePanel;
 import com.realeyez.trademart.gui.components.profile.ShowcaseRow;
+import com.realeyez.trademart.gui.sheets.ProfilePictureSheet;
+import com.realeyez.trademart.post.PostData;
 import com.realeyez.trademart.request.Content;
-import com.realeyez.trademart.request.ContentArray;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.user.User;
+import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Encoder;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 public class ProfilePageActivity extends AppCompatActivity {
 
@@ -65,8 +56,6 @@ public class ProfilePageActivity extends AppCompatActivity {
     private double rating;
 
     private ArrayList<Integer> loadedPostIds;
-
-    private int scrollY;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -94,6 +83,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             loadProfile();
+            loadProfilePicture();
             runOnUiThread(() -> { initProfileComponents(); });
 
             loadPosts();
@@ -117,21 +107,50 @@ public class ProfilePageActivity extends AppCompatActivity {
         }
     }
 
+    private void loadProfilePicture(){
+        String path = new StringBuilder()
+            .append("/user/")
+            .append(userId)
+            .append("/avatar")
+            .toString();
+        try {
+            Response response = RequestUtil.sendGetRequest(path);
+            CacheFile cacheFile = CacheFile.newFile(getCacheDir(),
+                    response.getContentDispositionField("filename"), 
+                    response.getContentBytes());
+            File file = cacheFile.getFile();
+            runOnUiThread(() -> {
+                profileImageView.setImageURI(Uri.fromFile(file));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadPosts(){
         Response postIdResponse = sendLoadMorePostRequest();
         try {
             JSONObject postIdResponseJson = postIdResponse.getContentJson();
-            Logger.log("received response for loading more posts: " + postIdResponseJson.toString(), LogLevel.INFO);
+            Logger.log("received response for loading more posts: ".concat(postIdResponseJson.toString()), LogLevel.INFO);
             JSONArray arr = postIdResponseJson.getJSONArray("post_ids");
-            Logger.log("THE LENGTH OF THE ARRAY WAS: " + arr.length(), LogLevel.INFO);
+            Logger.log(String.format("THE LENGTH OF THE ARRAY WAS: %d", arr.length()), LogLevel.INFO);
             for (int i = 0; i < arr.length(); i++) {
-                int mediaId = getPostMediaId(arr.getInt(i)).get(0);
-                Logger.log(String.format("mediaId for iteration %d: %d", i, mediaId), LogLevel.INFO);
-                File imageFile = getFileFromMedia(mediaId);
+                int postId = arr.getInt(i);
+                ArrayList<Integer> mediaIds = getPostMediaId(postId);
+                // TODO: this woudn't be necessary if posts were finished getting setup before they are loaded here. probs should figure that out.
+                if(mediaIds.size() == 0){
+                    continue;
+                }
+                PostData postData = new PostData.Builder()
+                    .setPostId(postId)
+                    .setMediaIds(mediaIds)
+                    .setUsername(user.getUsername())
+                    .build();
+                File imageFile = getThumbnailFileFromMedia(mediaIds.get(0));
                 loadedPostIds.add(arr.getInt(i));
                 runOnUiThread(() -> {
                     Uri uri = Uri.fromFile(imageFile);
-                    showcasePanel.addImage(uri);
+                    showcasePanel.addImage(uri, postData);
                 });
             }
         } catch (JSONException e) {
@@ -139,21 +158,32 @@ public class ProfilePageActivity extends AppCompatActivity {
         }
     }
 
-    private File getFileFromMedia(int mediaId){
+    private File getThumbnailFileFromMedia(int mediaId){
         File file = null;
         try {
-            Response response = RequestUtil.sendGetRequest("/media/" + mediaId);
+            Response response = RequestUtil.sendGetRequest(String.format("/media/thumbnail/%d", mediaId));
             String filename = response.getContentDispositionField("filename");
             byte[] data = response.getContentBytes();
 
-            file = new File(getCacheDir(), "temp_"+filename);
-            if(!file.exists()){
-                try (FileOutputStream writer = new FileOutputStream(file)) {
-                    writer.write(data);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            CacheFile cacheFile = CacheFile.cache(getCacheDir(), filename, data);
+            file = cacheFile.getFile();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    private File getFileFromMedia(int mediaId){
+        File file = null;
+        try {
+            Response response = RequestUtil.sendGetRequest(String.format("/media/%d", mediaId));
+            String filename = response.getContentDispositionField("filename");
+            byte[] data = response.getContentBytes();
+
+            CacheFile cacheFile = CacheFile.cache(getCacheDir(), filename, data);
+            file = cacheFile.getFile();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -192,30 +222,11 @@ public class ProfilePageActivity extends AppCompatActivity {
             .parseJson(json.toString());
         Response response = null;
         try {
-            response = RequestUtil.sendPostRequest("/post/user/" + userId, content);
+            response = RequestUtil.sendPostRequest(String.format("/post/user/%d", userId), content);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return response;
-    }
-
-    private void loadPostMedia(int postId){
-        String path = new StringBuilder()
-            .append("/post/")
-            .append(postId)
-            .append("/media")
-            .toString();
-        try {
-            Response response = RequestUtil.sendGetRequest(path);
-            JSONObject json = response.getContentJson();
-            JSONArray ids = json.getJSONArray("media_ids");
-            for (int i = 0; i < ids.length(); i++) {
-                int id = ids.getInt(i);
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            showUnableToLoad();
-        }
     }
 
     private void initProfileComponents(){
@@ -270,20 +281,22 @@ public class ProfilePageActivity extends AppCompatActivity {
         // });
     }
 
-    private void viewImageAction(String imageUri){
-        Intent explicitActivity = new Intent(ProfilePageActivity.this, CreatePostActivity.class);
-        // explicitActivity.putExtra("image_data", ResourceRepository.getResources().getCurrentUser().getId());
-        startActivity(explicitActivity);
-    }
-
     private void newPostButtonAction(){
         Intent explicitActivity = new Intent(ProfilePageActivity.this, CreatePostActivity.class);
         startActivity(explicitActivity);
     }
 
+    private void showProfilePictureSheet(){
+        ProfilePictureSheet sheet = new ProfilePictureSheet(this, userId);
+        sheet.show(getSupportFragmentManager(), ProfilePictureSheet.TAG);
+    }
+
     private void addOnClickListeners(){
         newPostButton.setOnClickListener(view -> {
             newPostButtonAction();
+        });
+        profileImageView.setOnClickListener(view -> {
+            showProfilePictureSheet();
         });
     }
 

@@ -8,15 +8,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.realeyez.trademart.encryption.Encryptor;
+import com.realeyez.trademart.gui.dialogs.LoadingDialog;
 import com.realeyez.trademart.request.Content;
-import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.user.User;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Logger;
-import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -73,18 +71,21 @@ public class LoginPageActivity extends AppCompatActivity {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
+            LoadingDialog dialog = new LoadingDialog(this);
+            runOnUiThread(() -> dialog.show());
             Response response = sendLoginRequest(username, password);
             try {
                 JSONObject json = response.getContentJson();
                 String status = json.getString("status");
                 String message = json.getString("message");
                 if (status.equals("failed")) {
+                    dialog.close();
                     showSignupFailedDialog(message);
                     return;
                 }
                 if (status.equals("success")) {
                     setupUser(json.getJSONObject("user_data"));
-                    showMainPage();
+                    showMainPage(dialog);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -130,10 +131,11 @@ public class LoginPageActivity extends AppCompatActivity {
         return response;
     }
 
-    private void showMainPage() {
+    private void showMainPage(LoadingDialog dialog) {
         runOnUiThread(() -> {
-            Intent explicitActivity = new Intent(LoginPageActivity.this, MainActivity.class);
+            Intent explicitActivity = new Intent(LoginPageActivity.this, HomepageActivity.class);
             startActivity(explicitActivity);
+            dialog.close();
         });
     }
 

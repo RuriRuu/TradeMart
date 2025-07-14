@@ -12,10 +12,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.realeyez.trademart.gui.components.createpost.ImagePanel;
+import com.realeyez.trademart.gui.dialogs.LoadingDialog;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
+import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Encoder;
 
 import android.app.Activity;
@@ -70,7 +73,7 @@ public class CreatePostActivity extends AppCompatActivity {
         finish();
     }
 
-    private void postButtonAction(View view) {
+    private void postButtonAction() {
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
             Response response = sendPublishPostRequest();
@@ -87,7 +90,6 @@ public class CreatePostActivity extends AppCompatActivity {
                 // TODO: display if uploading image failed
                 sendPublishPostImageRequest(imageUri, postId);
             }
-            runOnUiThread(() -> {finish();});
         });
     }
 
@@ -97,9 +99,11 @@ public class CreatePostActivity extends AppCompatActivity {
                 pickedImageAction(result);
             });
 
-    private void addImageButtonAction(View view) {
-        Intent pickerIntent = new Intent(Intent.ACTION_PICK);
-        pickerIntent.setType("image/*");
+    private void addImageButtonAction() {
+        Intent pickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        pickerIntent.setType("*/*");
+        String[] mimetypes = {"image/*", "video/*"};
+        pickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
         launcher.launch(pickerIntent);
     }
 
@@ -143,14 +147,11 @@ public class CreatePostActivity extends AppCompatActivity {
         byte[] bytes = readImageData(imageUri);
 
         String filename = getFileNameFromUri(imageUri);
-        String fileData = Encoder.encodeBase64(bytes);
-        Content content = new Content.ContentBuilder()
-            .put("filename", filename)
-            .put("data", fileData)
-            .build();
         Response response = null;
         try {
-            response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), content);
+            ContentDisposition disposition = ContentDisposition.attachment()
+                .addDisposition("filename", filename);
+            response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), bytes, disposition);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -191,10 +192,18 @@ public class CreatePostActivity extends AppCompatActivity {
             backButtonAction(view);
         });
         postButton.setOnClickListener(view -> {
-            postButtonAction(view);
+            if(imagePanels.size() == 0){
+                Dialogs.showMessageDialog("Posts must have media attached", this);
+                return;
+            }
+            LoadingDialog dialog = new LoadingDialog(this);
+            dialog.show();
+            postButtonAction();
+            dialog.close();
+            finish();
         });
         addImageButton.setOnClickListener(view -> {
-            addImageButtonAction(view);
+            addImageButtonAction();
         });
     }
 

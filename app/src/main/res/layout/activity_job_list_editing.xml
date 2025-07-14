@@ -6,7 +6,7 @@
     android:id="@+id/activity_job_list_editing"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_white"
+    android:background="#FAF5F5"
     tools:context=".JobListEditing">
 
     <ImageButton
@@ -20,6 +20,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+
+    <ImageButton
+        android:id="@+id/reportButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Report Job List"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toTopOf="@+id/jobListingScroll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/exitJobListView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@android:drawable/ic_dialog_alert"
+        app:tint="#BFB9B9" />
 
     <ScrollView
         android:id="@+id/jobListingScroll"
