@@ -8,7 +8,7 @@
 
     <!-- Message Container -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/sender_message_card"
+        android:id="@+id/sender_photo_message_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -18,7 +18,7 @@
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/message_sender_profile_image"
+        app:layout_constraintStart_toEndOf="@+id/photo_sender_profile_image"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -29,7 +29,7 @@
 
             <!-- Username -->
             <TextView
-                android:id="@+id/sender_message_username"
+                android:id="@+id/sender_photo_message_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
@@ -39,20 +39,21 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <!-- Message Text -->
-            <TextView
-                android:id="@+id/sender_message_text"
-                android:layout_width="match_parent"
+            <!-- Image -->
+            <ImageView
+                android:id="@+id/user_photo_message_photo"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:lineSpacingMultiplier="1.2"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                android:textColor="#F2EDED"
-                android:textSize="14sp" />
+                android:maxWidth="300dp"
+                android:maxHeight="400dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                tools:srcCompat="@tools:sample/backgrounds/scenic"
+                android:layout_marginBottom="10dp"/>
 
             <!-- Timestamp -->
             <TextView
-                android:id="@+id/sender_message_timestamp"
+                android:id="@+id/sender_photo_message_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -68,12 +69,12 @@
 
     <!-- Profile Image -->
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/message_sender_profile_image"
+        android:id="@+id/photo_sender_profile_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="8dp"
         android:src="@drawable/profile_picture_placeholder"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sender_message_card"/>
+        app:layout_constraintTop_toTopOf="@+id/sender_photo_message_card"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
