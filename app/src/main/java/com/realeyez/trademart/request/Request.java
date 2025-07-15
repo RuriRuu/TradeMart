@@ -105,6 +105,7 @@ public class Request {
         }
     }
 
+    // TODO: add Response Codes to Response
     private Response readResponse() {
         Response response = null;
         try {

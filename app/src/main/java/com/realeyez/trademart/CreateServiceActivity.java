@@ -17,10 +17,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.realeyez.trademart.gui.components.createpost.ImagePanel;
+import com.realeyez.trademart.media.MediaPicker;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
+import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Encoder;
 
 import android.app.Activity;
@@ -52,6 +55,15 @@ public class CreateServiceActivity extends AppCompatActivity {
 
     private ArrayList<ImagePanel> imagePanels;
 
+    private final ActivityResultLauncher<Intent> pickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(!pickedImageAction(result)){
+                    Dialogs.showErrorDialog("Unable to prepare the file", this);
+                }
+            });
+    private MediaPicker picker;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +82,7 @@ public class CreateServiceActivity extends AppCompatActivity {
         image_parent_panel = findViewById(R.id.createservice_images_panel);
         imagePanels = new ArrayList<>();
         addImageButton.setNextFocusForwardId(R.id.createservice_post_button);
+        picker = new MediaPicker(this, pickerLauncher);
         addOnClickListeners();
     }
 
@@ -81,45 +94,34 @@ public class CreateServiceActivity extends AppCompatActivity {
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
             Response response = sendPublishServiceRequest();
-            // int serviceId = -1;
-            // try {
-            //     JSONObject json = response.getContentJson();
-            //     serviceId = json.getInt("service_id");
-            // } catch (JSONException e) {
-            //     e.printStackTrace();
-            // }
-            // if(serviceId == -1) return;
-            // for (ImagePanel panel : imagePanels) {
-            //     Uri imageUri = panel.getImageUri();
-            //     // TODO: display if uploading image failed
-            //     sendPublishPostImageRequest(imageUri, postId);
-            // }
+            int serviceId = -1;
+            try {
+                JSONObject json = response.getContentJson();
+                serviceId = json.getInt("service_id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(serviceId == -1) return;
+            for (ImagePanel panel : imagePanels) {
+                Uri imageUri = panel.getImageUri();
+                // TODO: display if uploading image failed
+                sendPublishServiceImageRequest(imageUri, serviceId);
+            }
             runOnUiThread(() -> finish());
         });
     }
 
-    private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                pickedImageAction(result);
-            });
-
-    private void addImageButtonAction(View view) {
-        Intent pickerIntent = new Intent(Intent.ACTION_PICK);
-        pickerIntent.setType("image/*");
-        launcher.launch(pickerIntent);
-    }
-
-    private void pickedImageAction(ActivityResult result) {
+    private boolean pickedImageAction(ActivityResult result) {
         if (result.getResultCode() != Activity.RESULT_OK)
-            return;
+            return false;
         Intent data = result.getData();
 
         if (data == null || data.getData() == null)
-            return;
+            return false;
 
         Uri imageUri = data.getData();
         addImageRow(imageUri);
+        return true;
     }
 
     private void addImageRow(Uri imageUri){
@@ -149,18 +151,22 @@ public class CreateServiceActivity extends AppCompatActivity {
         return response;
     }
 
-    // private Response sendPublishPostImageRequest(Uri imageUri, int postId){
-    //     byte[] bytes = readImageData(imageUri);
-    //
-    //     String filename = getFileNameFromUri(imageUri);
-    //     Response response = null;
-    //     try {
-    //         response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), content);
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return response;
-    // }
+    private Response sendPublishServiceImageRequest(Uri imageUri, int serviceId){
+        byte[] bytes = readImageData(imageUri);
+
+        assert bytes != null && bytes.length > 0 : "bytes should not be null or empty";
+
+        String filename = getFileNameFromUri(imageUri);
+        Response response = null;
+        try {
+            ContentDisposition disposition = ContentDisposition.attachment()
+                .addDisposition("filename", filename);
+            response = RequestUtil.sendPostRequest(String.format("/service/create/%d/media", serviceId), bytes, disposition);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
 
     private byte[] readImageData(Uri uri){
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
@@ -199,7 +205,7 @@ public class CreateServiceActivity extends AppCompatActivity {
             postButtonAction(view);
         });
         addImageButton.setOnClickListener(view -> {
-            addImageButtonAction(view);
+            picker.show();
         });
     }
 
