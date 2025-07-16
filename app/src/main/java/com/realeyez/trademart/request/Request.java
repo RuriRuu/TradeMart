@@ -2,6 +2,7 @@ package com.realeyez.trademart.request;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -57,7 +58,7 @@ public class Request {
      * @return response from the server
      *
      **/
-    public Response sendRequest() throws IOException {
+    public Response sendRequest() throws FileNotFoundException, IOException {
         return sendHttpRequest();
     }
 
@@ -65,7 +66,7 @@ public class Request {
         return Uri.parse(buildURL());
     }
 
-    private Response sendHttpRequest() throws IOException {
+    private Response sendHttpRequest() throws FileNotFoundException, IOException {
 
         URL url = new URL(buildURL());
         con = (HttpURLConnection) url.openConnection();
@@ -106,36 +107,31 @@ public class Request {
     }
 
     // TODO: add Response Codes to Response
-    private Response readResponse() {
+    private Response readResponse() throws FileNotFoundException, IOException{
         Response response = null;
-        try {
-            ContentRange contentRange = ContentRange.parse(con.getHeaderField("Content-Range"));
-            byte[] content = null;
-            int contentLength = con.getHeaderFieldInt("Content-Length", 0);
-            ResponseBuilder builder = new ResponseBuilder()
-                    .setCode(usingSSL == true ? ((HttpsURLConnection) con).getResponseCode()
-                            : ((HttpURLConnection) con).getResponseCode())
-                    .setLocation(con.getHeaderField("Location"))
-                    .setHost(createResponseHost())
-                    .setContentLength(contentLength)
-                    .setContentDisposition(con.getHeaderField("Content-Disposition"))
-                    .setContentType(con.getContentType());
-            if(contentRange == null){
-                content = readAllResponseBytes(contentLength);
-            } else {
-                builder.setContentRange(contentRange);
-                content = readNResponseBytes(
-                        (int) contentRange.getStart(),
-                        (int) contentRange.getEnd(),
-                        contentLength
-                        );
-            }
-            builder.setContent(content);
-            response = builder.build();
-        } catch (IOException e) {
-            Logger.log("Unable to read response", LogLevel.WARNING);
-            e.printStackTrace();
+        ContentRange contentRange = ContentRange.parse(con.getHeaderField("Content-Range"));
+        byte[] content = null;
+        int contentLength = con.getHeaderFieldInt("Content-Length", 0);
+        ResponseBuilder builder = new ResponseBuilder()
+            .setCode(usingSSL == true ? ((HttpsURLConnection) con).getResponseCode()
+                    : ((HttpURLConnection) con).getResponseCode())
+            .setLocation(con.getHeaderField("Location"))
+            .setHost(createResponseHost())
+            .setContentLength(contentLength)
+            .setContentDisposition(con.getHeaderField("Content-Disposition"))
+            .setContentType(con.getContentType());
+        if(contentRange == null){
+            content = readAllResponseBytes(contentLength);
+        } else {
+            builder.setContentRange(contentRange);
+            content = readNResponseBytes(
+                    (int) contentRange.getStart(),
+                    (int) contentRange.getEnd(),
+                    contentLength
+                    );
         }
+        builder.setContent(content);
+        response = builder.build();
         return response;
     }
 
@@ -149,18 +145,16 @@ public class Request {
         return bytes;
     }
 
-    private byte[] readAllResponseBytes(int length){
+    private byte[] readAllResponseBytes(int length) throws FileNotFoundException, IOException{
         byte[] bytes = new byte[length];
-        try (BufferedInputStream reader = new BufferedInputStream(con.getInputStream())) {
-            int totalRead = 0;
-            while(totalRead < length){
-                int read = reader.read(bytes, totalRead, length-totalRead);
-                if(read == -1) break;
-                totalRead += read;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        BufferedInputStream reader = new BufferedInputStream(con.getInputStream());
+        int totalRead = 0;
+        while(totalRead < length){
+            int read = reader.read(bytes, totalRead, length-totalRead);
+            if(read == -1) break;
+            totalRead += read;
         }
+        reader.close();
         return bytes;
     }
 

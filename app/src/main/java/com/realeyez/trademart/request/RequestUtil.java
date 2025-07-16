@@ -1,5 +1,6 @@
 package com.realeyez.trademart.request;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class RequestUtil {
@@ -39,7 +40,7 @@ public class RequestUtil {
      *
      * @return the resulting {@link Response} of the sent request
      */
-    public static Response sendGetRequest(String path) throws IOException {
+    public static Response sendGetRequest(String path) throws FileNotFoundException, IOException {
         Request request = createBaseRequestBuilder(path)
             .setGet()
             .build();
