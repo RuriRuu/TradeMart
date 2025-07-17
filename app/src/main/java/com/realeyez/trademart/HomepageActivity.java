@@ -2,6 +2,8 @@ package com.realeyez.trademart;
 
 import java.util.ArrayList;
 
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.realeyez.trademart.gui.components.feed.FeedView;
 import com.realeyez.trademart.gui.components.scroll.SnapScroll;
 import com.realeyez.trademart.gui.sheets.HomepageCreateSheet;
@@ -21,9 +23,11 @@ public class HomepageActivity extends AppCompatActivity {
     private SnapScroll snapScroll;
     private LinearLayout scrollPanel;
 
-    private ImageButton homeButton;
-    private ImageButton createButton;
-    private ImageButton profileButton;
+    private BottomNavigationView bottomNav;
+    private BottomNavigationItemView homeButton;
+    private BottomNavigationItemView createButton;
+    private BottomNavigationItemView chatButton;
+    private BottomNavigationItemView profileButton;
 
     private ArrayList<FeedView> feedViews;
 
@@ -39,9 +43,12 @@ public class HomepageActivity extends AppCompatActivity {
         feedScroll = findViewById(R.id.homepage_scroll);
         scrollPanel = findViewById(R.id.homepage_scroll_panel);
 
-        homeButton = findViewById(R.id.homepage_home_button);
-        createButton = findViewById(R.id.homepage_create_post_button);
-        profileButton = findViewById(R.id.homepage_profile_button);
+        bottomNav = findViewById(R.id.homepage_nav_bar);
+
+        homeButton = findViewById(R.id.homepage_action_home);
+        createButton = findViewById(R.id.homepage_action_create);
+        chatButton = findViewById(R.id.homepage_action_chats);
+        profileButton = findViewById(R.id.homepage_action_profile);
 
         feedViews = new ArrayList<>();
         snapScroll = new SnapScroll(feedScroll);
@@ -76,12 +83,15 @@ public class HomepageActivity extends AppCompatActivity {
     private void addOnClickListeners(){
         createButton.setOnClickListener(view -> {
             displayCreateOptions();
+            bottomNav.setSelectedItemId(R.id.homepage_action_home);
         });
         profileButton.setOnClickListener(view -> {
             Intent explicitActivity = new Intent(HomepageActivity.this, ProfilePageActivity.class);
             explicitActivity.putExtra("user_id", ResourceRepository.getResources().getCurrentUser().getId());
             startActivity(explicitActivity);
+            bottomNav.setSelectedItemId(R.id.homepage_action_home);
         });
     }
+
 
 }
