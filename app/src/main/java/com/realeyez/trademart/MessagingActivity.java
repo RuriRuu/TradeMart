@@ -1,5 +1,7 @@
 package com.realeyez.trademart;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -27,6 +29,9 @@ public class MessagingActivity extends AppCompatActivity {
     private ScrollView scrollView;
     private LinearLayout contentPanel;
 
+    private int mateId;
+    private int convoId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +43,7 @@ public class MessagingActivity extends AppCompatActivity {
             return insets;
         });
         initComponents();
+        loadIntentExtras();
     }
 
     private void initComponents() {
@@ -52,6 +58,19 @@ public class MessagingActivity extends AppCompatActivity {
 
         scrollView = findViewById(R.id.messaging_chat_scroll);
         contentPanel = findViewById(R.id.messaging_chat_panel);
+    }
+
+    private void loadIntentExtras(){
+        Intent intent = getIntent();
+        int user_id = intent.getIntExtra("user_id", -1);
+        int convo_id = intent.getIntExtra("convo_id", -1);
+        Uri profilePictureUri = intent.getParcelableExtra("profile_picture_uri");
+        String username = intent.getStringExtra("username");
+
+        mateId = user_id;
+        convoId = convo_id;
+        convoLabel.setText(username);
+        profilePicture.setImageURI(profilePictureUri);
     }
 
     private void fetchMessages(){

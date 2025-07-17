@@ -26,9 +26,9 @@ public class RequestUtil {
      */
     private static Request.RequestBuilder createBaseRequestBuilder(String path){
         return new Request.RequestBuilder()
-            .useSSL()
-            .setHost(DEFAULT_HTTPS_HOST)
-            .noPort()
+            // .useSSL()
+            .setHost(DEFAULT_HTTP_HOST)
+            // .noPort()
             .setPath(path);
     }
 
