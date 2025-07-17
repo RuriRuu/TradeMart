@@ -1,9 +1,7 @@
 package com.realeyez.trademart;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,6 +24,7 @@ import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.request.Request.RequestBuilder;
 import com.realeyez.trademart.util.Encoder;
+import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
@@ -189,7 +188,7 @@ public class RequestTest {
             e.printStackTrace();
         }
         
-        File file = new File(".tempfile-" + filename);
+        File file = new File(".tempfile-".concat(filename));
         try (FileOutputStream outstream = new FileOutputStream(file)) {
             byte[] bytes = Encoder.decodeBase64(encodedData);
             outstream.write(bytes);
@@ -225,7 +224,7 @@ public class RequestTest {
         assertEquals(text, new String(bytes));
     }
 
-    @Test
+    // @Test
     public void test_hlsVideoUpload() throws IOException, JSONException{
         File file = new File("/home/redflameken/Videos/memes/fallguys_battlepass.mp4");
         byte[] bytes = null;
@@ -247,7 +246,7 @@ public class RequestTest {
         assertEquals(status, "success");
     }
 
-    @Test
+    // @Test
     public void test_contentDisposition() throws IOException {
         Response response = RequestUtil.sendGetRequest("/media/image/god_totem.png");
         String filename = response.getContentDispositionField("filename");
@@ -256,4 +255,77 @@ public class RequestTest {
 
     }
 
+    // @Test
+    public void test_disposition() throws IOException {
+        String content = "blabby blabby blabyy";
+        String filename = "silly_goobus.txt";
+        ContentDisposition disposition = ContentDisposition.attachment()
+            .addDisposition("filename", filename);
+        Response response = RequestUtil.sendPostRequest("/disposition", content.getBytes(), disposition);
+        String rString = response.getContent();
+        System.out.printf("%s\n", rString);
+        assertEquals(filename, response.getContentDispositionField("filename"));
+        assertEquals(content, response.getContent());
+    }
+
+    // @Test
+    public void test_profilePictureUpload(){
+
+        String filepath = "/home/redflameken/Pictures/RedFlameKen.jpg";
+        ContentDisposition disposition = ContentDisposition.attachment()
+            .addDisposition("filename", "RedFlameKen.jpg");
+        byte[] data = FileUtil.readFile(filepath);
+        for (byte b : data) {
+            System.out.print(b);
+        }
+        String path = new StringBuilder()
+            .append("/user/")
+            .append(84335)
+            .append("/avatar/update")
+            .toString();
+        try {
+            Response response = RequestUtil.sendPostRequest(path, data, disposition);
+            Logger.log("status: " + response.getCode(), LogLevel.INFO);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] result = FileUtil.readFile("/home/redflameken/Storage/media/images/pfp_84335.jpg");
+    }
+
+    // @Test
+    public void test_serviceCreate() throws JSONException, IOException{
+        String path = "/service/create"; 
+        Content content = new Content.ContentBuilder()
+            .put("job_id", 69420)
+            .put("job_title", "Test")
+            .put("job_description", "lorem ipsum dolor sit amet")
+            .put("job_type", "GIG")
+            .put("job_category", "PROGRAMMING")
+            .put("date_posted", "2025-07-10T20:34")
+            .put("user_id", 84335)
+            .build();
+
+        Response response = RequestUtil.sendPostRequest(path, content);
+
+        assertEquals("success", response.getContentJson().getString("status"));
+
+    }
+
+    // @Test
+    public void test_serviceFetch()throws JSONException, IOException{
+        String path = new StringBuilder()
+            .append("/service/")
+            .append(33330)
+            .toString();
+
+        Response response = RequestUtil.sendGetRequest(path);
+        JSONObject json = response.getContentJson();
+        assertEquals(33330, json.getInt("job_id"));
+        assertEquals("Test", json.getString("job_title"));
+        assertEquals("lorem ipsum dolor sit amet", json.getString("job_description"));
+        assertEquals("GIG", json.getString("job_type"));
+        assertEquals("PROGRAMMING", json.getString("job_category"));
+        assertEquals("2025-07-10T20:34", json.getString("date_posted"));
+        assertEquals(84335, json.getInt("user_id"));
+    }
 }

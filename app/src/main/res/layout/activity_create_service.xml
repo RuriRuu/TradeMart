@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/grey"
+        android:backgroundTint="@color/background_main"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,29 +24,35 @@
             android:id="@+id/createservice_back_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@android:color/transparent"
             android:layout_gravity="center|start"
+            android:background="@android:color/transparent"
             android:scaleType="centerInside"
             android:src="@drawable/arrow_left_dark" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
-            android:paddingStart="15dp"
             android:layout_gravity="center|start"
+            android:fontFamily="@font/poppins_bold"
+            android:paddingStart="15dp"
+            android:text="Create Service"
+            android:textColor="#FFFDFD"
             android:textSize="11pt"
-            android:text="Create Post" />
+            tools:layout_editor_absoluteX="46dp"
+            tools:layout_editor_absoluteY="15dp" />
 
         <Button
             android:id="@+id/createservice_post_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="POST"
+            android:layout_gravity="end|center"
             android:backgroundTint="@color/pink"
-            android:layout_marginEnd="15dp"
-            android:textSize="9pt"
-            android:layout_gravity="end|center" />
+            android:fontFamily="@font/poppins_bold"
+            android:layout_marginRight="15dp"
+            android:text="POST"
+            android:textSize="8pt"
+            tools:layout_editor_absoluteX="294dp"
+            tools:layout_editor_absoluteY="8dp" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -69,13 +76,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_margin="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:text="Title" />
+                    android:fontFamily="@font/poppins"
+                    android:text="Title"
+                    android:textColor="#000000" />
 
                 <EditText
                     android:id="@+id/createservice_title_field"
@@ -90,21 +99,23 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_margin="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:text="Description" />
+                    android:fontFamily="@font/poppins"
+                    android:text="Description"
+                    android:textColor="#000000" />
 
                 <EditText
-                    android:id="@+id/createservice_desc"
+                    android:id="@+id/createservice_description_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="false"
                     android:background="@drawable/rounded_white_inputfield"
-                    android:textColor="@color/black" 
+                    android:textColor="@color/black"
                     android:inputType="text|textMultiLine" />
 
             </LinearLayout>
@@ -112,12 +123,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_margin="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Price"
+                    android:fontFamily="@font/poppins"
+                    android:text="Estimated Price"
                     android:textColor="#000000" />
 
                 <EditText
@@ -135,7 +148,10 @@
                 android:id="@+id/createservice_add_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="50px"
                 android:backgroundTint="@color/pink"
+                android:fontFamily="@font/poppins_bold"
                 android:text="Add Image"
                 android:textSize="7pt" />
 

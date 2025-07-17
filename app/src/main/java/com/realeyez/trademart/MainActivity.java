@@ -24,7 +24,10 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        initButtons();
+    }
 
+    private void initButtons(){
         Button ratings = findViewById(R.id.RatingCheck);
         ratings.setOnClickListener(view -> {
             Intent explicitActivity = new Intent(MainActivity.this, RatingViewActivity.class);
@@ -61,6 +64,5 @@ public class MainActivity extends AppCompatActivity {
             Intent explicitActivity = new Intent(MainActivity.this, VideoPlayerActivity.class);
             startActivity(explicitActivity);
         });
-
     }
 }

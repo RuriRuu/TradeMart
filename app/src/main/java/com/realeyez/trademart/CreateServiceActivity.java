@@ -4,7 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,10 +17,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.realeyez.trademart.gui.components.createpost.ImagePanel;
+import com.realeyez.trademart.media.MediaPicker;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
+import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Encoder;
 
 import android.app.Activity;
@@ -29,7 +37,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -42,27 +49,40 @@ public class CreateServiceActivity extends AppCompatActivity {
     private Button addImageButton;
     private EditText titleField;
     private EditText descField;
+    private EditText priceField;
 
     private LinearLayout image_parent_panel;
 
     private ArrayList<ImagePanel> imagePanels;
 
+    private final ActivityResultLauncher<Intent> pickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(!pickedImageAction(result)){
+                    Dialogs.showErrorDialog("Unable to prepare the file", this);
+                }
+            });
+    private MediaPicker picker;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_post);
+        setContentView(R.layout.activity_create_service);
         initComponents();
     }
 
     private void initComponents() {
-        backButton = findViewById(R.id.createpost_back_button);
-        postButton = findViewById(R.id.createpost_post_button);
-        addImageButton = findViewById(R.id.createpost_add_image_button);
+        backButton = findViewById(R.id.createservice_back_button);
+        postButton = findViewById(R.id.createservice_post_button);
+        addImageButton = findViewById(R.id.createservice_add_image_button);
 
-        titleField = findViewById(R.id.createpost_title_field);
-        descField = findViewById(R.id.createpost_description_field);
-        image_parent_panel = findViewById(R.id.createpost_images_panel);
+        titleField = findViewById(R.id.createservice_title_field);
+        descField = findViewById(R.id.createservice_description_field);
+        priceField = findViewById(R.id.createservice_price);
+        image_parent_panel = findViewById(R.id.createservice_images_panel);
         imagePanels = new ArrayList<>();
+        addImageButton.setNextFocusForwardId(R.id.createservice_post_button);
+        picker = new MediaPicker(this, pickerLauncher);
         addOnClickListeners();
     }
 
@@ -73,46 +93,35 @@ public class CreateServiceActivity extends AppCompatActivity {
     private void postButtonAction(View view) {
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
-            Response response = sendPublishPostRequest();
-            int postId = -1;
+            Response response = sendPublishServiceRequest();
+            int serviceId = -1;
             try {
                 JSONObject json = response.getContentJson();
-                postId = json.getInt("post_id");
+                serviceId = json.getInt("service_id");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if(postId == -1) return;
+            if(serviceId == -1) return;
             for (ImagePanel panel : imagePanels) {
                 Uri imageUri = panel.getImageUri();
                 // TODO: display if uploading image failed
-                sendPublishPostImageRequest(imageUri, postId);
+                sendPublishServiceImageRequest(imageUri, serviceId);
             }
-            runOnUiThread(() -> {finish();});
+            runOnUiThread(() -> finish());
         });
     }
 
-    private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                pickedImageAction(result);
-            });
-
-    private void addImageButtonAction(View view) {
-        Intent pickerIntent = new Intent(Intent.ACTION_PICK);
-        pickerIntent.setType("image/*");
-        launcher.launch(pickerIntent);
-    }
-
-    private void pickedImageAction(ActivityResult result) {
+    private boolean pickedImageAction(ActivityResult result) {
         if (result.getResultCode() != Activity.RESULT_OK)
-            return;
+            return false;
         Intent data = result.getData();
 
         if (data == null || data.getData() == null)
-            return;
+            return false;
 
         Uri imageUri = data.getData();
         addImageRow(imageUri);
+        return true;
     }
 
     private void addImageRow(Uri imageUri){
@@ -121,36 +130,38 @@ public class CreateServiceActivity extends AppCompatActivity {
         image_parent_panel.addView(imagePanel.getLayout());
     }
 
-    private Response sendPublishPostRequest(){
+    private Response sendPublishServiceRequest(){
         String title = titleField.getText().toString();
         String description = descField.getText().toString();
+        String price = priceField.getText().toString();
 
         Content content = new Content.ContentBuilder()
-            .put("title", title)
-            .put("description", description)
-            .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
+            .put("service_title", title)
+            .put("service_description", description)
+            .put("service_price", price)
+            .put("date_posted", LocalDateTime.now().toString())
+            .put("owner_id", ResourceRepository.getResources().getCurrentUser().getId())
             .build();
         Response response = null;
         try {
-            response = RequestUtil.sendPostRequest("/post/publish", content);
+            response = RequestUtil.sendPostRequest("/service/create", content);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return response;
     }
 
-    private Response sendPublishPostImageRequest(Uri imageUri, int postId){
+    private Response sendPublishServiceImageRequest(Uri imageUri, int serviceId){
         byte[] bytes = readImageData(imageUri);
 
+        assert bytes != null && bytes.length > 0 : "bytes should not be null or empty";
+
         String filename = getFileNameFromUri(imageUri);
-        String fileData = Encoder.encodeBase64(bytes);
-        Content content = new Content.ContentBuilder()
-            .put("filename", filename)
-            .put("data", fileData)
-            .build();
         Response response = null;
         try {
-            response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), content);
+            ContentDisposition disposition = ContentDisposition.attachment()
+                .addDisposition("filename", filename);
+            response = RequestUtil.sendPostRequest(String.format("/service/create/%d/media", serviceId), bytes, disposition);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -194,7 +205,7 @@ public class CreateServiceActivity extends AppCompatActivity {
             postButtonAction(view);
         });
         addImageButton.setOnClickListener(view -> {
-            addImageButtonAction(view);
+            picker.show();
         });
     }
 

@@ -2,6 +2,8 @@ package com.realeyez.trademart.gui.components.profile;
 
 import java.util.ArrayList;
 
+import com.realeyez.trademart.post.PostData;
+
 import android.content.Context;
 import android.net.Uri;
 import android.view.Gravity;
@@ -23,7 +25,7 @@ public class ShowcasePanel {
         this.rows = new ArrayList<>();
     }
 
-    public void addImage(Uri imageUri) {
+    public void addImage(Uri imageUri, PostData postData) {
         ImageView image = new ImageView(context);
         LinearLayout.LayoutParams image_params = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, 
@@ -45,7 +47,8 @@ public class ShowcasePanel {
                 rows.add(row);
             }
         }
-        row.AddImage(image);
+        MediaButton button = new MediaButton(context, image, postData);
+        row.addImage(button);
     }
 
     private ShowcaseRow addRow() {

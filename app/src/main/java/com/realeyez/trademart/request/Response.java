@@ -11,11 +11,13 @@ public class Response {
     private String contentType;
     private long contentLength;
     private String location;
+    private String host;
     private ContentRange contentRange;
     private ContentDisposition contentDisposition;
     
     public Response(ResponseBuilder builder){
         this.code = builder.code;
+        this.host = builder.host;
         this.content = builder.content;
         this.contentLength = builder.contentLength;
         this.contentType = builder.contentType;
@@ -52,6 +54,10 @@ public class Response {
         return location;
     }
 
+    public String getHost() {
+        return host;
+    }
+
     public ContentRange getContentRange() {
         return contentRange;
     }
@@ -72,12 +78,13 @@ public class Response {
         private String contentType;
         private long contentLength;
         private String location;
+        private String host;
         private ContentRange contentRange;
         private ContentDisposition contentDisposition;
 
         public ResponseBuilder() {
             code = 0;
-            location = contentType = null;
+            host = location = contentType = null;
             content = null;
             contentRange = null;
             contentDisposition = null;
@@ -90,6 +97,11 @@ public class Response {
 
         public ResponseBuilder setContent(byte[] content) {
             this.content = content;
+            return this;
+        }
+
+        public ResponseBuilder setHost(String host) {
+            this.host = host;
             return this;
         }
 
