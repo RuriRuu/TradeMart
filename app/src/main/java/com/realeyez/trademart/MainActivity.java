@@ -1,5 +1,6 @@
 package com.realeyez.trademart;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
@@ -8,6 +9,8 @@ import com.realeyez.trademart.gui.components.feed.FeedView;
 import com.realeyez.trademart.gui.fragments.ConvosMenuFragment;
 import com.realeyez.trademart.gui.fragments.HomepageFragment;
 import com.realeyez.trademart.gui.sheets.HomepageCreateSheet;
+import com.realeyez.trademart.messaging.ChatType;
+import com.realeyez.trademart.messaging.ConvoInfo;
 import com.realeyez.trademart.resource.ResourceRepository;
 
 import android.content.Intent;
@@ -18,20 +21,11 @@ import androidx.fragment.app.FragmentManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    // private ScrollView feedScroll;
-    // private SnapScroll snapScroll;
-    // private LinearLayout scrollPanel;
-
     private FrameLayout contentPanel;
     private ConvosMenuFragment convosFrag;
     private HomepageFragment homepageFrag;
 
     private BottomNavigationView bottomNav;
-
-    // private BottomNavigationItemView homeButton;
-    // private BottomNavigationItemView createButton;
-    // private BottomNavigationItemView chatButton;
-    // private BottomNavigationItemView profileButton;
 
     private FragmentManager fragman;
 
@@ -42,42 +36,57 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initComponents();
-        // loadPlaceholders();
     }
 
     private void initComponents(){
-        // feedScroll = findViewById(R.id.main_scroll);
-        // scrollPanel = findViewById(R.id.main_scroll_panel);
 
-        convosFrag = new ConvosMenuFragment();
+        ArrayList<ConvoInfo> tempInfos = new ArrayList<>();
+        tempInfos.add(new ConvoInfo.Builder()
+                .setConvoId(23770)
+                .setUserId(12004)
+                .setSenderId(84335)
+                .setTimestamp(LocalDateTime.parse("2025-07-16T20:02:09"))
+                .setType(ChatType.MESSAGE)
+                .setUsername("RuriRuu")
+                .setLastMessage("switched users")
+                .build()
+                );
+        tempInfos.add(new ConvoInfo.Builder()
+                .setConvoId(58343)
+                .setUserId(28643)
+                .setSenderId(84335)
+                .setTimestamp(LocalDateTime.parse("2025-07-16T21:45:20"))
+                .setType(ChatType.MESSAGE)
+                .setUsername("labubu")
+                .setLastMessage("switched users")
+                .build()
+                );
+        tempInfos.add(new ConvoInfo.Builder()
+                .setConvoId(1345)
+                .setUserId(84335)
+                .setSenderId(84335)
+                .setTimestamp(LocalDateTime.parse("2025-07-18T00:31:14"))
+                .setType(ChatType.MESSAGE)
+                .setUsername("Ken")
+                .setLastMessage("This is a message to myself?")
+                .build()
+                );
+
+
+        convosFrag = new ConvosMenuFragment(tempInfos);
         homepageFrag = new HomepageFragment(); 
 
         contentPanel = findViewById(R.id.main_content_panel);
         bottomNav = findViewById(R.id.main_nav_bar);
 
-        // homeButton = findViewById(R.id.main_action_home);
-        // createButton = findViewById(R.id.main_action_create);
-        // chatButton = findViewById(R.id.main_action_chats);
-        // profileButton = findViewById(R.id.main_action_profile);
-        //
-
         fragman = getSupportFragmentManager();
 
         feedViews = new ArrayList<>();
-        // snapScroll = new SnapScroll(feedScroll);
 
         showHomepageFragment();
 
         addOnClickListeners();
     }
-
-    // private void loadPlaceholders(){
-    //     feedScroll.post(() -> {
-    //         addFeedView();
-    //         addFeedView();
-    //         addFeedView();
-    //     });
-    // }
 
     private void displayCreateOptions(){
         HomepageCreateSheet bottomSheet = new HomepageCreateSheet();
