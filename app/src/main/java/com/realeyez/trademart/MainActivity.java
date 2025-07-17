@@ -1,16 +1,12 @@
 package com.realeyez.trademart;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.realeyez.trademart.gui.components.feed.FeedView;
 import com.realeyez.trademart.gui.fragments.ConvosMenuFragment;
 import com.realeyez.trademart.gui.fragments.HomepageFragment;
 import com.realeyez.trademart.gui.sheets.HomepageCreateSheet;
-import com.realeyez.trademart.messaging.ChatType;
-import com.realeyez.trademart.messaging.ConvoInfo;
 import com.realeyez.trademart.resource.ResourceRepository;
 
 import android.content.Intent;
@@ -39,41 +35,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initComponents(){
-
-        ArrayList<ConvoInfo> tempInfos = new ArrayList<>();
-        tempInfos.add(new ConvoInfo.Builder()
-                .setConvoId(23770)
-                .setUserId(12004)
-                .setSenderId(84335)
-                .setTimestamp(LocalDateTime.parse("2025-07-16T20:02:09"))
-                .setType(ChatType.MESSAGE)
-                .setUsername("RuriRuu")
-                .setLastMessage("switched users")
-                .build()
-                );
-        tempInfos.add(new ConvoInfo.Builder()
-                .setConvoId(58343)
-                .setUserId(28643)
-                .setSenderId(84335)
-                .setTimestamp(LocalDateTime.parse("2025-07-16T21:45:20"))
-                .setType(ChatType.MESSAGE)
-                .setUsername("labubu")
-                .setLastMessage("switched users")
-                .build()
-                );
-        tempInfos.add(new ConvoInfo.Builder()
-                .setConvoId(1345)
-                .setUserId(84335)
-                .setSenderId(84335)
-                .setTimestamp(LocalDateTime.parse("2025-07-18T00:31:14"))
-                .setType(ChatType.MESSAGE)
-                .setUsername("Ken")
-                .setLastMessage("This is a message to myself?")
-                .build()
-                );
-
-
-        convosFrag = new ConvosMenuFragment(tempInfos);
+        convosFrag = new ConvosMenuFragment();
         homepageFrag = new HomepageFragment(); 
 
         contentPanel = findViewById(R.id.main_content_panel);

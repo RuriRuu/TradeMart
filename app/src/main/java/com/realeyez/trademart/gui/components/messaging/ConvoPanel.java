@@ -1,19 +1,17 @@
 package com.realeyez.trademart.gui.components.messaging;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 
+import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.messaging.ConvoInfo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -48,6 +46,15 @@ public class ConvoPanel extends ConstraintLayout {
         timestampLabel = findViewById(R.id.convo_timestamp);
         lastMessageLabel = findViewById(R.id.convo_last_message);
 
+        setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), MessagingActivity.class);
+            intent.putExtra("username", convoInfo.getUsername());
+            intent.putExtra("profile_picture_uri", convoInfo.getProfilePictureUri());
+            intent.putExtra("user_id", convoInfo.getUserId());
+            intent.putExtra("convo_id", convoInfo.getConvoId());
+
+            getContext().startActivity(intent);
+        });
     }
 
     public void loadInfo(){
@@ -55,8 +62,22 @@ public class ConvoPanel extends ConstraintLayout {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
                 
         timestampLabel.setText(convoInfo.getTimestamp().format(formatter));
-        lastMessageLabel.setText(convoInfo.getLastMessage());
+        String lastMessage = generateLastMessage();
+        lastMessageLabel.setText(lastMessage);
         profilePicture.setImageURI(convoInfo.getProfilePictureUri());
+    }
+
+    private String generateLastMessage(){
+        switch(convoInfo.getType()){
+            case MESSAGE:
+                return convoInfo.getLastMessage();
+            case MEDIA:
+                return "Sent a payment!";
+            case PAYMENT:
+                return "Sent a media file!";
+            default:
+                return "Sent a message!";
+        }
     }
 
     @Override

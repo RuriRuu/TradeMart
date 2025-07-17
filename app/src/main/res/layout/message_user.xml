@@ -8,7 +8,7 @@
 
     <!-- Message Container -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/user_message_card"
+        android:id="@+id/chat_user_message_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
@@ -17,7 +17,7 @@
         app:cardBackgroundColor="#f9f9f9"
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
-        app:layout_constraintEnd_toStartOf="@+id/message_user_profile_image"
+        app:layout_constraintEnd_toStartOf="@+id/chat_user_profile_image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -29,7 +29,7 @@
 
             <!-- Message Text -->
             <TextView
-                android:id="@+id/user_message_text"
+                android:id="@+id/chat_user_message_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
@@ -41,7 +41,7 @@
 
             <!-- Timestamp -->
             <TextView
-                android:id="@+id/user_message_timestamp"
+                android:id="@+id/chat_user_message_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
@@ -56,12 +56,12 @@
 
     <!-- User Profile Image -->
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/message_user_profile_image"
+        android:id="@+id/chat_user_profile_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginEnd="8dp"
         android:src="@drawable/profile_picture_placeholder"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/user_message_card" />
+        app:layout_constraintTop_toTopOf="@+id/chat_user_message_card" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
