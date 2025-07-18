@@ -72,9 +72,9 @@ public class ConvoPanel extends ConstraintLayout {
             case MESSAGE:
                 return convoInfo.getLastMessage();
             case MEDIA:
-                return "Sent a payment!";
-            case PAYMENT:
                 return "Sent a media file!";
+            case PAYMENT:
+                return "Sent a payment!";
             default:
                 return "Sent a message!";
         }

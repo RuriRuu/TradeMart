@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.realeyez.trademart.gui.components.messaging.PaymentReceiverChatPanel xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:hapticFeedbackEnabled="false">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/payment_message_card"
+        android:id="@+id/payment_receiver_message_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
@@ -29,7 +29,7 @@
 
             <!-- Message Text -->
             <TextView
-                android:id="@+id/payment_reason"
+                android:id="@+id/payment_receiver_reason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
@@ -41,7 +41,7 @@
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/payment_amount"
+                android:id="@+id/payment_receiver_amount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
@@ -54,18 +54,18 @@
             <!-- Timestamp -->
 
             <Button
-                android:id="@+id/payment_received"
+                android:id="@+id/payment_receiver_received"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:backgroundTint="#FFFFFF"
                 android:backgroundTintMode="add"
-                android:text="Payment Received"
+                android:text="Confirm Payment"
                 android:textColor="#333333"
                 app:cornerRadius="10dp" />
 
             <TextView
-                android:id="@+id/payment_message_timestamp"
+                android:id="@+id/payment_receiver_message_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -79,4 +79,4 @@
 
     </androidx.cardview.widget.CardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.realeyez.trademart.gui.components.messaging.PaymentReceiverChatPanel>

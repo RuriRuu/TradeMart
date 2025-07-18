@@ -1,8 +1,6 @@
 package com.realeyez.trademart.gui.components.messaging;
 
-import com.realeyez.trademart.messaging.ConvoInfo;
 import com.realeyez.trademart.messaging.MessageChat;
-import com.realeyez.trademart.messaging.Chat;
 
 import java.time.format.DateTimeFormatter;
 
@@ -10,7 +8,6 @@ import com.realeyez.trademart.R;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;

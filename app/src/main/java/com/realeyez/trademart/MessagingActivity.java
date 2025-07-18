@@ -9,27 +9,36 @@ import java.util.concurrent.Executors;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import com.realeyez.trademart.gui.components.messaging.MessageSenderChatPanel;
 import com.realeyez.trademart.gui.components.messaging.MessageUserChatPanel;
+import com.realeyez.trademart.gui.components.messaging.PaymentReceiverChatPanel;
+import com.realeyez.trademart.gui.components.messaging.PaymentSenderChatPanel;
+import com.realeyez.trademart.gui.sheets.AttachmentOptionSheet;
 import com.realeyez.trademart.messaging.Chat;
 import com.realeyez.trademart.messaging.ChatType;
 import com.realeyez.trademart.messaging.MediaChat;
 import com.realeyez.trademart.messaging.MessageChat;
 import com.realeyez.trademart.messaging.PaymentChat;
+import com.realeyez.trademart.payment.Payment;
+import com.realeyez.trademart.payment.PaymentType;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.Dialogs;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -40,7 +49,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.media3.common.util.Log;
+import androidx.fragment.app.FragmentManager;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessagingActivity extends AppCompatActivity {
@@ -164,6 +173,7 @@ public class MessagingActivity extends AppCompatActivity {
             case MEDIA:
                 break;
             case PAYMENT:
+                addPaymentSenderChatPanel(chat);
                 break;
             default:
                 return;
@@ -178,6 +188,7 @@ public class MessagingActivity extends AppCompatActivity {
             case MEDIA:
                 break;
             case PAYMENT:
+                addPaymentReceiverChatPanel(chat);
                 break;
             default:
                 return;
@@ -222,10 +233,33 @@ public class MessagingActivity extends AppCompatActivity {
         runOnUiThread(() -> addMessageUserChatPanel(chat));
     }
 
+    private void sendPayment(){
+    }
+
     private void addMessageUserChatPanel(Chat chat){
         MessageUserChatPanel panel = MessageUserChatPanel.inflate(
                 getLayoutInflater(),
                 (MessageChat) chat);
+        addChatView(panel);
+    }
+
+    private void addPaymentSenderChatPanel(Chat chat){
+        PaymentSenderChatPanel panel = PaymentSenderChatPanel.inflate(
+                getLayoutInflater(),
+                (PaymentChat) chat);
+        addChatView(panel);
+    }
+
+    private void addPaymentReceiverChatPanel(Chat chat){
+        PaymentReceiverChatPanel panel = PaymentReceiverChatPanel.inflate(
+                getLayoutInflater(),
+                (PaymentChat) chat);
+        panel.setOnConfirmListener(view -> {
+            ExecutorService exec = Executors.newSingleThreadExecutor();
+            exec.execute(() -> {
+                sendSetConfirmed((Button) view, (PaymentChat)chat);
+            });
+        });
         addChatView(panel);
     }
 
@@ -267,6 +301,9 @@ public class MessagingActivity extends AppCompatActivity {
             case PAYMENT:
                 chat = PaymentChat.Builder.of(builder)
                     .setPaymentId(json.getInt("payment_id"))
+                    .setAmount(json.getInt("amount"))
+                    .setPaidFor(json.getString("payment_reason"))
+                    .setPaymentType(PaymentType.parse(json.getString("payment_type")))
                     .build();
                 break;
             default:
@@ -281,8 +318,82 @@ public class MessagingActivity extends AppCompatActivity {
         executor.execute(() -> sendMessage());
     }
 
+    private void sendPaymenetMessage(JSONObject json) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                // PaymentChat chat = (PaymentChat) createChatFromJson(json);
+                Content content = new Content.ContentBuilder()
+                    .put("user1_id", userId)
+                    .put("user2_id", mateId)
+                    .put("sender_id", userId)
+                    .put("payment_id", json.getInt("payment_id"))
+                    .put("type", ChatType.PAYMENT.toString())
+                    .build();
+                Response response = RequestUtil.sendPostRequest("/message/send", content);
+                JSONObject responseJson = response.getContentJson();
+                if(responseJson.getString("status").equals("failed")){
+                    String rMessage = responseJson.getString("message");
+                    runOnUiThread(() -> Dialogs.showErrorDialog(rMessage, this));
+                    return;
+                }
+                PaymentChat chat2 =(PaymentChat) createChatFromJson(responseJson.getJSONObject("data"));
+                runOnUiThread(() -> addPaymentSenderChatPanel(chat2));
+            } catch (JSONException | IOException e){
+                e.printStackTrace();
+                return;
+            }
+        });
+    }
+
+    // add event here for creating a payment chat
+    private void attachmentAction(){
+        FragmentManager fragman = getSupportFragmentManager();
+        fragman.setFragmentResultListener("pay_result", this, (key, result) -> {
+            try {
+                sendPaymenetMessage(new JSONObject(new JSONTokener(result.getString("json_data"))));
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        });
+
+        AttachmentOptionSheet bottomSheet = new AttachmentOptionSheet();
+        Bundle args = new Bundle();
+        args.putInt("mate_id", mateId);
+        args.putInt("convo_id", convoId);
+        bottomSheet.setArguments(args);
+        bottomSheet.show(getSupportFragmentManager(), AttachmentOptionSheet.TAG);
+    }
+
+    private void sendSetConfirmed(Button view, PaymentChat payment){
+        Content content = new ContentBuilder()
+            .put("payment_id", payment.getPaymentId())
+            .put("type", payment.getPaymentType().toString())
+            .build();
+
+        try {
+            Response response = RequestUtil.sendPostRequest("/payment/confirm", content);
+            JSONObject responseJson = response.getContentJson();
+            if(responseJson.getString("status").equals("failed")){
+                String rMessage = responseJson.getString("message");
+                runOnUiThread(() -> Dialogs.showErrorDialog(rMessage, this));
+                return;
+            }
+            runOnUiThread(() -> {
+                view.setText("Payment Confirmed");
+                view.setEnabled(false);
+            });
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+            runOnUiThread(() -> Dialogs.showErrorDialog("Unable to confirm payment, try agan later!", this));
+        }
+    }
+
     private void addActionListeners() {
         backButton.setOnClickListener(view -> finish());
+        attachButton.setOnClickListener(view -> {
+            attachmentAction();
+        });
         sendButton.setOnClickListener(view -> {
             sendMessageAction();
         });

@@ -63,6 +63,7 @@ public class MediaChat extends Chat {
             return new Builder()
                 .setChatId(chat.getChatId())
                 .setTimeSent(chat.getTimeSent())
+                .setType(chat.getType())
                 .setSenderId(chat.getSenderId())
                 .setConvoId(chat.getConvoId());
 
