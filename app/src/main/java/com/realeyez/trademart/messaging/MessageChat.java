@@ -2,6 +2,8 @@ package com.realeyez.trademart.messaging;
 
 import java.time.LocalDateTime;
 
+import android.net.Uri;
+
 public class MessageChat extends Chat {
 
     private String message;
@@ -56,6 +58,16 @@ public class MessageChat extends Chat {
         @Override
         public Builder setType(ChatType type) {
             return (Builder) super.setType(type);
+        }
+
+        @Override
+        public Builder setProfilePictureUri(Uri profilePictureUri) {
+            return (Builder) super.setProfilePictureUri(profilePictureUri);
+        }
+
+        @Override
+        public Builder setUsername(String username) {
+            return (Builder) super.setUsername(username);
         }
 
         public static Builder of(Chat.Builder builder){

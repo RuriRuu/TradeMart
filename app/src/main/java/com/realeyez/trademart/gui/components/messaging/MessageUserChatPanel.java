@@ -10,6 +10,7 @@ import com.realeyez.trademart.R;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -49,7 +50,9 @@ public class MessageUserChatPanel extends ConstraintLayout implements MessageCha
         profilePicture = findViewById(R.id.chat_user_profile_image);
         messageLabel = findViewById(R.id.chat_user_message_text);
         timestampLabel = findViewById(R.id.chat_user_message_timestamp);
+    }
 
+    private void loadData(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
 
         messageLabel.setText(chat.getMessage());
@@ -64,6 +67,7 @@ public class MessageUserChatPanel extends ConstraintLayout implements MessageCha
     public static MessageUserChatPanel inflate(LayoutInflater inflater, MessageChat chat) {
         MessageUserChatPanel panel = (MessageUserChatPanel) inflater.inflate(R.layout.message_user, null, false);
         panel.setChat(chat);
+        panel.loadData();
         return panel;
     }
 

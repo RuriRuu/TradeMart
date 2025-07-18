@@ -48,7 +48,12 @@ public class ConvosMenuFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> loadConvoInfos());
+        executor.execute(() -> {
+            if(!convoInfos.isEmpty()){
+                convoInfos.clear();
+            }
+            loadConvoInfos();
+        });
     }
 
     @Override

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/activity_messaging"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FAF5F5"
+    android:fitsSystemWindows="true"
     tools:context=".MessagingActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -54,6 +54,7 @@
         android:id="@+id/messaging_chat_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@id/materialToolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,6 +75,7 @@
         android:background="@color/background_main"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
+        app:layout_constraintTop_toBottomOf="@id/messaging_chat_scroll"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -85,9 +87,9 @@
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:backgroundTint="#E91E63"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/message_editText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/baseline_add_24" />
 
@@ -101,21 +103,21 @@
             android:text=""
             android:textColor="#FFFFFF"
             android:textColorHint="#FFFFFF"
-            app:layout_constraintStart_toEndOf="@id/message_attachButton"
-            app:layout_constraintEnd_toStartOf="@id/message_submitButton"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/message_submitButton"
+            app:layout_constraintStart_toEndOf="@id/message_attachButton"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/message_submitButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:backgroundTint="#E91E63"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:backgroundTint="#E91E63"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/message_editText"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_menu_send"
             app:tint="#FFFFFF" />

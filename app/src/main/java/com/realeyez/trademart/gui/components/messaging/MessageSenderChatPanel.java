@@ -45,10 +45,13 @@ public class MessageSenderChatPanel extends ConstraintLayout{
     }
 
     private void initComponents(){
-        profilePicture = findViewById(R.id.chat_user_profile_image);
-        messageLabel = findViewById(R.id.chat_user_message_text);
-        timestampLabel = findViewById(R.id.chat_user_message_timestamp);
+        usernameLabel = findViewById(R.id.chat_sender_message_username);
+        profilePicture = findViewById(R.id.chat_sender_profile_image);
+        messageLabel = findViewById(R.id.chat_sender_message_text);
+        timestampLabel = findViewById(R.id.chat_sender_message_timestamp);
+    }
 
+    private void loadData(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
 
         usernameLabel.setText(chat.getUsername());
@@ -65,6 +68,7 @@ public class MessageSenderChatPanel extends ConstraintLayout{
     public static MessageSenderChatPanel inflate(LayoutInflater inflater, MessageChat chat) {
         MessageSenderChatPanel panel = (MessageSenderChatPanel) inflater.inflate(R.layout.message_sender, null, false);
         panel.setChat(chat);
+        panel.loadData();
         return panel;
     }
 
