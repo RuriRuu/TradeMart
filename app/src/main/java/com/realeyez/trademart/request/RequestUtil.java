@@ -2,6 +2,9 @@ package com.realeyez.trademart.request;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+
+import com.realeyez.trademart.request.Request.RequestBuilder;
 
 public class RequestUtil {
 
@@ -47,6 +50,12 @@ public class RequestUtil {
         return request.sendRequest();
     }
 
+    public static Response sendGetRequest(String path, HashMap<String, String> params) throws FileNotFoundException, IOException {
+        Request.RequestBuilder request = createBaseRequestBuilder(path);
+        params.forEach((key, value) -> request.addParam(key, value));
+        return request.setGet().build().sendRequest();
+    }
+
     /**
      * This is a convenience method for making a POST request. Make sure to USE THIS
      * when making a POST request that contains raw bytes content and
@@ -83,6 +92,15 @@ public class RequestUtil {
         return request.sendRequest();
     }
 
+    public static Response sendPostRequest(String path, byte[] content, HashMap<String, String> params) throws IOException {
+        RequestBuilder request = createBaseRequestBuilder(path);
+        params.forEach((key, value) -> request.addParam(key, value));
+        return request
+                .setPost(content)
+                .build()
+                .sendRequest();
+    }
+
     /**
      * This is a convenience method for making a POST request. Make sure to USE THIS
      * when making a POST request that contains JSON data.
@@ -98,6 +116,16 @@ public class RequestUtil {
             .setContentType("application/json")
             .build();
         return request.sendRequest();
+    }
+
+    public static Response sendPostRequest(String path, Content content, HashMap<String, String> params) throws IOException {
+        RequestBuilder request = createBaseRequestBuilder(path);
+        params.forEach((key, value) -> request.addParam(key, value));
+        return request
+                .setPost(content.getContentString())
+                .setContentType("application/json")
+                .build()
+                .sendRequest();
     }
 
     /**

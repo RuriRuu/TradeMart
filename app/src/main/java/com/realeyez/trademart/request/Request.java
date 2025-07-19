@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -33,6 +35,7 @@ public class Request {
     private long contentLength;
     private ContentRange contentRange;
     private ContentDisposition disposition;
+    private HashMap<String, String> params;
 
     private boolean usingSSL;
     private URLConnection con;
@@ -48,6 +51,7 @@ public class Request {
         this.contentRange = builder.contentRange;
         this.disposition = builder.disposition;
         this.usingSSL = builder.usingSSL;
+        this.params = builder.params;
     }
 
     /**
@@ -78,6 +82,7 @@ public class Request {
         if(disposition != null){
             con.setRequestProperty("Content-Disposition", disposition.getHeader());
         }
+        params.forEach((key, value) -> con.addRequestProperty(key, value));
         // HttpParams params = con.getPar
         // con.getHeaderField("Content");
         if (method.equals("POST")) {
@@ -177,6 +182,25 @@ public class Request {
                 .append(getLocationBase())
                 .append(getPortString())
                 .append(path);
+        if(!params.isEmpty()){
+            builder.append(parseParams());
+        }
+        return builder.toString();
+    }
+
+    private String parseParams(){
+        StringBuilder builder = new StringBuilder();
+        builder.append('?');
+        Set<String> keyset = params.keySet();
+        int curParam = 0;
+        for (String key : keyset) {
+            builder.append(Uri.encode(key));
+            builder.append('=');
+            builder.append(Uri.encode(params.get(key)));
+            if(curParam < params.size()-1)
+                builder.append('&');
+            curParam++;
+        }
         return builder.toString();
     }
 
@@ -221,15 +245,18 @@ public class Request {
         private boolean usingSSL;
         private ContentRange contentRange;
         private ContentDisposition disposition;
+        private HashMap<String, String> params;
 
         public RequestBuilder() {
-            host = method = path = contentType = null;
+            host = method = contentType = null;
+            path = "";
             body = null;
             usingSSL = false;
             port = DEFAULT_SERVER_PORT;
             contentLength = 0;
             contentRange = null;
             disposition = null;
+            params = new HashMap<>();
         }
 
         public RequestBuilder setHost(String host) {
@@ -348,6 +375,11 @@ public class Request {
                 else
                     this.contentType = contentType;
             }
+            return this;
+        }
+
+        public RequestBuilder addParam(String key, String value){
+            params.put(key, value);
             return this;
         }
 
