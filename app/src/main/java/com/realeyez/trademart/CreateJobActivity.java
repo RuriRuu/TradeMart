@@ -27,12 +27,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -68,14 +70,27 @@ import androidx.appcompat.app.AppCompatActivity;
         image_parent_panel = findViewById(R.id.create_job_list_images_panel);
         imagePanels = new ArrayList<>();
 
-        Spinner spinner = (Spinner) findViewById(R.id.tag_spinner);
+        Spinner spinner = findViewById(R.id.tag_spinner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                String Item = adapterView.getItemAtPosition(position).toString();
+                Toast.makeText(getApplicationContext(), "Selected: " + Item, Toast.LENGTH_LONG).show();
 
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.job_categories,
                 android.R.layout.simple_spinner_item
         );
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
