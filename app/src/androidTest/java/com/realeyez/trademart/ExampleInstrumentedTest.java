@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.realeyez.trademart.request.Request;
+import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Request.RequestBuilder;
 
@@ -20,6 +21,8 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Rule;
 
 import static androidx.test.espresso.Espresso.*;
@@ -52,19 +55,13 @@ public class ExampleInstrumentedTest {
     }
 
     // @Test
-    public void test_requestParams() throws IOException {
+    public void test_requestParams() throws IOException, JSONException {
         HashMap<String, String> params = new HashMap<>();
         params.put("q", "Hello, World");
-        RequestBuilder builder = new RequestBuilder()
-            .setHost("duckduckgo.com")
-            .useSSL()
-            .noPort()
-            .setGet();
-        params.forEach((key, value) -> builder.addParam(key, value));
-        Request request = builder.build();
-        Log.d("trademart", request.getUri().toString());
-        Response response = request.sendRequest();
+        Response response = RequestUtil.sendGetRequest("/test", params);
+        JSONObject json = response.getContentJson();
         Log.d("trademart", response.getContent());
+        assertEquals("Hello, World", json.getString("value"));
     }
 
 }
