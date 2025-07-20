@@ -102,21 +102,21 @@ import androidx.appcompat.app.AppCompatActivity;
     }
 
     private void postButtonAction() {
-        ExecutorService service = Executors.newSingleThreadExecutor();
+        ExecutorService     service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
-            Response response = sendPublishPostRequest();
-            int postId = -1;
+            Response response = sendPublishJobListRequest();
+            int jobId = -1;
             try {
                 JSONObject json = response.getContentJson();
-                postId = json.getInt("post_id");
+                jobId = json.getInt("post_id");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if(postId == -1) return;
+            if(jobId == -1) return;
             for (ImagePanel panel : imagePanels) {
                 Uri imageUri = panel.getImageUri();
                 // TODO: display if uploading image failed
-                sendPublishPostImageRequest(imageUri, postId);
+                sendPublishJobListRequest(imageUri, jobId);
             }
         });
     }
@@ -153,7 +153,7 @@ import androidx.appcompat.app.AppCompatActivity;
         image_parent_panel.addView(imagePanel.getLayout());
     }
 
-    private Response sendPublishPostRequest(){
+    private Response sendPublishJobListRequest(){
         String title = titleField.getText().toString();
         String description = descField.getText().toString();
 
@@ -161,17 +161,18 @@ import androidx.appcompat.app.AppCompatActivity;
                 .put("title", title)
                 .put("description", description)
                 .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
+                .put("category", "job")
                 .build();
         Response response = null;
         try {
-            response = RequestUtil.sendPostRequest("/post/publish", content);
+            response = RequestUtil.sendPostRequest("/service/create", content);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return response;
     }
 
-    private Response sendPublishPostImageRequest(Uri imageUri, int postId){
+    private Response sendPublishJobListRequest(Uri imageUri, int jobId){
         byte[] bytes = readImageData(imageUri);
 
         String filename = getFileNameFromUri(imageUri);
@@ -179,7 +180,7 @@ import androidx.appcompat.app.AppCompatActivity;
         try {
             ContentDisposition disposition = ContentDisposition.attachment()
                     .addDisposition("filename", filename);
-            response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), bytes, disposition);
+            response = RequestUtil.sendPostRequest(String.format("/service/{job_id}", jobId), bytes, disposition);
         } catch (IOException e) {
             e.printStackTrace();
         }
