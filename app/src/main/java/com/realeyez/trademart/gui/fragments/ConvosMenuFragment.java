@@ -26,6 +26,8 @@ import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
+import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -36,6 +38,8 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 
 public class ConvosMenuFragment extends Fragment {
+
+    private Context appContext;
 
     private ArrayList<ConvoInfo> convoInfos;
     private LinearLayout listPanel;
@@ -50,6 +54,11 @@ public class ConvosMenuFragment extends Fragment {
         this.convoInfos = convoInfos;
     }
 
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        appContext = context.getApplicationContext();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -83,7 +92,7 @@ public class ConvosMenuFragment extends Fragment {
             if(json.getString("status").equals("failed")){
                 String errMsg = json.getString("message");
                 getActivity().runOnUiThread(() -> {
-                    Dialogs.showErrorDialog(errMsg, getContext());
+                    Dialogs.showErrorDialog(errMsg, requireContext());
                 });
                 return;
             }
@@ -106,19 +115,20 @@ public class ConvosMenuFragment extends Fragment {
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             getActivity().runOnUiThread(() -> {
-                Dialogs.showErrorDialog("Unable to get conversations", getContext());
+                Dialogs.showErrorDialog("Unable to get conversations", requireContext());
             });
             return;
         }
 
+        Activity activity = getActivity();
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             convoInfos.sort(Comparator.comparing((info) -> ((ConvoInfo)info).getTimestamp()).reversed());
             for (ConvoInfo info : convoInfos) {
                 Uri mateUri = cacheProfilePicture(info.getUserId());
                 Uri userUri = cacheProfilePicture(ResourceRepository.getResources().getCurrentUser().getId());
-                getActivity().runOnUiThread(() -> {
-                    listPanel.addView(ConvoPanel.inflate(getLayoutInflater(), info, mateUri, userUri));
+                activity.runOnUiThread(() -> {
+                    listPanel.addView(ConvoPanel.inflate(activity.getLayoutInflater(), info, mateUri, userUri));
                 });
             }
         });
@@ -135,7 +145,7 @@ public class ConvosMenuFragment extends Fragment {
         try {
             Response response = RequestUtil.sendGetRequest(path);
             String filename = response.getContentDispositionField("filename");
-            CacheFile cache = CacheFile.cache(getContext().getCacheDir(), filename, response.getContentBytes());
+            CacheFile cache = CacheFile.cache(appContext.getCacheDir(), filename, response.getContentBytes());
             File file = cache.getFile();
             uri = Uri.fromFile(file);
         } catch (FileNotFoundException e) {
