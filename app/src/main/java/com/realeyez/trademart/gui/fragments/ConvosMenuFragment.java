@@ -23,6 +23,8 @@ import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -137,7 +139,7 @@ public class ConvosMenuFragment extends Fragment {
             File file = cache.getFile();
             uri = Uri.fromFile(file);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Logger.log("User has no profile picture :(", LogLevel.INFO);
         } catch (IOException e) {
             e.printStackTrace();
         }

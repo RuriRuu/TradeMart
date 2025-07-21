@@ -4,6 +4,7 @@ import com.realeyez.trademart.R;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.service.Service;
 import com.realeyez.trademart.util.Dialogs;
 
@@ -72,20 +73,52 @@ public class AttachmentOptionSheet extends BottomSheetDialogFragment {
             args.putInt("convo_id", convoId);
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
-                if(!fetchServices(args)){
-                    getActivity().runOnUiThread(() -> {
-                        Dialogs.showErrorDialog("This user does not have any services or job listings", getActivity());
-                        dismiss();
-                    });
-                } else {
-                    getActivity().runOnUiThread(() -> {
-                        bottomSheet.setArguments(args);
-                        bottomSheet.show(requireActivity().getSupportFragmentManager(), CreatePaymentSheet.TAG);
-                    });
-                }
+                fetchServices(args);
+                fetchJobs(args);
+                requireActivity().runOnUiThread(() -> {
+                    bottomSheet.setArguments(args);
+                    bottomSheet.show(requireActivity().getSupportFragmentManager(), CreatePaymentSheet.TAG);
+                });
+                requireActivity().runOnUiThread(() -> dismiss());
             });
-            dismiss();
         });
+    }
+
+    private boolean fetchJobs(Bundle bundle){
+        ArrayList<Integer> ids = new ArrayList<>();
+        ArrayList<String> titles = new ArrayList<>();
+        bundle.putStringArrayList("job_titles", titles);
+        bundle.putIntegerArrayList("job_ids", ids);
+        String path = new StringBuilder()
+            .append("/jobs/employer/")
+            .append(ResourceRepository.getResources().getCurrentUser().getId())
+            .toString();
+        try {
+            Response response = RequestUtil.sendGetRequest(path);
+            JSONObject json = response.getContentJson();
+            if(json.getString("status").equals("failed")){
+                String rMessage = json.getString("message");
+                getActivity().runOnUiThread(() -> Dialogs.showErrorDialog(rMessage, getContext()));
+                return false;
+            }
+            if(!json.getJSONObject("data").has("jobs")){
+                return false;
+            }
+            JSONArray servArr = json.getJSONObject("data").getJSONArray("jobs");
+            for (int i = 0; i < servArr.length(); i++) {
+                JSONObject jobJson = servArr.getJSONObject(i);
+                ids.add(jobJson.getInt("job_id"));
+                titles.add(jobJson.getString("job_title"));
+            }
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+            getActivity().runOnUiThread(() -> {
+                Dialogs.showErrorDialog("You currently don't have any Job Listings", getActivity());
+                dismiss();
+            });
+            return false;
+        }
+        return true;
     }
 
     private boolean fetchServices(Bundle bundle){

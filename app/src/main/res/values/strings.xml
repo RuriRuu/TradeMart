@@ -20,7 +20,7 @@
 
     <string-array name="payment_types">
         <item>Service</item>
-        <item>Job</item>
+        <item>Job Listing</item>
     </string-array>
 
     <string-array name="job_tiers">
