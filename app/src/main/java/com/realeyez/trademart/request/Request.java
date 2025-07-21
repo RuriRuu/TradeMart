@@ -248,7 +248,8 @@ public class Request {
         private HashMap<String, String> params;
 
         public RequestBuilder() {
-            host = method = contentType = null;
+            host = method = null;
+            contentType = "application/octet-stream";
             path = "";
             body = null;
             usingSSL = false;
