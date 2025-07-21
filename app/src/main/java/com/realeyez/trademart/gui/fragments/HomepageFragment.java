@@ -137,6 +137,7 @@ public class HomepageFragment extends Fragment {
                     .setOwnerId(feedJson.getInt("owner_id"))
                     .setUsername(feedJson.getString("username"))
                     .setLikes(feedJson.getInt("likes"))
+                    .setUserLiked(feedJson.getBoolean("user_liked"))
                     .setMediaIds(mediaIds)
                     .build());
             }

@@ -13,6 +13,7 @@ public class FeedItem {
     private String username;
     private int ownerId;
     private int likes;
+    private boolean userLiked;
     private ArrayList<Integer> mediaIds;
 
     public FeedItem(Builder builder){
@@ -23,6 +24,7 @@ public class FeedItem {
         ownerId = builder.ownerId;
         likes = builder.likes;
         mediaIds = builder.mediaIds;
+        userLiked = builder.userLiked;
     }
 
     public int getId() {
@@ -49,6 +51,10 @@ public class FeedItem {
         return likes;
     }
 
+    public boolean userLiked(){
+        return userLiked;
+    }
+
     public ArrayList<Integer> getMediaIds() {
         return mediaIds;
     }
@@ -72,6 +78,7 @@ public class FeedItem {
         private String username;
         private int ownerId;
         private int likes;
+        private boolean userLiked;
         private ArrayList<Integer> mediaIds;
 
         public Builder(){
@@ -80,6 +87,7 @@ public class FeedItem {
             username = title = null;
             mediaIds = null;
             type = null;
+            userLiked = false;
         }
 
         public Builder setId(int id) {
@@ -109,6 +117,11 @@ public class FeedItem {
 
         public Builder setLikes(int likes) {
             this.likes = likes;
+            return this;
+        }
+
+        public Builder setUserLiked(boolean userLiked) {
+            this.userLiked = userLiked;
             return this;
         }
 

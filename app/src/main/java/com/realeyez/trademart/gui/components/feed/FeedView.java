@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.feed.FeedItem;
 import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
@@ -17,6 +18,7 @@ import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
@@ -24,6 +26,7 @@ import com.realeyez.trademart.util.FileUtil;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -131,6 +134,9 @@ public class FeedView extends ConstraintLayout {
     private void loadFeedDetails(){
         titleField.setText(feed.getTitle());
         authorField.setText(feed.getUsername());
+        if(feed.userLiked()){
+            setLikeButtonLiked(feed.getLikes());
+        }
         likeCountField.setText(likeCountString(feed.getLikes()));
         ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.execute(() -> {
@@ -161,6 +167,13 @@ public class FeedView extends ConstraintLayout {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void setLikeButtonLiked(int likeCount){
+        likeButton.setImageDrawable(getResources().getDrawable(R.drawable.heart_filled, null));
+        likeCountField.setText(likeCountString(likeCount));
+        likeButton.setEnabled(false);
     }
 
     private void addMediaPanels(ArrayList<MediaData> mediaData){
@@ -260,15 +273,49 @@ public class FeedView extends ConstraintLayout {
             JSONObject updated = responseJson.getJSONObject("data").getJSONObject("feed_updated");
             int likeCount = updated.getInt("likes");
             activity.runOnUiThread(() -> {
-                likeButton.setImageDrawable(getResources().getDrawable(R.drawable.heart_filled, null));
-                likeCountField.setText(likeCountString(likeCount));
-                likeButton.setEnabled(false);
+                setLikeButtonLiked(likeCount);
             });
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void messageButtonAction(){
+        int mateId = feed.getOwnerId();
+        int userId = ResourceRepository.getResources().getCurrentUser().getId();
+        int convoId = -1;
+
+        Content content = new ContentBuilder()
+            .put("user1_id", userId)
+            .put("user2_id", mateId)
+            .build();
+
+        try {
+            Response response = RequestUtil.sendPostRequest("/message/convos", content);
+            JSONObject json = response.getContentJson();
+            if(json.getString("status").equals("failed")){
+                String rMessage = json.getString("message");
+                activity.runOnUiThread(() -> {
+                    Dialogs.showErrorDialog(rMessage, getContext());
+                });
+                return;
+            }
+            convoId = json.getJSONObject("data").getInt("convo_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(convoId == -1){
+            return;
+        }
+        Intent intent = new Intent(getContext(), MessagingActivity.class);
+        intent.putExtra("user_id", mateId);
+        intent.putExtra("username", feed.getUsername());
+        intent.putExtra("convo_id", convoId);
+        getContext().startActivity(intent);
     }
 
     private void addOnClickListeners(){
@@ -279,6 +326,10 @@ public class FeedView extends ConstraintLayout {
             });
         });
         messageButton.setOnClickListener(view -> {
+            ExecutorService exec = Executors.newSingleThreadExecutor();
+            exec.execute(() -> {
+                messageButtonAction();
+            });
         });
     }
 

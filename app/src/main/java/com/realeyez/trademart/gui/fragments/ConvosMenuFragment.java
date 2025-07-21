@@ -1,5 +1,7 @@
 package com.realeyez.trademart.gui.fragments;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,8 +20,10 @@ import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
+import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,7 +75,7 @@ public class ConvosMenuFragment extends Fragment {
             .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
             .build();
         try {
-            Response response = RequestUtil.sendPostRequest("/message/convos", content);
+            Response response = RequestUtil.sendPostRequest("/message/convos/user", content);
             JSONObject json = response.getContentJson();
             if(json.getString("status").equals("failed")){
                 String errMsg = json.getString("message");
@@ -106,10 +110,37 @@ public class ConvosMenuFragment extends Fragment {
 
         getActivity().runOnUiThread(() -> {
             for (ConvoInfo info : convoInfos) {
-                listPanel.addView(ConvoPanel.inflate(getLayoutInflater(), info));
+                listPanel.addView(ConvoPanel.inflate(getLayoutInflater(), info, cacheProfilePicture(info.getUserId())));
             }
         });
 
+    }
+
+    private Uri cacheProfilePicture(int mateId){
+        Uri.Builder uri = new Uri.Builder();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            String path = new StringBuilder()
+                .append("/user/")
+                .append(mateId)
+                .append("/avatar")
+                .toString();
+            try {
+                Response response = RequestUtil.sendGetRequest(path);
+                String filename = response.getContentDispositionField("filename");
+                CacheFile cache = CacheFile.cache(getContext().getCacheDir(), filename, response.getContentBytes());
+                File file = cache.getFile();
+                uri.path(file.getAbsolutePath());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        if(uri.toString().equals("")){
+            return null;
+        }
+        return uri.build();
     }
 
     
