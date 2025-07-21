@@ -309,6 +309,7 @@ public class MessagingActivity extends AppCompatActivity {
                     .setPaymentId(json.getInt("payment_id"))
                     .setAmount(json.getInt("amount"))
                     .setPaidFor(json.getString("payment_reason"))
+                    .setConfirmed(json.getBoolean("is_confirmed"))
                     .setPaymentType(PaymentType.parse(json.getString("payment_type")))
                     .build();
                 break;

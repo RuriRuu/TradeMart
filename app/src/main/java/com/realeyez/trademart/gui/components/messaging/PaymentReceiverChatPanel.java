@@ -65,6 +65,12 @@ public class PaymentReceiverChatPanel extends ConstraintLayout {
         amountLabel.setText(new StringBuilder().append(chat.getAmount()).toString());
         timestampLabel.setText(chat.getTimeSent().format(formatter));
         reasonLabel.setText(chat.getPaidFor());
+
+        if(chat.isConfirmed()){
+            receivedButton.setText("Payment Confirmed");
+            receivedButton.setEnabled(false);
+            receivedButton.setBackgroundColor(getResources().getColor(R.color.grey, null));
+        }
     }
 
     private void setChat(PaymentChat chat){

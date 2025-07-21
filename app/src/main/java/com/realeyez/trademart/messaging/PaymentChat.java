@@ -9,6 +9,7 @@ public class PaymentChat extends Chat {
     private int paymentId;
     private double amount;
     private String paidFor;
+    private boolean isConfirmed;
     private PaymentType paymentType;
 
     protected PaymentChat(Builder builder) {
@@ -16,6 +17,7 @@ public class PaymentChat extends Chat {
         paymentId = builder.paymentId;
         amount = builder.amount;
         paidFor = builder.paidFor;
+        isConfirmed = builder.isConfirmed;
         paymentType = builder.paymentType;
     }
 
@@ -31,6 +33,10 @@ public class PaymentChat extends Chat {
         return paidFor;
     }
 
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
     public PaymentType getPaymentType() {
         return paymentType;
     }
@@ -40,6 +46,7 @@ public class PaymentChat extends Chat {
         private int paymentId;
         private double amount;
         private String paidFor;
+        private boolean isConfirmed;
         private PaymentType paymentType;
 
         public Builder(){
@@ -47,10 +54,16 @@ public class PaymentChat extends Chat {
             amount = 0;
             paidFor = "";
             paymentType = null;
+            isConfirmed = false;
         }
 
         public Builder setPaymentId(int paymentId) {
             this.paymentId = paymentId;
+            return this;
+        }
+
+        public Builder setConfirmed(boolean isConfirmed) {
+            this.isConfirmed = isConfirmed;
             return this;
         }
 
