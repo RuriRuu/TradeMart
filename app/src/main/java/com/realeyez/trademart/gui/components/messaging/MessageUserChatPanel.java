@@ -1,12 +1,21 @@
 package com.realeyez.trademart.gui.components.messaging;
 
 import com.realeyez.trademart.messaging.MessageChat;
+import com.realeyez.trademart.request.RequestUtil;
+import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.util.CacheFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.realeyez.trademart.R;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.TextView;
@@ -55,7 +64,13 @@ public class MessageUserChatPanel extends ConstraintLayout implements MessageCha
         messageLabel.setText(chat.getMessage());
         timestampLabel.setText(chat.getTimeSent().format(formatter));
         profilePicture.setImageURI(chat.getProfilePictureUri());
+
     }
+
+    public void setImageUri(Uri uri){
+        profilePicture.setImageURI(uri);
+    }
+
 
     private void setChat(MessageChat chat){
         this.chat = chat;

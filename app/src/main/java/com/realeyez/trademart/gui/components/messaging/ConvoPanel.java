@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.messaging.ConvoInfo;
-import com.realeyez.trademart.util.CacheFile;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +25,8 @@ public class ConvoPanel extends ConstraintLayout {
 
     private ConvoInfo convoInfo;
 
-    private Uri profilePictureUri;
+    private Uri mateUri;
+    private Uri selfUri;
 
     public ConvoPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,7 +53,8 @@ public class ConvoPanel extends ConstraintLayout {
         setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), MessagingActivity.class);
             intent.putExtra("username", convoInfo.getUsername());
-            intent.putExtra("profile_picture_uri", profilePictureUri);
+            intent.putExtra("mate_profile_uri", mateUri);
+            intent.putExtra("self_profile_uri", selfUri);
             intent.putExtra("user_id", convoInfo.getUserId());
             intent.putExtra("convo_id", convoInfo.getConvoId());
 
@@ -61,16 +62,17 @@ public class ConvoPanel extends ConstraintLayout {
         });
     }
 
-    public void loadInfo(Uri profilePictureUri){
-        this.profilePictureUri = profilePictureUri;
+    public void loadInfo(Uri mateUri, Uri selfUri){
+        this.mateUri = mateUri;
+        this.selfUri = selfUri;
         usernameLabel.setText(convoInfo.getUsername());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
                 
         timestampLabel.setText(convoInfo.getTimestamp().format(formatter));
         String lastMessage = generateLastMessage();
         lastMessageLabel.setText(lastMessage);
-        if(profilePictureUri != null){
-            profilePicture.setImageURI(profilePictureUri);
+        if(mateUri != null){
+            profilePicture.setImageURI(mateUri);
         }
     }
 
@@ -97,10 +99,10 @@ public class ConvoPanel extends ConstraintLayout {
         this.convoInfo = convoInfo;
     }
 
-    public static ConvoPanel inflate(LayoutInflater inflater, ConvoInfo convoInfo, Uri profilePictureUri) {
+    public static ConvoPanel inflate(LayoutInflater inflater, ConvoInfo convoInfo, Uri mateUri, Uri selfUri) {
         ConvoPanel panel = (ConvoPanel) inflater.inflate(R.layout.convo_layout, null, false);
         panel.setConvoInfo(convoInfo);
-        panel.loadInfo(profilePictureUri);
+        panel.loadInfo(mateUri, selfUri);
         return panel;
     }
 

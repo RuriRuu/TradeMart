@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -108,39 +109,39 @@ public class ConvosMenuFragment extends Fragment {
             return;
         }
 
-        getActivity().runOnUiThread(() -> {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            convoInfos.sort(Comparator.comparing((info) -> ((ConvoInfo)info).getTimestamp()).reversed());
             for (ConvoInfo info : convoInfos) {
-                listPanel.addView(ConvoPanel.inflate(getLayoutInflater(), info, cacheProfilePicture(info.getUserId())));
+                Uri mateUri = cacheProfilePicture(info.getUserId());
+                Uri userUri = cacheProfilePicture(ResourceRepository.getResources().getCurrentUser().getId());
+                getActivity().runOnUiThread(() -> {
+                    listPanel.addView(ConvoPanel.inflate(getLayoutInflater(), info, mateUri, userUri));
+                });
             }
         });
 
     }
 
     private Uri cacheProfilePicture(int mateId){
-        Uri.Builder uri = new Uri.Builder();
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            String path = new StringBuilder()
-                .append("/user/")
-                .append(mateId)
-                .append("/avatar")
-                .toString();
-            try {
-                Response response = RequestUtil.sendGetRequest(path);
-                String filename = response.getContentDispositionField("filename");
-                CacheFile cache = CacheFile.cache(getContext().getCacheDir(), filename, response.getContentBytes());
-                File file = cache.getFile();
-                uri.path(file.getAbsolutePath());
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        if(uri.toString().equals("")){
-            return null;
+        Uri uri = null;
+        String path = new StringBuilder()
+            .append("/user/")
+            .append(mateId)
+            .append("/avatar")
+            .toString();
+        try {
+            Response response = RequestUtil.sendGetRequest(path);
+            String filename = response.getContentDispositionField("filename");
+            CacheFile cache = CacheFile.cache(getContext().getCacheDir(), filename, response.getContentBytes());
+            File file = cache.getFile();
+            uri = Uri.fromFile(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return uri.build();
+        return uri;
     }
 
     

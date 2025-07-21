@@ -3,6 +3,7 @@ package com.realeyez.trademart;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,7 +22,6 @@ import com.realeyez.trademart.messaging.ChatType;
 import com.realeyez.trademart.messaging.MediaChat;
 import com.realeyez.trademart.messaging.MessageChat;
 import com.realeyez.trademart.messaging.PaymentChat;
-import com.realeyez.trademart.payment.Payment;
 import com.realeyez.trademart.payment.PaymentType;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
@@ -70,6 +70,9 @@ public class MessagingActivity extends AppCompatActivity {
     private ArrayList<Chat> chats;
     private boolean setup;
 
+    private Uri mateUri;
+    private Uri selfUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,13 +108,15 @@ public class MessagingActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int user_id = intent.getIntExtra("user_id", -1);
         int convo_id = intent.getIntExtra("convo_id", -1);
-        Uri profilePictureUri = intent.getParcelableExtra("profile_picture_uri");
+        mateUri = intent.getParcelableExtra("mate_profile_uri");
+        selfUri = intent.getParcelableExtra("self_profile_uri");
         String username = intent.getStringExtra("username");
 
         mateId = user_id;
         convoId = convo_id;
         convoLabel.setText(username);
-        profilePicture.setImageURI(profilePictureUri);
+
+        profilePicture.setImageURI(mateUri);
     }
 
     // I'm really god dam sleepy, ben on tihs for 15 minutes wjitout writing shit somehow
@@ -144,12 +149,11 @@ public class MessagingActivity extends AppCompatActivity {
             runOnUiThread(() -> Dialogs.showErrorDialog("unable to load messages", this));
             return;
         }
-        runOnUiThread(() -> {
-            for (Chat chat : chats) {
-                addChatPanel(chat);
-            }
-            setup = true;
-        });
+        chats.sort(Comparator.comparing((chat) -> ((Chat)chat).getTimeSent()));
+        for (Chat chat : chats) {
+            addChatPanel(chat);
+        }
+        setup = true;
     }
 
     private void addChatPanel(Chat chat){
@@ -228,41 +232,46 @@ public class MessagingActivity extends AppCompatActivity {
         runOnUiThread(() -> addMessageUserChatPanel(chat));
     }
 
-    private void sendPayment(){
-    }
-
     private void addMessageUserChatPanel(Chat chat){
-        MessageUserChatPanel panel = MessageUserChatPanel.inflate(
-                getLayoutInflater(),
-                (MessageChat) chat);
-        addChatView(panel);
+        runOnUiThread(() -> {
+            MessageUserChatPanel panel = MessageUserChatPanel.inflate(
+                    getLayoutInflater(),
+                    (MessageChat) chat);
+            addChatView(panel);
+        });
     }
 
     private void addPaymentSenderChatPanel(Chat chat){
-        PaymentSenderChatPanel panel = PaymentSenderChatPanel.inflate(
-                getLayoutInflater(),
-                (PaymentChat) chat);
-        addChatView(panel);
+        runOnUiThread(() -> {
+            PaymentSenderChatPanel panel = PaymentSenderChatPanel.inflate(
+                    getLayoutInflater(),
+                    (PaymentChat) chat);
+            addChatView(panel);
+        });
     }
 
     private void addPaymentReceiverChatPanel(Chat chat){
-        PaymentReceiverChatPanel panel = PaymentReceiverChatPanel.inflate(
-                getLayoutInflater(),
-                (PaymentChat) chat);
-        panel.setOnConfirmListener(view -> {
-            ExecutorService exec = Executors.newSingleThreadExecutor();
-            exec.execute(() -> {
-                sendSetConfirmed((Button) view, (PaymentChat)chat);
+        runOnUiThread(() -> {
+            PaymentReceiverChatPanel panel = PaymentReceiverChatPanel.inflate(
+                    getLayoutInflater(),
+                    (PaymentChat) chat);
+            panel.setOnConfirmListener(view -> {
+                ExecutorService exec = Executors.newSingleThreadExecutor();
+                exec.execute(() -> {
+                    sendSetConfirmed((Button) view, (PaymentChat)chat);
+                });
             });
+            addChatView(panel);
         });
-        addChatView(panel);
     }
 
     private void addMessageSenderChatPanel(Chat chat){
-        MessageSenderChatPanel panel = MessageSenderChatPanel.inflate(
-                getLayoutInflater(),
-                (MessageChat) chat);
-        addChatView(panel);
+        runOnUiThread(() -> {
+            MessageSenderChatPanel panel = MessageSenderChatPanel.inflate(
+                    getLayoutInflater(),
+                    (MessageChat) chat);
+            addChatView(panel);
+        });
     }
 
     private void addChatView(View view){
@@ -273,11 +282,13 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     private Chat createChatFromJson(JSONObject json) throws JSONException {
+        int curUserId = ResourceRepository.getResources().getCurrentUser().getId();
         ChatType type = ChatType.parse(json.getString("type"));
         Chat.Builder builder = new MessageChat.Builder()
                     .setChatId(json.getInt("chat_id"))
                     .setSenderId(json.getInt("sender_id"))
                     .setConvoId(json.getInt("convo_id"))
+                    .setProfilePictureUri(json.getInt("sender_id") == curUserId ? mateUri : selfUri)
                     // .setUsername(json.getString("username"))
                     .setTimeSent(LocalDateTime.parse(json.getString("time_sent")))
                     .setType(type);

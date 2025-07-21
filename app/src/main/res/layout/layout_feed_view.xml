@@ -104,7 +104,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:cardCornerRadius="70dp">
+                    app:cardCornerRadius="40dp">
 
                     <ImageView
                         android:id="@+id/feedview_user_image"

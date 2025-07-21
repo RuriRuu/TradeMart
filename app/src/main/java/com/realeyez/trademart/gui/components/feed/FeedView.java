@@ -127,6 +127,7 @@ public class FeedView extends ConstraintLayout {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.execute(() -> {
             fetchMedia();
+            requestProfilePicture();
             activity.runOnUiThread(() -> addMediaPanels(mediaData));
         });
     }
@@ -138,10 +139,6 @@ public class FeedView extends ConstraintLayout {
             setLikeButtonLiked(feed.getLikes());
         }
         likeCountField.setText(likeCountString(feed.getLikes()));
-        ExecutorService exec = Executors.newSingleThreadExecutor();
-        exec.execute(() -> {
-            requestProfilePicture();
-        });
     }
 
     private String likeCountString(int likes){

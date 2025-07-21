@@ -49,6 +49,10 @@ public class HomepageFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        feedViews = new ArrayList<>();
+        feedItems = new ArrayList<>();
+
     }
 
     @Override
@@ -60,15 +64,7 @@ public class HomepageFragment extends Fragment {
 
         snapScroll = new SnapScroll(scrollView);
 
-        feedViews = new ArrayList<>();
-        feedItems = new ArrayList<>();
-
-        return layout;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
@@ -78,6 +74,17 @@ public class HomepageFragment extends Fragment {
                     addFeedView(feedItem);
                 }
             });
+        });
+
+        return layout;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        scrollView.post(() -> {
+            scrollView.scrollTo(0, 0);
         });
     }
 
