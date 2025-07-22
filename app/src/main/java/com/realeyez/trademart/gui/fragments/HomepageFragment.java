@@ -55,6 +55,10 @@ public class HomepageFragment extends Fragment {
 
     }
 
+    public void scrollToTop(){
+        scrollView.smoothScrollTo(0, 0);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.fragment_homepage, container, false);

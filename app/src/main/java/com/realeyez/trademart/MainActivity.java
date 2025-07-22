@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         feedViews = new ArrayList<>();
 
-        showHomepageFragment();
+        initFrags();
+
 
         addOnClickListeners();
     }
@@ -55,22 +56,41 @@ public class MainActivity extends AppCompatActivity {
         bottomSheet.show(getSupportFragmentManager(), HomepageCreateSheet.TAG);
     }
 
+    private void initFrags(){
+        fragman.beginTransaction()
+            .add(R.id.main_content_panel, homepageFrag)
+            .add(R.id.main_content_panel, convosFrag)
+            .hide(convosFrag)
+            .setReorderingAllowed(true)
+            .commit();
+    }
+
+    private int currentFrag = 0;
+
     private void showHomepageFragment(){
         fragman.beginTransaction()
-            .replace(R.id.main_content_panel, homepageFrag)
-            .setReorderingAllowed(true)
+            .show(homepageFrag)
+            .hide(convosFrag)
+            // .replace(R.id.main_content_panel, homepageFrag)
+            // .setReorderingAllowed(true)
             .commit();
     }
 
     private void showChatsFragment(){
         fragman.beginTransaction()
-            .replace(R.id.main_content_panel, convosFrag)
-            .setReorderingAllowed(true)
+            .hide(homepageFrag)
+            .show(convosFrag)
+            // .replace(R.id.main_content_panel, convosFrag)
+            // .setReorderingAllowed(true)
             .commit();
     }
 
     private void homeButtonAction(){
-        showHomepageFragment();
+        if(currentFrag == 0){
+            homepageFrag.scrollToTop();
+        } else {
+            showHomepageFragment();
+        }
     }
 
     private void createButtonAction(){
@@ -93,9 +113,11 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener(item -> {
             if(item.getItemId() == R.id.main_action_home){
                 homeButtonAction();
+                currentFrag = 0;
                 return true;
             }
             if(item.getItemId() == R.id.main_action_search){
+                currentFrag = 2;
                 return true;
             }
             if(item.getItemId() == R.id.main_action_create) {
@@ -103,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
             if(item.getItemId() == R.id.main_action_chats) {
+                currentFrag = 3;
                 chatButtonAction();
                 return true;
             }
