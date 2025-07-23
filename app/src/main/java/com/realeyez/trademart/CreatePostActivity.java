@@ -1,10 +1,12 @@
 package com.realeyez.trademart;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,21 +20,25 @@ import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
+import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Encoder;
+import com.realeyez.trademart.util.FileUtil;
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.VideoThumbnailer;
+import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -116,10 +122,20 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
 
         Uri imageUri = data.getData();
-        addImageRow(imageUri);
+        try {
+            addImageRow(imageUri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void addImageRow(Uri imageUri){
+    private void addImageRow(Uri imageUri) throws FileNotFoundException {
+        if(FileUtil.getExtension(imageUri.getPath()).equals("mp4")){
+            ParcelFileDescriptor fd = getContentResolver().openFileDescriptor(imageUri, "r");
+            File thumbnail = VideoThumbnailer.generateThumbnailFile(getCacheDir(), fd.getFileDescriptor(),
+                    getFileNameFromUri(imageUri));
+            imageUri = Uri.fromFile(thumbnail);
+        }
         ImagePanel imagePanel = new ImagePanel(this, image_parent_panel, imageUri, imagePanels);
         imagePanels.add(imagePanel);
         image_parent_panel.addView(imagePanel.getLayout());

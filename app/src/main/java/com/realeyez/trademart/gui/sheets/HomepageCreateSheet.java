@@ -1,5 +1,6 @@
 package com.realeyez.trademart.gui.sheets;
 
+import com.realeyez.trademart.CreateJobActivity;
 import com.realeyez.trademart.CreatePostActivity;
 import com.realeyez.trademart.CreateServiceActivity;
 import com.realeyez.trademart.R;
@@ -19,6 +20,7 @@ public class HomepageCreateSheet extends BottomSheetDialogFragment {
     public static final String TAG = "HomepageCreateSheet";
 
     private Button postButton;
+    private Button jobButton;
     private Button serviceButton;
 
     @Override
@@ -28,6 +30,7 @@ public class HomepageCreateSheet extends BottomSheetDialogFragment {
         LinearLayout panel =  (LinearLayout) inflater.inflate(R.layout.layout_create_option_sheet, container, false);
 
         postButton = panel.findViewById(R.id.createoption_post_button);
+        jobButton = panel.findViewById(R.id.createoption_job_button);
         serviceButton = panel.findViewById(R.id.createoption_service_button);
 
         addOnClickListeners();
@@ -37,6 +40,10 @@ public class HomepageCreateSheet extends BottomSheetDialogFragment {
     private void addOnClickListeners(){
         postButton.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), CreatePostActivity.class);
+            startActivity(intent);
+        });
+        jobButton.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), CreateJobActivity.class);
             startActivity(intent);
         });
         serviceButton.setOnClickListener(view -> {

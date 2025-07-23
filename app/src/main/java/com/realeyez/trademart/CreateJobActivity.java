@@ -1,6 +1,7 @@
 package com.realeyez.trademart;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,12 +20,15 @@ import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.Dialogs;
+import com.realeyez.trademart.util.FileUtil;
+import com.realeyez.trademart.util.VideoThumbnailer;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.AdapterView;
@@ -61,13 +65,13 @@ import androidx.appcompat.app.AppCompatActivity;
     }
 
     private void initComponents() {
-        backButton = findViewById(R.id.create_job_list_back_button);
-        postButton = findViewById(R.id.create_job_list_post_button);
-        addImageButton = findViewById(R.id.create_job_list_add_image_button);
+        backButton = findViewById(R.id.createjob_list_back_button);
+        postButton = findViewById(R.id.createjob_list_post_button);
+        addImageButton = findViewById(R.id.createjob_list_add_image_button);
 
-        titleField = findViewById(R.id.create_job_list_title_field);
-        descField = findViewById(R.id.create_job_list_description_field);
-        image_parent_panel = findViewById(R.id.create_job_list_images_panel);
+        titleField = findViewById(R.id.createjob_list_title_field);
+        descField = findViewById(R.id.createjob_list_description_field);
+        image_parent_panel = findViewById(R.id.createjob_list_images_panel);
         imagePanels = new ArrayList<>();
 
         Spinner spinner = findViewById(R.id.tag_spinner);
@@ -144,10 +148,20 @@ import androidx.appcompat.app.AppCompatActivity;
             return;
 
         Uri imageUri = data.getData();
-        addImageRow(imageUri);
+        try {
+            addImageRow(imageUri);
+        } catch (FileNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
-    private void addImageRow(Uri imageUri){
+    private void addImageRow(Uri imageUri) throws FileNotFoundException {
+        if(FileUtil.getExtension(imageUri.getPath()).equals("mp4")){
+            ParcelFileDescriptor fd = getContentResolver().openFileDescriptor(imageUri, "r");
+            File thumbnail = VideoThumbnailer.generateThumbnailFile(getCacheDir(), fd.getFileDescriptor(),
+                    getFileNameFromUri(imageUri));
+            imageUri = Uri.fromFile(thumbnail);
+        }
         ImagePanel imagePanel = new ImagePanel(this, image_parent_panel, imageUri, imagePanels);
         imagePanels.add(imagePanel);
         image_parent_panel.addView(imagePanel.getLayout());
