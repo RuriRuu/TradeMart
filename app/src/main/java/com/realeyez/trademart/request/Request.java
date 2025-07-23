@@ -2,12 +2,15 @@ package com.realeyez.trademart.request;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -32,6 +35,7 @@ public class Request {
     private long contentLength;
     private ContentRange contentRange;
     private ContentDisposition disposition;
+    private HashMap<String, String> params;
 
     private boolean usingSSL;
     private URLConnection con;
@@ -47,6 +51,7 @@ public class Request {
         this.contentRange = builder.contentRange;
         this.disposition = builder.disposition;
         this.usingSSL = builder.usingSSL;
+        this.params = builder.params;
     }
 
     /**
@@ -57,7 +62,7 @@ public class Request {
      * @return response from the server
      *
      **/
-    public Response sendRequest() throws IOException {
+    public Response sendRequest() throws FileNotFoundException, IOException {
         return sendHttpRequest();
     }
 
@@ -65,7 +70,7 @@ public class Request {
         return Uri.parse(buildURL());
     }
 
-    private Response sendHttpRequest() throws IOException {
+    private Response sendHttpRequest() throws FileNotFoundException, IOException {
 
         URL url = new URL(buildURL());
         con = (HttpURLConnection) url.openConnection();
@@ -77,6 +82,7 @@ public class Request {
         if(disposition != null){
             con.setRequestProperty("Content-Disposition", disposition.getHeader());
         }
+        params.forEach((key, value) -> con.addRequestProperty(key, value));
         // HttpParams params = con.getPar
         // con.getHeaderField("Content");
         if (method.equals("POST")) {
@@ -106,36 +112,31 @@ public class Request {
     }
 
     // TODO: add Response Codes to Response
-    private Response readResponse() {
+    private Response readResponse() throws FileNotFoundException, IOException{
         Response response = null;
-        try {
-            ContentRange contentRange = ContentRange.parse(con.getHeaderField("Content-Range"));
-            byte[] content = null;
-            int contentLength = con.getHeaderFieldInt("Content-Length", 0);
-            ResponseBuilder builder = new ResponseBuilder()
-                    .setCode(usingSSL == true ? ((HttpsURLConnection) con).getResponseCode()
-                            : ((HttpURLConnection) con).getResponseCode())
-                    .setLocation(con.getHeaderField("Location"))
-                    .setHost(createResponseHost())
-                    .setContentLength(contentLength)
-                    .setContentDisposition(con.getHeaderField("Content-Disposition"))
-                    .setContentType(con.getContentType());
-            if(contentRange == null){
-                content = readAllResponseBytes(contentLength);
-            } else {
-                builder.setContentRange(contentRange);
-                content = readNResponseBytes(
-                        (int) contentRange.getStart(),
-                        (int) contentRange.getEnd(),
-                        contentLength
-                        );
-            }
-            builder.setContent(content);
-            response = builder.build();
-        } catch (IOException e) {
-            Logger.log("Unable to read response", LogLevel.WARNING);
-            e.printStackTrace();
+        ContentRange contentRange = ContentRange.parse(con.getHeaderField("Content-Range"));
+        byte[] content = null;
+        int contentLength = con.getHeaderFieldInt("Content-Length", 0);
+        ResponseBuilder builder = new ResponseBuilder()
+            .setCode(usingSSL == true ? ((HttpsURLConnection) con).getResponseCode()
+                    : ((HttpURLConnection) con).getResponseCode())
+            .setLocation(con.getHeaderField("Location"))
+            .setHost(createResponseHost())
+            .setContentLength(contentLength)
+            .setContentDisposition(con.getHeaderField("Content-Disposition"))
+            .setContentType(con.getContentType());
+        if(contentRange == null){
+            content = readAllResponseBytes(contentLength);
+        } else {
+            builder.setContentRange(contentRange);
+            content = readNResponseBytes(
+                    (int) contentRange.getStart(),
+                    (int) contentRange.getEnd(),
+                    contentLength
+                    );
         }
+        builder.setContent(content);
+        response = builder.build();
         return response;
     }
 
@@ -149,18 +150,16 @@ public class Request {
         return bytes;
     }
 
-    private byte[] readAllResponseBytes(int length){
+    private byte[] readAllResponseBytes(int length) throws FileNotFoundException, IOException{
         byte[] bytes = new byte[length];
-        try (BufferedInputStream reader = new BufferedInputStream(con.getInputStream())) {
-            int totalRead = 0;
-            while(totalRead < length){
-                int read = reader.read(bytes, totalRead, length-totalRead);
-                if(read == -1) break;
-                totalRead += read;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        BufferedInputStream reader = new BufferedInputStream(con.getInputStream());
+        int totalRead = 0;
+        while(totalRead < length){
+            int read = reader.read(bytes, totalRead, length-totalRead);
+            if(read == -1) break;
+            totalRead += read;
         }
+        reader.close();
         return bytes;
     }
 
@@ -183,6 +182,25 @@ public class Request {
                 .append(getLocationBase())
                 .append(getPortString())
                 .append(path);
+        if(!params.isEmpty()){
+            builder.append(parseParams());
+        }
+        return builder.toString();
+    }
+
+    private String parseParams(){
+        StringBuilder builder = new StringBuilder();
+        builder.append('?');
+        Set<String> keyset = params.keySet();
+        int curParam = 0;
+        for (String key : keyset) {
+            builder.append(Uri.encode(key));
+            builder.append('=');
+            builder.append(Uri.encode(params.get(key)));
+            if(curParam < params.size()-1)
+                builder.append('&');
+            curParam++;
+        }
         return builder.toString();
     }
 
@@ -227,15 +245,19 @@ public class Request {
         private boolean usingSSL;
         private ContentRange contentRange;
         private ContentDisposition disposition;
+        private HashMap<String, String> params;
 
         public RequestBuilder() {
-            host = method = path = contentType = null;
+            host = method = null;
+            contentType = "application/octet-stream";
+            path = "";
             body = null;
             usingSSL = false;
             port = DEFAULT_SERVER_PORT;
             contentLength = 0;
             contentRange = null;
             disposition = null;
+            params = new HashMap<>();
         }
 
         public RequestBuilder setHost(String host) {
@@ -354,6 +376,11 @@ public class Request {
                 else
                     this.contentType = contentType;
             }
+            return this;
+        }
+
+        public RequestBuilder addParam(String key, String value){
+            params.put(key, value);
             return this;
         }
 

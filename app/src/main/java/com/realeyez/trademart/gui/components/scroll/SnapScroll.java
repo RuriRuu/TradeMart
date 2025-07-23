@@ -56,6 +56,22 @@ public class SnapScroll {
         });
     }
 
+    public void refreshScroll(){
+        int curY = curChild * scrollView.getHeight();
+        if(lastY == curY){
+            scrollView.scrollTo(scrollView.getWidth(), curY);
+        }
+    }
+
+    public void resetChildren(){
+        curChild = 0;
+        lastY = 0;
+    }
+
+    public void setCurChild(int curChild){
+        this.curChild = curChild;
+    }
+
     public int getCurChild(){
         return curChild;
     }

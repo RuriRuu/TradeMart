@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.realeyez.trademart.gui.components.messaging.ConvoPanel xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/convo_layout"
+    android:padding="16dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/convo_layout_profile_image"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/profile_picture_placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/convo_username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="Mirai Yuki"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toStartOf="@+id/convo_timestamp"
+        app:layout_constraintStart_toEndOf="@+id/convo_layout_profile_image"
+        app:layout_constraintTop_toTopOf="@+id/convo_layout_profile_image" />
+
+    <!-- Message Time -->
+    <TextView
+        android:id="@+id/convo_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:text="12:34 PM"
+        android:textColor="#999999"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/convo_username" />
+
+    <!-- Last Message Container -->
+    <LinearLayout
+        android:id="@+id/last_message_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toStartOf="@+id/convo_unread_count"
+        app:layout_constraintStart_toEndOf="@+id/convo_layout_profile_image"
+        app:layout_constraintTop_toBottomOf="@+id/convo_username">
+
+        <!-- Message Type Icon -->
+        <TextView
+            android:id="@+id/message_type_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:gravity="center"
+            android:text="📷"
+            android:textSize="12sp"
+            android:layout_marginEnd="4dp"
+            android:visibility="gone" />
+
+        <!-- Last Message Preview -->
+        <TextView
+            android:id="@+id/convo_last_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/poppins"
+            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras mattis nisl eu turpis mollis hendrerit. Duis consequat justo vel ex aliquet venenatis non a nisi. Praesent malesuada fermentum sem. Nullam fringilla eget lacus commodo facilisis. Praesent metus tellus, tempus at lorem sit amet, cursus rutrum lacus. Integer nulla arcu, elementum sit amet diam eu, efficitur porta risus. Integer sagittis facilisis quam, quis tincidunt est convallis id."
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+    </LinearLayout>
+
+    <!-- Unread Messages Count -->
+    <TextView
+        android:id="@+id/convo_unread_count"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/rounded_card_background"
+        android:backgroundTint="#F26594"
+        android:gravity="center"
+        android:text="3"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppins_bold"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/last_message_container"
+        app:layout_constraintBottom_toBottomOf="@+id/last_message_container" />
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/convo_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="16dp"
+        android:background="#F0F0F0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/last_message_container" />
+
+</com.realeyez.trademart.gui.components.messaging.ConvoPanel>

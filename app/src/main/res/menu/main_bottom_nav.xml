@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/main_action_home"
+        android:title="home"
+        android:icon="@drawable/home" />
+
+    <item
+        android:id="@+id/main_action_search"
+        android:title="search"
+        android:icon="@drawable/search_24" />
+
+    <item
+        android:id="@+id/main_action_create"
+        android:title="create"
+        android:icon="@drawable/plus" />
+
+    <item
+        android:id="@+id/main_action_chats"
+        android:title="chats"
+        android:icon="@drawable/message" />
+
+    <item
+        android:id="@+id/main_action_profile"
+        android:title="profile"
+        android:icon="@drawable/profile_picture_placeholder" />
+
+</menu>
+
+

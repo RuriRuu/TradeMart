@@ -18,9 +18,11 @@ import org.json.JSONObject;
 import com.realeyez.trademart.encryption.Encryptor;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.Request;
+import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.util.Dialogs;
+import com.realeyez.trademart.util.Logger;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -107,18 +109,9 @@ public class SignUpActivity extends AppCompatActivity {
             .put("salt_iv", saltIv)
             .build();
 
-        Request request = new Request.RequestBuilder()
-            .setPost(content.getContentString())
-            .useSSL()
-            .setHost(getResources().getString(R.string.host_url))
-            .noPort()
-            .setPath("/user/signup")
-            .setContentType("application/json")
-            .build();
-
         Response response = null;
         try {
-            response = request.sendRequest();
+            response = RequestUtil.sendPostRequest("/user/signup", content);
         } catch (IOException e) {
             e.printStackTrace();
         }

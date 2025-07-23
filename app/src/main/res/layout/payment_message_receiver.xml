@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.realeyez.trademart.gui.components.messaging.MessageSenderChatPanel xmlns:android="http://schemas.android.com/apk/res/android"
+<com.realeyez.trademart.gui.components.messaging.PaymentReceiverChatPanel xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:hapticFeedbackEnabled="false">
 
-    <!-- Message Container -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/chat_sender_message_card"
+        android:id="@+id/payment_receiver_message_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="64dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="64dp"
         app:cardBackgroundColor="#F26594"
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/chat_sender_profile_image"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -28,31 +26,46 @@
             android:padding="12dp">
 
             <!-- Username -->
-            <TextView
-                android:id="@+id/chat_sender_message_username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:fontFamily="@font/poppins_bold"
-                android:text="Mirai Yuki"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp"
-                android:textStyle="bold" />
 
             <!-- Message Text -->
             <TextView
-                android:id="@+id/chat_sender_message_text"
+                android:id="@+id/payment_receiver_reason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
                 android:lineSpacingMultiplier="1.2"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                android:paddingVertical="8dp"
+                android:text="Job"
+                android:textAlignment="center"
                 android:textColor="#F2EDED"
                 android:textSize="14sp" />
 
-            <!-- Timestamp -->
             <TextView
-                android:id="@+id/chat_sender_message_timestamp"
+                android:id="@+id/payment_receiver_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:lineSpacingMultiplier="1.2"
+                android:text="PAYMENT AMOUNT"
+                android:textAlignment="center"
+                android:textColor="#F2EDED"
+                android:textSize="24sp" />
+
+            <!-- Timestamp -->
+
+            <Button
+                android:id="@+id/payment_receiver_received"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="#FFFFFF"
+                android:backgroundTintMode="add"
+                android:text="Confirm Payment"
+                android:textColor="#333333"
+                app:cornerRadius="10dp" />
+
+            <TextView
+                android:id="@+id/payment_receiver_message_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -66,14 +79,4 @@
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Profile Image -->
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/chat_sender_profile_image"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:src="@drawable/profile_picture_placeholder"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/chat_sender_message_card"/>
-
-</com.realeyez.trademart.gui.components.messaging.MessageSenderChatPanel>
+</com.realeyez.trademart.gui.components.messaging.PaymentReceiverChatPanel>

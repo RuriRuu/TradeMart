@@ -7,12 +7,21 @@
     android:layout_height="match_parent"
     android:background="#FFFAFAFA">
 
-    <androidx.media3.ui.PlayerView
-        android:id="@+id/feedview_video_view"
+    <HorizontalScrollView
+        android:id="@+id/feedview_content_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:descendantFocusability="blocksDescendants"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/feedview_content_panel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
+
+    </HorizontalScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/feedview_control_panel"
@@ -32,14 +41,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <ImageButton
-                android:id="@+id/feedview_like_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/heart"
-                android:layout_weight="1"
-                android:background="@android:color/transparent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/feedview_like_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/heart"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/feedview_like_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="0"
+                    android:textSize="10pt"
+                    android:textAlignment="center"
+                    android:textColor="@color/pink"
+                    app:layout_constraintTop_toBottomOf="@id/feedview_like_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageButton
                 android:id="@+id/feedview_message_button"
@@ -47,7 +76,6 @@
                 android:layout_height="50dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/message"
-                android:layout_weight="1"
                 android:background="@android:color/transparent" />
 
         </LinearLayout>
@@ -76,7 +104,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:cardCornerRadius="70dp">
+                    app:cardCornerRadius="40dp">
 
                     <ImageView
                         android:id="@+id/feedview_user_image"
@@ -114,3 +142,5 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.realeyez.trademart.gui.components.feed.FeedView>
+
+

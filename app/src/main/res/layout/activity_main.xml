@@ -3,107 +3,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_white"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/main_logoContainer"
+    <FrameLayout
+        android:id="@+id/main_content_panel"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:gravity="center"
-        android:orientation="vertical"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/main_nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:background="@drawable/transparent_bg"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/trademart_logo" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/mainmenu_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Demo Menu"
-        android:textColor="#000000"
-        android:textSize="14pt"
-        app:layout_constraintTop_toBottomOf="@id/main_logoContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <LinearLayout
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/main_nav_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="65dp"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/mainmenu_textview">
-
-        <Button
-            android:id="@+id/RatingCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:backgroundTint="@color/pink"
-            android:textSize="11pt"
-            android:text=" Rating System" />
-
-        <Button
-            android:id="@+id/InterestCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:backgroundTint="@color/pink"
-            android:textSize="11pt"
-            android:text="Interest Checker" />
-
-        <Button
-            android:id="@+id/buypagebtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:backgroundTint="@color/pink"
-            android:textSize="11pt"
-            android:text="Buy Page" />
-
-        <Button
-            android:id="@+id/skillcardbuttonview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:backgroundTint="@color/pink"
-            android:textSize="11pt"
-            android:text="Skill Cards" />
-
-        <Button
-            android:id="@+id/profile_view_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:backgroundTint="@color/pink"
-            android:textSize="11pt"
-            android:text="Profile Page" />
-
-        <Button
-            android:id="@+id/video_view_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:backgroundTint="@color/pink"
-            android:textSize="11pt"
-            android:text="Video Player" />
-
-    </LinearLayout>
+        app:menu="@menu/main_bottom_nav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

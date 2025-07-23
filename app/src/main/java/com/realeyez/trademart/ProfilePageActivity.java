@@ -1,6 +1,7 @@
 package com.realeyez.trademart;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -113,18 +114,24 @@ public class ProfilePageActivity extends AppCompatActivity {
             .append(userId)
             .append("/avatar")
             .toString();
+        Response response = null;
         try {
-            Response response = RequestUtil.sendGetRequest(path);
-            CacheFile cacheFile = CacheFile.newFile(getCacheDir(),
-                    response.getContentDispositionField("filename"), 
-                    response.getContentBytes());
-            File file = cacheFile.getFile();
-            runOnUiThread(() -> {
-                profileImageView.setImageURI(Uri.fromFile(file));
-            });
+            response = RequestUtil.sendGetRequest(path);
+        } catch (FileNotFoundException e) {
+            Logger.log("User does not have a profile picture", LogLevel.INFO);
+            return;
         } catch (IOException e) {
+            Logger.log("Something went wrong regarding loading profile picture", LogLevel.INFO);
             e.printStackTrace();
+            return;
         }
+        CacheFile cacheFile = CacheFile.newFile(getCacheDir(),
+                response.getContentDispositionField("filename"), 
+                response.getContentBytes());
+        File file = cacheFile.getFile();
+        runOnUiThread(() -> {
+            profileImageView.setImageURI(Uri.fromFile(file));
+        });
     }
 
     private void loadPosts(){
