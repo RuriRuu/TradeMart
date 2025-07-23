@@ -62,6 +62,7 @@ public class HomepageFragment extends Fragment {
 
     public void scrollToTop(){
         scrollView.smoothScrollTo(0, 0);
+        snapScroll.resetChildren();
     }
 
     @Override
