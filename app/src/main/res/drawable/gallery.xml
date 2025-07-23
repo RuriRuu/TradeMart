@@ -1,11 +1,4 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="512dp" android:viewportHeight="122.88" android:viewportWidth="122.88" android:width="512dp">
-      
-    <path android:fillColor="#00000000" android:pathData="M17.76,15.36L51.36,15.36A2.4,2.4 0,0 1,53.76 17.76L53.76,51.36A2.4,2.4 0,0 1,51.36 53.76L17.76,53.76A2.4,2.4 0,0 1,15.36 51.36L15.36,17.76A2.4,2.4 0,0 1,17.76 15.36z" android:strokeColor="#e91e63" android:strokeLineCap="square" android:strokeLineJoin="bevel" android:strokeWidth="4.8"/>
-      
-    <path android:fillColor="#00000000" android:pathData="M17.52,68.88L51.12,68.88A2.4,2.4 0,0 1,53.52 71.28L53.52,104.88A2.4,2.4 0,0 1,51.12 107.28L17.52,107.28A2.4,2.4 0,0 1,15.12 104.88L15.12,71.28A2.4,2.4 0,0 1,17.52 68.88z" android:strokeColor="#e91e63" android:strokeLineCap="square" android:strokeLineJoin="bevel" android:strokeWidth="4.8"/>
-      
-    <path android:fillColor="#00000000" android:pathData="M70.32,68.88L103.92,68.88A2.4,2.4 0,0 1,106.32 71.28L106.32,104.88A2.4,2.4 0,0 1,103.92 107.28L70.32,107.28A2.4,2.4 0,0 1,67.92 104.88L67.92,71.28A2.4,2.4 0,0 1,70.32 68.88z" android:strokeColor="#e91e63" android:strokeLineCap="square" android:strokeLineJoin="bevel" android:strokeWidth="4.8"/>
-      
-    <path android:fillColor="#00000000" android:pathData="M70.32,15.12L103.92,15.12A2.4,2.4 0,0 1,106.32 17.52L106.32,51.12A2.4,2.4 0,0 1,103.92 53.52L70.32,53.52A2.4,2.4 0,0 1,67.92 51.12L67.92,17.52A2.4,2.4 0,0 1,70.32 15.12z" android:strokeColor="#e91e63" android:strokeLineCap="square" android:strokeLineJoin="bevel" android:strokeWidth="4.8"/>
-    
-</vector>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp" android:viewportHeight="960" android:viewportWidth="960" android:width="24dp">
+
+    <path android:fillColor="@color/pink" android:pathData="M120,520L120,200Q120,167 143.5,143.5Q167,120 200,120L440,120L440,520L120,520ZM360,440L360,440L360,440L360,440L360,440Q360,440 360,440Q360,440 360,440ZM520,120L760,120Q793,120 816.5,143.5Q840,167 840,200L840,360L520,360L520,120ZM520,840L520,440L840,440L840,760Q840,793 816.5,816.5Q793,840 760,840L520,840ZM120,600L440,600L440,840L200,840Q167,840 143.5,816.5Q120,793 120,760L120,600ZM360,680L360,680L360,680L360,680L360,680Q360,680 360,680Q360,680 360,680ZM600,280L600,280L600,280L600,280L600,280Q600,280 600,280Q600,280 600,280ZM600,520Q600,520 600,520Q600,520 600,520L600,520L600,520L600,520ZM200,440L360,440L360,200L200,200Q200,200 200,200Q200,200 200,200L200,440ZM600,280L760,280L760,200Q760,200 760,200Q760,200 760,200L600,200L600,280ZM600,520L600,760L760,760Q760,760 760,760Q760,760 760,760L760,520L600,520ZM200,680L200,760Q200,760 200,760Q200,760 200,760L360,760L360,680L200,680Z"/></vector>
