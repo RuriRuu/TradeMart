@@ -8,20 +8,27 @@
     android:layout_height="match_parent"
     android:background="@color/background_white">
 
-    <ScrollView
-        android:id="@+id/homepage_scroll"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/homepage_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:descendantFocusability="blocksDescendants"
-        >
+        android:descendantFocusability="blocksDescendants">
 
-        <LinearLayout
-            android:id="@+id/homepage_scroll_panel"
+        <ScrollView
+            android:id="@+id/homepage_scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:layout_height="match_parent"
+            android:descendantFocusability="blocksDescendants">
 
-    </ScrollView>
+            <LinearLayout
+                android:id="@+id/homepage_scroll_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </FrameLayout>
 

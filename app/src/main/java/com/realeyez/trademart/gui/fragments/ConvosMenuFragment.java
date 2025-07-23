@@ -43,6 +43,7 @@ public class ConvosMenuFragment extends Fragment {
 
     private ArrayList<ConvoInfo> convoInfos;
     private LinearLayout listPanel;
+    private Activity activity;
 
     public ConvosMenuFragment(){
         super(R.layout.fragment_convo_menu);
@@ -63,6 +64,7 @@ public class ConvosMenuFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        activity = getActivity();
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             if(!convoInfos.isEmpty()){
@@ -120,18 +122,14 @@ public class ConvosMenuFragment extends Fragment {
             return;
         }
 
-        Activity activity = getActivity();
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            convoInfos.sort(Comparator.comparing((info) -> ((ConvoInfo)info).getTimestamp()).reversed());
-            for (ConvoInfo info : convoInfos) {
-                Uri mateUri = cacheProfilePicture(info.getUserId());
-                Uri userUri = cacheProfilePicture(ResourceRepository.getResources().getCurrentUser().getId());
-                activity.runOnUiThread(() -> {
-                    listPanel.addView(ConvoPanel.inflate(activity.getLayoutInflater(), info, mateUri, userUri));
-                });
-            }
-        });
+        convoInfos.sort(Comparator.comparing((info) -> ((ConvoInfo)info).getTimestamp()).reversed());
+        for (ConvoInfo info : convoInfos) {
+            Uri mateUri = cacheProfilePicture(info.getUserId());
+            Uri userUri = cacheProfilePicture(ResourceRepository.getResources().getCurrentUser().getId());
+            activity.runOnUiThread(() -> {
+                listPanel.addView(ConvoPanel.inflate(activity.getLayoutInflater(), info, mateUri, userUri));
+            });
+        }
 
     }
 

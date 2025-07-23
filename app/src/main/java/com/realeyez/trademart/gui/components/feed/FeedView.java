@@ -14,6 +14,7 @@ import com.realeyez.trademart.R;
 import com.realeyez.trademart.feed.FeedItem;
 import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
 import com.realeyez.trademart.gui.media.VideoPlayer;
+import com.realeyez.trademart.media.MediaType;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
@@ -22,7 +23,8 @@ import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.FileUtil;
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,27 +38,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.FrameLayout.LayoutParams;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.media3.common.Player;
+import androidx.media3.ui.PlayerView;
 
 public class FeedView extends ConstraintLayout {
-
-    private enum PanelType {
-        IMAGE, VIDEO;
-    }
-
-    private static class MediaData {
-        private PanelType type;
-        private Uri mediaUri;
-
-        public MediaData(PanelType type, Uri mediaUri){
-            this.type = type;
-            this.mediaUri = mediaUri;
-        }
-    }
 
     private HorizontalScrollView scrollView;
     private SnapScrollH snapScroll;
@@ -75,7 +63,8 @@ public class FeedView extends ConstraintLayout {
 
     private FeedItem feed;
 
-    private ArrayList<MediaData> mediaData;
+    private ArrayList<Uri> mediaUris;
+    private boolean isFirst;
 
     public FeedView(Activity activity){
         super(activity);
@@ -107,6 +96,14 @@ public class FeedView extends ConstraintLayout {
         likeCountField = findViewById(R.id.feedview_like_count);
         likeButton = findViewById(R.id.feedview_like_button);
         messageButton = findViewById(R.id.feedview_message_button);
+
+        // setOnFocusChangeListener((view, focused) -> {
+        //     if(focused){
+        //         preparePlayers();
+        //     } else {
+        //         destroyPlayers();
+        //     }
+        // });
     }
 
     @Override
@@ -115,20 +112,52 @@ public class FeedView extends ConstraintLayout {
 
         initComponents();
 
-        mediaData = new ArrayList<>();
-
+        mediaUris = new ArrayList<>();
         snapScroll = new SnapScrollH(scrollView);
 
         addOnClickListeners();
     }
 
+    public void destroyPlayers(){
+        for (int i = 0; i < contentPanel.getChildCount(); i++) {
+            if(contentPanel.getChildAt(i) instanceof PlayerView){
+                Player player = ((PlayerView) contentPanel.getChildAt(i)).getPlayer();
+                player.stop();
+                player.clearMediaItems();
+            }
+        }
+    }
+            
+    public void pausePlayers(){
+        for (int i = 0; i < contentPanel.getChildCount(); i++) {
+            if(contentPanel.getChildAt(i) instanceof PlayerView){
+                Player player = ((PlayerView) contentPanel.getChildAt(i)).getPlayer();
+                if(player.isPlaying()){
+                    player.pause();
+                }
+            }
+        }
+    }
+
+    public void preparePlayers(){
+        for (int i = 0; i < contentPanel.getChildCount(); i++) {
+            if(contentPanel.getChildAt(i) instanceof VideoPlayer){
+                VideoPlayer player = (VideoPlayer) contentPanel.getChildAt(i);
+                player.setMediaUri(mediaUris.get(i));
+                player.getPlayer().setPlayWhenReady(true);
+                player.prepare();
+                // player.play();
+            }
+            
+        }
+    }
+
     private void loadFeed(){
         loadFeedDetails();
+        addMediaPanels();
         ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.execute(() -> {
-            fetchMedia();
             requestProfilePicture();
-            activity.runOnUiThread(() -> addMediaPanels(mediaData));
         });
     }
 
@@ -166,64 +195,80 @@ public class FeedView extends ConstraintLayout {
         }
     }
 
-
     private void setLikeButtonLiked(int likeCount){
         likeButton.setImageDrawable(getResources().getDrawable(R.drawable.heart_filled, null));
         likeCountField.setText(likeCountString(likeCount));
         likeButton.setEnabled(false);
     }
 
-    private void addMediaPanels(ArrayList<MediaData> mediaData){
-        for (MediaData data : mediaData) {
-            switch (data.type) {
-                case IMAGE:
-                    addImagePanel(data.mediaUri);
-                    break;
-                case VIDEO:
-                    addVideoPanel(data.mediaUri);
-                    break;
-            }
+    private void addMediaPanels(){
+        ArrayList<MediaType> types = feed.getMediaTypes();
+        for (int i = 0; i < feed.getMediaIds().size(); i++) {
+            addPanels(types, i);
         }
+            
     }
 
-    private void fetchMedia(){
-        for (int mediaId : feed.getMediaIds()) {
-            String path = new StringBuilder()
-                .append("/media/")
-                .append(mediaId).toString();
-            try {
-                Response response = RequestUtil.sendGetRequest(path);
-                ContentDisposition disposition = response.getContentDisposition();
-                String filename = disposition.getField("filename");
-                if(FileUtil.getExtension(filename).equals("m3u8")){
-                    String location = new StringBuilder()
-                        .append(response.getHost())
-                        .append(response.getLocation())
-                        .toString();
-                    mediaData.add(new MediaData(PanelType.VIDEO, Uri.parse(location)));
-                } else {
-                    CacheFile cacheFile = CacheFile.cache(getContext().getCacheDir(), filename, response.getContentBytes());
-                    File file = cacheFile.getFile();
-                    mediaData.add(new MediaData(PanelType.IMAGE, Uri.fromFile(file)));
+    private void addPanels(ArrayList<MediaType> types, int i){
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            Uri uri = fetchMediaUri(feed.getMediaIds().get(i), types.get(i));
+            activity.runOnUiThread(() -> {
+                switch (types.get(i)) {
+                    case IMAGE:
+                        addImagePanel(uri);
+                        break;
+                    case VIDEO:
+                        addVideoPanel(uri);
+                        break;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+            });
+        });
     }
 
-    private void addImagePanel(Uri mediaUri){
+    private Uri fetchMediaUri(int mediaId, MediaType type){
+        Uri uri = null;
+        String path = new StringBuilder()
+            .append("/media/")
+            .append(mediaId).toString();
+        try {
+            Response response = RequestUtil.sendGetRequest(path);
+            ContentDisposition disposition = response.getContentDisposition();
+            String filename = disposition.getField("filename");
+            if(type == MediaType.VIDEO){
+                String location = new StringBuilder()
+                    .append(response.getHost())
+                    .append(response.getLocation())
+                    .toString();
+                uri = Uri.parse(location);
+            } else {
+                CacheFile cacheFile = CacheFile.cache(getContext().getCacheDir(), filename, response.getContentBytes());
+                File file = cacheFile.getFile();
+                uri = Uri.fromFile(file);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return uri;
+    }
+
+    private void addImagePanel(Uri uri){
         ImageView imageView = new ImageView(getContext());
         layoutMediaPanel(imageView);
-        imageView.setImageURI(mediaUri);
+        imageView.setImageURI(uri);
+        mediaUris.add(uri);
         contentPanel.addView(imageView);
     }
 
-    private void addVideoPanel(Uri mediaUri){
+    private void addVideoPanel(Uri uri){
         VideoPlayer player = new VideoPlayer(getContext());
         layoutMediaPanel(player);
-        player.setMediaUri(mediaUri);
-        player.prepare();
+        player.setMediaUri(uri);
+        player.getPlayer().setPlayWhenReady(true);
+        if(isFirst){
+            player.prepare();
+        }
+        mediaUris.add(uri);
         contentPanel.addView(player);
     }
 
@@ -233,15 +278,6 @@ public class FeedView extends ConstraintLayout {
                 scrollView.getHeight(),
                 Gravity.CENTER);
         view.setLayoutParams(params);
-    }
-
-    public static FeedView inflate(Activity activity, LayoutParams params, FeedItem feed) {
-        FeedView view = (FeedView) activity.getLayoutInflater()
-                .inflate(R.layout.layout_feed_view, null);
-        view.setLayoutParams(params);
-        view.setFeed(feed);
-        view.loadFeed();
-        return view;
     }
 
     public void setFeed(FeedItem feed){
@@ -323,11 +359,23 @@ public class FeedView extends ConstraintLayout {
             });
         });
         messageButton.setOnClickListener(view -> {
+            VideoPlayer player = (VideoPlayer) contentPanel.getChildAt(snapScroll.getCurChild());
+            player.pause();
             ExecutorService exec = Executors.newSingleThreadExecutor();
             exec.execute(() -> {
                 messageButtonAction();
             });
         });
+    }
+
+    public static FeedView inflate(Activity activity, LayoutParams params, FeedItem feed, boolean isFirst) {
+        FeedView view = (FeedView) activity.getLayoutInflater()
+                .inflate(R.layout.layout_feed_view, null);
+        view.isFirst = isFirst;
+        view.setLayoutParams(params);
+        view.setFeed(feed);
+        view.loadFeed();
+        return view;
     }
 
 }

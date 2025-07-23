@@ -45,6 +45,7 @@ public class VideoPlayer extends PlayerView {
     private void initComponents(Context context){
         player = new ExoPlayer.Builder(context).build();
         setPlayer(player);
+        player.setPlayWhenReady(true);
     }
 
     public void togglePlay(){

@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         feedViews = new ArrayList<>();
 
-        initFrags();
-
+        // initFrags();
+        showHomepageFragment();
 
         addOnClickListeners();
     }
@@ -69,19 +69,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void showHomepageFragment(){
         fragman.beginTransaction()
-            .show(homepageFrag)
-            .hide(convosFrag)
-            // .replace(R.id.main_content_panel, homepageFrag)
-            // .setReorderingAllowed(true)
+            .replace(R.id.main_content_panel, homepageFrag)
+            .setReorderingAllowed(true)
             .commit();
     }
 
     private void showChatsFragment(){
         fragman.beginTransaction()
-            .hide(homepageFrag)
-            .show(convosFrag)
-            // .replace(R.id.main_content_panel, convosFrag)
-            // .setReorderingAllowed(true)
+            .replace(R.id.main_content_panel, convosFrag)
+            .setReorderingAllowed(true)
             .commit();
     }
 
@@ -118,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if(item.getItemId() == R.id.main_action_search){
                 currentFrag = 2;
+                homepageFrag.unfocus();
                 return true;
             }
             if(item.getItemId() == R.id.main_action_create) {
@@ -126,10 +123,12 @@ public class MainActivity extends AppCompatActivity {
             }
             if(item.getItemId() == R.id.main_action_chats) {
                 currentFrag = 3;
+                homepageFrag.unfocus();
                 chatButtonAction();
                 return true;
             }
             if(item.getItemId() == R.id.main_action_profile) {
+                homepageFrag.unfocus();
                 profileButtonAction();
                 return false;
             }
