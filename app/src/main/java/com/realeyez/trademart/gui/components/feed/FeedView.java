@@ -23,8 +23,6 @@ import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Logger;
-import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
 import android.content.Context;
@@ -164,9 +162,7 @@ public class FeedView extends ConstraintLayout {
     private void loadFeedDetails(){
         titleField.setText(feed.getTitle());
         authorField.setText(feed.getUsername());
-        if(feed.userLiked()){
-            setLikeButtonLiked(feed.getLikes());
-        }
+        setLikeButtonLiked(feed.getLikes(), feed.userLiked());
         likeCountField.setText(likeCountString(feed.getLikes()));
     }
 
@@ -195,10 +191,11 @@ public class FeedView extends ConstraintLayout {
         }
     }
 
-    private void setLikeButtonLiked(int likeCount){
-        likeButton.setImageDrawable(getResources().getDrawable(R.drawable.heart_filled, null));
+    private void setLikeButtonLiked(int likeCount, boolean isLiking){
+        likeButton.setImageDrawable(isLiking ?
+                getResources().getDrawable(R.drawable.heart_filled, null) :
+                getResources().getDrawable(R.drawable.heart, null));
         likeCountField.setText(likeCountString(likeCount));
-        likeButton.setEnabled(false);
     }
 
     private void addMediaPanels(){
@@ -305,8 +302,9 @@ public class FeedView extends ConstraintLayout {
             }
             JSONObject updated = responseJson.getJSONObject("data").getJSONObject("feed_updated");
             int likeCount = updated.getInt("likes");
+            boolean userLiked = updated.getBoolean("user_liked");
             activity.runOnUiThread(() -> {
-                setLikeButtonLiked(likeCount);
+                setLikeButtonLiked(likeCount, userLiked);
             });
         } catch (JSONException e) {
             e.printStackTrace();
@@ -359,8 +357,7 @@ public class FeedView extends ConstraintLayout {
             });
         });
         messageButton.setOnClickListener(view -> {
-            VideoPlayer player = (VideoPlayer) contentPanel.getChildAt(snapScroll.getCurChild());
-            player.pause();
+            pausePlayers();
             ExecutorService exec = Executors.newSingleThreadExecutor();
             exec.execute(() -> {
                 messageButtonAction();
