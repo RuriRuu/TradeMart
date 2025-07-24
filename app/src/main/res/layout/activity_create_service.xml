@@ -24,8 +24,8 @@
             android:id="@+id/createservice_back_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_gravity="center|start"
             android:background="@android:color/transparent"
+            android:layout_gravity="center|start"
             android:scaleType="centerInside"
             android:src="@drawable/arrow_left_dark" />
 
@@ -59,25 +59,28 @@
     <ScrollView
         android:id="@+id/createservice_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:paddingTop="15dp"
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/createservice_toolbar"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/createservice_main_linearlayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:orientation="vertical">
+            android:layout_marginEnd="15dp">
 
             <LinearLayout
+                android:id="@+id/createservice_title_input_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:orientation="vertical"
-                android:layout_margin="10dp">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -90,17 +93,20 @@
                     android:id="@+id/createservice_title_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
                     android:background="@drawable/rounded_white_inputfield"
+                    android:inputType="text"
                     android:textColor="@color/black" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/createservice_description_input_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:orientation="vertical"
-                android:layout_margin="10dp">
+                app:layout_constraintTop_toBottomOf="@id/createservice_title_input_row"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -113,18 +119,21 @@
                     android:id="@+id/createservice_description_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:singleLine="false"
                     android:background="@drawable/rounded_white_inputfield"
-                    android:textColor="@color/black"
-                    android:inputType="text|textMultiLine" />
+                    android:inputType="text|textMultiLine"
+                    android:singleLine="false"
+                    android:textColor="@color/black" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/createservice_price_input_row"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:layout_margin="10dp">
+                android:layout_margin="10dp"
+                app:layout_constraintTop_toBottomOf="@id/createservice_description_input_row"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -138,11 +147,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_white_inputfield"
-                    android:inputType="number|textMultiLine"
+                    android:inputType="number"
                     android:singleLine="false"
                     android:textColor="@color/black" />
 
             </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/createservice_categories_input_panel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/createservice_price_input_row"
+                app:layout_constraintStart_toStartOf="parent"/>
 
             <Button
                 android:id="@+id/createservice_add_image_button"
@@ -153,15 +171,21 @@
                 android:backgroundTint="@color/pink"
                 android:fontFamily="@font/poppins_bold"
                 android:text="Add Image"
-                android:textSize="7pt" />
+                android:textSize="7pt"
+                app:layout_constraintTop_toBottomOf="@id/createservice_categories_input_panel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <LinearLayout
                 android:id="@+id/createservice_images_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical" 
+                app:layout_constraintTop_toBottomOf="@id/createservice_add_image_button"
+                app:layout_constraintEnd_toEndOf="parent" 
+                app:layout_constraintStart_toStartOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

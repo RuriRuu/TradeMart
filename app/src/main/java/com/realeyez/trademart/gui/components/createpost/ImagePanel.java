@@ -3,6 +3,7 @@ package com.realeyez.trademart.gui.components.createpost;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
@@ -20,10 +21,20 @@ public class ImagePanel {
     private FrameLayout panelFrame;
     private Button removeButton;
     private Uri imageUri;
+    private Bitmap imageBitmap;
     private ArrayList<ImagePanel> imagePanels;
 
     public ImagePanel(Context context, LinearLayout images_panel, Uri imageUri, ArrayList<ImagePanel> imagePanels){
         this.context = context;
+        this.images_panel = images_panel;
+        this.imageUri = imageUri;
+        this.imagePanels = imagePanels;
+        initComponents();
+    }
+
+    public ImagePanel(Context context, LinearLayout images_panel, Uri imageUri, Bitmap imageBitmap, ArrayList<ImagePanel> imagePanels){
+        this.context = context;
+        this.imageBitmap = imageBitmap;
         this.images_panel = images_panel;
         this.imageUri = imageUri;
         this.imagePanels = imagePanels;
@@ -41,7 +52,11 @@ public class ImagePanel {
         image_panel_layout.setLayoutParams(linear_params);
 
         imageView = new ImageView(context);
-        imageView.setImageURI(imageUri);
+        if(imageBitmap != null)
+            imageView.setImageBitmap(imageBitmap);
+        else
+            imageView.setImageURI(imageUri);
+
         LinearLayout.LayoutParams image_params = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT);

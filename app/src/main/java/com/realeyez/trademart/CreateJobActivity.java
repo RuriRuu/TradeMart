@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.gui.components.categorychooser.CategoryChooser;
 import com.realeyez.trademart.gui.components.createpost.ImagePanel;
 import com.realeyez.trademart.gui.dialogs.LoadingDialog;
 import com.realeyez.trademart.request.Content;
@@ -19,27 +20,31 @@ import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.Dialogs;
+import com.realeyez.trademart.util.FileUtil;
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.VideoThumbnailer;
+import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 
     public class CreateJobActivity extends AppCompatActivity {
 
@@ -48,8 +53,13 @@ import androidx.appcompat.app.AppCompatActivity;
     private Button addImageButton;
     private EditText titleField;
     private EditText descField;
+    private EditText priceField;
 
     private LinearLayout image_parent_panel;
+
+    private FrameLayout categoryPanel;
+
+    private CategoryChooser categoryChooser;
 
     private ArrayList<ImagePanel> imagePanels;
 
@@ -61,38 +71,23 @@ import androidx.appcompat.app.AppCompatActivity;
     }
 
     private void initComponents() {
-        backButton = findViewById(R.id.create_job_list_back_button);
-        postButton = findViewById(R.id.create_job_list_post_button);
-        addImageButton = findViewById(R.id.create_job_list_add_image_button);
+        backButton = findViewById(R.id.createjob_list_back_button);
+        postButton = findViewById(R.id.createjob_list_post_button);
+        addImageButton = findViewById(R.id.createjob_list_add_image_button);
+        priceField = findViewById(R.id.createjob_price);
 
-        titleField = findViewById(R.id.create_job_list_title_field);
-        descField = findViewById(R.id.create_job_list_description_field);
-        image_parent_panel = findViewById(R.id.create_job_list_images_panel);
+        titleField = findViewById(R.id.createjob_list_title_field);
+        descField = findViewById(R.id.createjob_list_description_field);
+        image_parent_panel = findViewById(R.id.createjob_list_images_panel);
         imagePanels = new ArrayList<>();
 
-        Spinner spinner = findViewById(R.id.tag_spinner);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                String Item = adapterView.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(), "Selected: " + Item, Toast.LENGTH_LONG).show();
+        categoryPanel = findViewById(R.id.createjob_categories_input_panel);
 
-            }
+        categoryChooser = CategoryChooser.inflate(this,
+                new LayoutParams(LayoutParams.MATCH_PARENT, 
+                    LayoutParams.WRAP_CONTENT));
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.job_categories,
-                android.R.layout.simple_spinner_item
-        );
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        categoryPanel.addView(categoryChooser);
 
         addOnClickListeners();
     }
@@ -104,19 +99,22 @@ import androidx.appcompat.app.AppCompatActivity;
     private void postButtonAction() {
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
-            Response response = sendPublishPostRequest();
-            int postId = -1;
+            Response response = sendPublishJobListRequest();
+            if(response == null){
+                return;
+            }
+            int jobId = -1;
             try {
                 JSONObject json = response.getContentJson();
-                postId = json.getInt("post_id");
+                jobId = json.getInt("job_id");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if(postId == -1) return;
+            if(jobId == -1) return;
             for (ImagePanel panel : imagePanels) {
                 Uri imageUri = panel.getImageUri();
                 // TODO: display if uploading image failed
-                sendPublishPostImageRequest(imageUri, postId);
+                sendPublishJobMediaRequest(imageUri, jobId);
             }
         });
     }
@@ -144,34 +142,59 @@ import androidx.appcompat.app.AppCompatActivity;
             return;
 
         Uri imageUri = data.getData();
-        addImageRow(imageUri);
+        try {
+            addImageRow(imageUri);
+        } catch (FileNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
-    private void addImageRow(Uri imageUri){
-        ImagePanel imagePanel = new ImagePanel(this, image_parent_panel, imageUri, imagePanels);
+    private void addImageRow(Uri imageUri) throws FileNotFoundException {
+        ImagePanel imagePanel = null;
+        if(FileUtil.getExtension(imageUri.getPath()).equals("mp4")){
+            ParcelFileDescriptor fd = getContentResolver().openFileDescriptor(imageUri, "r");
+            Bitmap thumbnail = VideoThumbnailer.generateThumbnailBitmap(fd.getFileDescriptor());
+            imagePanel = new ImagePanel(this, image_parent_panel, imageUri, thumbnail, imagePanels);
+        } else {
+            imagePanel = new ImagePanel(this, image_parent_panel, imageUri, imagePanels);
+        }
         imagePanels.add(imagePanel);
         image_parent_panel.addView(imagePanel.getLayout());
     }
 
-    private Response sendPublishPostRequest(){
+    private Response sendPublishJobListRequest(){
+        if (imagePanels.size() == 0) {
+            runOnUiThread(() -> {
+                Dialogs.showWarningDialog("Please select media to upload", this);
+            });
+            return null;
+        }
         String title = titleField.getText().toString();
         String description = descField.getText().toString();
+        double amount = Double.parseDouble(priceField.getText().toString());
 
         Content content = new Content.ContentBuilder()
-                .put("title", title)
-                .put("description", description)
-                .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
+                .put("job_title", title)
+                .put("job_description", description)
+                .put("employer_id", ResourceRepository.getResources().getCurrentUser().getId())
+                .put("amount", amount)
+                .put("categories", categoryChooser.getChosenCategoriesString())
                 .build();
         Response response = null;
+        Logger.log(content.getContentString(), LogLevel.INFO);
         try {
-            response = RequestUtil.sendPostRequest("/post/publish", content);
+            response = RequestUtil.sendPostRequest("/jobs/create", content);
+        } catch (FileNotFoundException e) {
+            runOnUiThread(() -> {
+                Dialogs.showErrorDialog("Unable to publish Job List", this);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
         return response;
     }
 
-    private Response sendPublishPostImageRequest(Uri imageUri, int postId){
+    private Response sendPublishJobMediaRequest(Uri imageUri, int jobId){
         byte[] bytes = readImageData(imageUri);
 
         String filename = getFileNameFromUri(imageUri);
@@ -179,7 +202,7 @@ import androidx.appcompat.app.AppCompatActivity;
         try {
             ContentDisposition disposition = ContentDisposition.attachment()
                     .addDisposition("filename", filename);
-            response = RequestUtil.sendPostRequest(String.format("/post/publish/%d/media", postId), bytes, disposition);
+            response = RequestUtil.sendPostRequest(String.format("/jobs/create/%d/media", jobId), bytes, disposition);
         } catch (IOException e) {
             e.printStackTrace();
         }

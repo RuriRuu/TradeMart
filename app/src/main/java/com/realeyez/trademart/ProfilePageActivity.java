@@ -61,9 +61,6 @@ public class ProfilePageActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        if(savedInstanceState == null){
-            Logger.log("bruh instance bundle is null", LogLevel.CRITICAL);
-        }
         Intent intent = getIntent();
         userId = intent.getIntExtra("user_id", -1);
         if(userId == -1){
