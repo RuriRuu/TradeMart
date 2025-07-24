@@ -3,7 +3,6 @@ package com.realeyez.trademart.util;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
-import java.util.HashMap;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -26,11 +25,10 @@ public class VideoThumbnailer {
         return cacheFile.getFile();
     }
     
-    public static Bitmap generateThumbnailBitmap(File video){
+    public static Bitmap generateThumbnailBitmap(FileDescriptor fd){
         Bitmap thumbnail = null;
-        String path = video.getAbsolutePath();
         try (MediaMetadataRetriever retriever = new MediaMetadataRetriever()){
-            retriever.setDataSource(path, new HashMap<String, String>());
+            retriever.setDataSource(fd);
             thumbnail = retriever.getFrameAtTime(0);
         } catch (Exception e) {
             e.printStackTrace();

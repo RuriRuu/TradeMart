@@ -1,6 +1,6 @@
 package com.realeyez.trademart.service;
 
-public enum ServiceCategory {
+public enum FeedCategory {
 
     GRAPHICS,
     FINANCE,
@@ -10,7 +10,7 @@ public enum ServiceCategory {
     VOICE_OVERS,
     NONE;
 
-    public static ServiceCategory parse(String category){
+    public static FeedCategory parse(String category){
         if(category.equalsIgnoreCase("graphics")){
             return GRAPHICS;
         } else if(category.equalsIgnoreCase("finance")){
