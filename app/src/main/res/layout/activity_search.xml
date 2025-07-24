@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_search"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_white">
+    android:background="@color/background_white"
+    tools:context=".SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/search_toolbar"
@@ -33,7 +36,7 @@
                 app:srcCompat="@drawable/arrow_left_dark" />
 
             <EditText
-                android:id="@+id/SearchText"
+                android:id="@+id/search_query_field"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
@@ -45,7 +48,7 @@
                 android:textColorHint="#D3CFCF" />
 
             <ImageButton
-                android:id="@+id/GoSearchButton"
+                android:id="@+id/search_submit_button"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@android:color/transparent"
@@ -56,61 +59,53 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/result_toolbar"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/search_result_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/pink"
+        android:background="@color/white"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/search_toolbar"
-        tools:layout_editor_absoluteY="64dp">
+        app:tabIndicatorFullWidth="true"
+        app:tabTextColor="@color/pink"
+        app:tabIndicatorColor="@color/pink">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/search_post_result_tab"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal|center_vertical"
-            android:orientation="horizontal">
+            android:text="Posts" />
 
-            <Button
-                android:id="@+id/post_result_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#00FFFFFF"
-                android:text="Posts" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/search_service_result_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Services" />
 
-            <Button
-                android:id="@+id/service_result_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#00FFFFFF"
-                android:text="Services" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/search_jobs_result_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jobs" />
 
-            <Button
-                android:id="@+id/jobs_result_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#00FFFFFF"
-                android:text="Jobs" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/search_user_result_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Users" />
 
-            <Button
-                android:id="@+id/user_result_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#00FFFFFF"
-                android:text="Users" />
-        </LinearLayout>
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+    </com.google.android.material.tabs.TabLayout>
 
     <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    android:id="@+id/search_content_panel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/result_toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/search_result_toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+

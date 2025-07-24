@@ -1,4 +1,4 @@
-package com.realeyez.trademart.gui.components.event;
+package com.realeyez.trademart.gui.components.scroll.event;
 
 @FunctionalInterface
 public interface OnChangeChildListener {
