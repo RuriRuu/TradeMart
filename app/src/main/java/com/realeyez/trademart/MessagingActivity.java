@@ -1,5 +1,6 @@
 package com.realeyez.trademart;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.resource.ResourceRepository;
+import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
 
 import android.content.Intent;
@@ -108,15 +110,19 @@ public class MessagingActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int user_id = intent.getIntExtra("user_id", -1);
         int convo_id = intent.getIntExtra("convo_id", -1);
-        mateUri = intent.getParcelableExtra("mate_profile_uri");
-        selfUri = intent.getParcelableExtra("self_profile_uri");
+        // mateUri = intent.getParcelableExtra("mate_profile_uri");
+        // selfUri = intent.getParcelableExtra("self_profile_uri");
         String username = intent.getStringExtra("username");
 
         mateId = user_id;
         convoId = convo_id;
+
+        requestMateProfilePicture();
+        requestUserProfilePicture();
+
         convoLabel.setText(username);
 
-        profilePicture.setImageURI(mateUri);
+        // profilePicture.setImageURI(mateUri);
     }
 
     // I'm really god dam sleepy, ben on tihs for 15 minutes wjitout writing shit somehow
@@ -154,6 +160,44 @@ public class MessagingActivity extends AppCompatActivity {
             addChatPanel(chat);
         }
         setup = true;
+    }
+
+    private void requestMateProfilePicture(){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            mateUri = requestProfilePicture(mateId);
+            runOnUiThread(() -> profilePicture.setImageURI(mateUri));
+        });
+    }
+
+    private void requestUserProfilePicture(){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            selfUri = requestProfilePicture(userId);
+        });
+    }
+
+    private Uri requestProfilePicture(int userId){
+        try {
+            String path = new StringBuilder()
+                .append("/user/")
+                .append(userId)
+                .append("/avatar")
+                .toString();
+            Response response = RequestUtil.sendGetRequest(path);
+            String filename = response.getContentDispositionField("filename");
+            byte[] profilePictureData = response.getContentBytes();
+
+            CacheFile cache = CacheFile.cache(getCacheDir(), filename, profilePictureData);
+
+            return Uri.fromFile(cache.getFile());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void addChatPanel(Chat chat){
@@ -237,6 +281,7 @@ public class MessagingActivity extends AppCompatActivity {
             MessageUserChatPanel panel = MessageUserChatPanel.inflate(
                     getLayoutInflater(),
                     (MessageChat) chat);
+            panel.setImageUri(selfUri);
             addChatView(panel);
         });
     }
