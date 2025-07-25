@@ -17,6 +17,7 @@ import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
 import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
@@ -29,6 +30,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +43,7 @@ public class ServiceViewerActivity extends AppCompatActivity {
     private LinearLayout mediaDots;
     private LinearLayout mediaScrollPanel;
     private LinearLayout mediaCountPanel;
+    private ImageView profilePictureView;
 
     private TextView titleLabel;
     private TextView descLabel;
@@ -83,6 +86,8 @@ public class ServiceViewerActivity extends AppCompatActivity {
         likeButton = findViewById(R.id.serviceviewer_like_button);
         backButton = findViewById(R.id.serviceviewer_back_button);
         mediaDots = findViewById(R.id.serviceviewer_media_dots_panel);
+
+        profilePictureView = findViewById(R.id.serviceviewer_user_image);
 
         snapScroll = new SnapScrollH(mediaScroll);
         addActionListeners();
@@ -158,6 +163,7 @@ public class ServiceViewerActivity extends AppCompatActivity {
         Response response = RequestUtil.sendGetRequest(path);
         try {
             JSONObject json = response.getContentJson();
+            int userId = json.getInt("owner_id");
             runOnUiThread(() -> {
                 try{ 
                     titleLabel.setText(json.getString("service_title"));
@@ -169,7 +175,9 @@ public class ServiceViewerActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             });
-        } catch (JSONException e) {
+            Uri pfpUri = ProfilePictureRequestor.sendRequest(userId, getCacheDir());
+            runOnUiThread(() -> profilePictureView.setImageURI(pfpUri));
+        } catch (JSONException  | IOException e) {
             e.printStackTrace();
         }
     }

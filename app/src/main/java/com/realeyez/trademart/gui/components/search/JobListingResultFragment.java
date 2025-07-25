@@ -59,13 +59,14 @@ public class JobListingResultFragment extends Fragment {
         resultPanel.removeAllViews();
         this.results.clear();
 
-        Activity activity = getActivity();
+        Activity activity = requireActivity();
         ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.execute(() -> {
             if(results == null || results.size() == 0){
                 return;
             }
             for (MediaSearchResult result : results) {
+                // BUG: activity is null bug
                 activity.runOnUiThread(() -> {
                     this.results.add(result);
                     addJobResultPanels(result);

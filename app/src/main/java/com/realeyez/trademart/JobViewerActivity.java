@@ -17,6 +17,7 @@ import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
 import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
@@ -29,6 +30,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,6 +52,8 @@ public class JobViewerActivity extends AppCompatActivity {
 
     private ImageButton likeButton;
     private ImageButton backButton;
+
+    private ImageView profilePictureView;
 
     private String username;
 
@@ -83,6 +87,8 @@ public class JobViewerActivity extends AppCompatActivity {
         likeButton = findViewById(R.id.jobviewer_like_button);
         backButton = findViewById(R.id.jobviewer_back_button);
         mediaDots = findViewById(R.id.jobviewer_media_dots_panel);
+
+        profilePictureView = findViewById(R.id.jobviewer_user_image);
 
         snapScroll = new SnapScrollH(mediaScroll);
         addActionListeners();
@@ -161,6 +167,7 @@ public class JobViewerActivity extends AppCompatActivity {
         Response response = RequestUtil.sendGetRequest(path);
         try {
             JSONObject json = response.getContentJson().getJSONObject("data");
+            int userId = json.getInt("employer_id");
             runOnUiThread(() -> {
                 try{ 
                     titleLabel.setText(json.getString("job_title"));
@@ -168,11 +175,14 @@ public class JobViewerActivity extends AppCompatActivity {
                     nameLabel.setText(username);
                     descLabel.setText(json.getString("job_description"));
                     likesLabel.setText(generateLikeString(json.getInt("likes")));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             });
-        } catch (JSONException e) {
+            Uri pfpUri = ProfilePictureRequestor.sendRequest(userId, getCacheDir());
+            runOnUiThread(() -> profilePictureView.setImageURI(pfpUri));
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
     }
