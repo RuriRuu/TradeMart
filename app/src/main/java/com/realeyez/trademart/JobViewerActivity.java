@@ -9,16 +9,20 @@ import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.feed.FeedType;
 import com.realeyez.trademart.gui.components.profile.panels.MediaPanel;
 import com.realeyez.trademart.gui.components.profile.panels.MediaPanelImage;
 import com.realeyez.trademart.gui.components.profile.panels.MediaPanelVideo;
 import com.realeyez.trademart.gui.components.scroll.ScrollDotPanel;
 import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
+import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
+import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
+import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.FileUtil;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
@@ -99,6 +103,7 @@ public class JobViewerActivity extends AppCompatActivity {
         ExecutorService mediaExecutor = Executors.newSingleThreadExecutor();
         jobDataExecutor.execute(() -> {
             try {
+                initLikeButton();
                 loadPostData();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -207,11 +212,74 @@ public class JobViewerActivity extends AppCompatActivity {
         mediaScrollPanel.addView(panel.getPlayerView());
     }
 
+    private void initLikeButton(){
+        Content content = new Content.ContentBuilder()
+            .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
+            .build();
+        String path = new StringBuilder()
+            .append("/jobs/").append(jobId).append("/liked")
+            .toString();
+        try {
+            Response response = RequestUtil.sendPostRequest(path, content);
+            JSONObject data = response.getContentJson().getJSONObject("data");
+            boolean hasLiked = data.getBoolean("has_liked");
+            runOnUiThread(() -> setLikeButtonLiked(-1, hasLiked));
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void likeClickAction(){
+        Content data = new Content.ContentBuilder()
+            .put("id", jobId)
+            .put("type", FeedType.JOB_LISTING.toString())
+            .build();
+        Content content = new Content.ContentBuilder()
+            .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
+            .put("data", data)
+            .build();
+        try {
+            Response response = RequestUtil.sendPostRequest("/feed/like", content);
+            JSONObject responseJson = response.getContentJson();
+            if(responseJson.getString("status").equals("failed")){
+                String rMessage = responseJson.getString("message");
+                runOnUiThread(() -> {
+                    Dialogs.showErrorDialog(rMessage, this);
+                });
+                return;
+            }
+            JSONObject updated = responseJson.getJSONObject("data").getJSONObject("feed_updated");
+            int likeCount = updated.getInt("likes");
+            boolean userLiked = updated.getBoolean("user_liked");
+            runOnUiThread(() -> {
+                setLikeButtonLiked(likeCount, userLiked);
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setLikeButtonLiked(int likeCount, boolean isLiking){
+        likeButton.setImageDrawable(isLiking ?
+                getResources().getDrawable(R.drawable.heart_filled, null) :
+                getResources().getDrawable(R.drawable.heart, null));
+        if(likeCount == -1){
+            return;
+        }
+        likesLabel.setText(generateLikeString(likeCount));
+    }
+
     private void addActionListeners(){
         backButton.setOnClickListener(view -> {
             finish();
         });
         likeButton.setOnClickListener(view -> {
+            ExecutorService exec = Executors.newSingleThreadExecutor();
+            exec.execute(() -> {
+                likeClickAction();
+            });
         });
         snapScroll.setOnChangeChildListener((lastChild, curChild) -> {
             dotsPanel.setActive(curChild);
