@@ -33,7 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class PostViewerActivity extends AppCompatActivity {
+public class JobViewerActivity extends AppCompatActivity {
 
     private HorizontalScrollView mediaScroll;
     private SnapScrollH snapScroll;
@@ -46,13 +46,14 @@ public class PostViewerActivity extends AppCompatActivity {
     private TextView descLabel;
     private TextView nameLabel;
     private TextView likesLabel;
+    private TextView amountLabel;
 
     private ImageButton likeButton;
     private ImageButton backButton;
 
     private String username;
 
-    private int postId;
+    private int jobId;
     private ArrayList<Integer> mediaIds;
     private ArrayList<MediaPanel> mediaPanels;
 
@@ -60,45 +61,49 @@ public class PostViewerActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        postId = intent.getIntExtra("post_id", -1);
+        jobId = intent.getIntExtra("job_id", -1);
         mediaIds = intent.getIntegerArrayListExtra("media_ids");
         username = intent.getStringExtra("username");
         mediaPanels = new ArrayList<>();
-        setContentView(R.layout.activity_post_viewer);
+        setContentView(R.layout.activity_job_viewer);
         initComponents();
         loadPost();
     }
 
     private void initComponents(){
-        mediaScroll = findViewById(R.id.postviewer_media_scroll);
-        mediaScrollPanel = findViewById(R.id.postviewer_media_scroll_panel);
-        mediaCountPanel = findViewById(R.id.postviewer_media_dots_panel);
-        titleLabel = findViewById(R.id.postviewer_title_view);
-        descLabel = findViewById(R.id.postviewer_desc_view);
-        nameLabel = findViewById(R.id.postviewer_name_view);
-        likesLabel = findViewById(R.id.postviewer_like_count);
+        mediaScroll = findViewById(R.id.jobviewer_media_scroll);
+        mediaScrollPanel = findViewById(R.id.jobviewer_media_scroll_panel);
+        mediaCountPanel = findViewById(R.id.jobviewer_media_dots_panel);
+        titleLabel = findViewById(R.id.jobviewer_title_view);
+        descLabel = findViewById(R.id.jobviewer_desc_view);
+        nameLabel = findViewById(R.id.jobviewer_name_view);
+        likesLabel = findViewById(R.id.jobviewer_like_count);
+        amountLabel = findViewById(R.id.jobviewer_income);
 
-        likeButton = findViewById(R.id.postviewer_like_button);
-        backButton = findViewById(R.id.postviewer_back_button);
-        mediaDots = findViewById(R.id.postviewer_media_dots_panel);
+        likeButton = findViewById(R.id.jobviewer_like_button);
+        backButton = findViewById(R.id.jobviewer_back_button);
+        mediaDots = findViewById(R.id.jobviewer_media_dots_panel);
 
         snapScroll = new SnapScrollH(mediaScroll);
         addActionListeners();
     }
 
     private void loadPost(){
-        ExecutorService postDataExecutor = Executors.newSingleThreadExecutor();
+        ExecutorService jobDataExecutor = Executors.newSingleThreadExecutor();
         ExecutorService mediaExecutor = Executors.newSingleThreadExecutor();
-        postDataExecutor.execute(() -> {
+        jobDataExecutor.execute(() -> {
             try {
                 loadPostData();
             } catch (IOException e) {
                 e.printStackTrace();
-                Logger.log("unable to load post data", LogLevel.WARNING);
+                Logger.log("unable to load job data", LogLevel.WARNING);
                 finish();
             }
         });
         mediaExecutor.execute(() -> {
+            if(mediaIds.size() == 0){
+                return;
+            }
             runOnUiThread(() -> {
                 dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
             });
@@ -136,6 +141,13 @@ public class PostViewerActivity extends AppCompatActivity {
         });
     }
 
+    private String generatePriceString(double price){
+        String text = new StringBuilder()
+            .append(String.format("₱ %.2f", price))
+            .toString();
+        return text;
+    }
+
     private String generateLikeString(int likes){
         String text = new StringBuilder()
             .append(likes)
@@ -145,15 +157,16 @@ public class PostViewerActivity extends AppCompatActivity {
 
     private void loadPostData() throws IOException {
         String path = new StringBuilder()
-            .append("/post/").append(postId).toString();
+            .append("/jobs/find/").append(jobId).toString();
         Response response = RequestUtil.sendGetRequest(path);
         try {
-            JSONObject json = response.getContentJson();
+            JSONObject json = response.getContentJson().getJSONObject("data");
             runOnUiThread(() -> {
                 try{ 
-                    titleLabel.setText(json.getString("title"));
+                    titleLabel.setText(json.getString("job_title"));
+                    amountLabel.setText(generatePriceString(json.getDouble("amount")));
                     nameLabel.setText(username);
-                    descLabel.setText(json.getString("description"));
+                    descLabel.setText(json.getString("job_description"));
                     likesLabel.setText(generateLikeString(json.getInt("likes")));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -203,3 +216,4 @@ public class PostViewerActivity extends AppCompatActivity {
         });
     }
 };
+

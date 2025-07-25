@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.realeyez.trademart.gui.components.categorychooser.CategoryChooser
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_category_chooser"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_white">
+
+    <LinearLayout
+        android:id="@+id/categorychooser_categories_label_row"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="Tags"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/categorychooser_label2"
+            android:layout_width="83dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=" (choose a category)" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/categorychooser_categories_input_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/categorychooser_categories_label_row"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</com.realeyez.trademart.gui.components.categorychooser.CategoryChooser>
+
+

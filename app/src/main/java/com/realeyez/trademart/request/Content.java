@@ -1,5 +1,9 @@
 package com.realeyez.trademart.request;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -86,6 +90,19 @@ public class Content {
         public ContentBuilder put(String key, String data){
             try {
                 content.put(key, data);
+            } catch (JSONException e) {
+                StringBuilder builder = new StringBuilder()
+                    .append("Could not put the entry ")
+                    .append(key);
+                Logger.log(builder.toString(), LogLevel.WARNING);
+                e.printStackTrace();
+            }
+            return this;
+        }
+
+        public ContentBuilder put(String key, ArrayList<String> data){
+            try {
+                content.put(key, new JSONArray(data));
             } catch (JSONException e) {
                 StringBuilder builder = new StringBuilder()
                     .append("Could not put the entry ")

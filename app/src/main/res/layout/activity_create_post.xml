@@ -39,7 +39,7 @@
             android:textColor="#FFFDFD"
             android:textSize="11pt"
             tools:layout_editor_absoluteX="46dp"
-            tools:layout_editor_absoluteY="15dp"/>
+            tools:layout_editor_absoluteY="15dp" />
 
         <Button
             android:id="@+id/createpost_post_button"
@@ -53,73 +53,87 @@
             android:text="POST"
             android:textSize="8pt"
             tools:layout_editor_absoluteX="294dp"
-            tools:layout_editor_absoluteY="8dp"/>
+            tools:layout_editor_absoluteY="8dp" />
 
     </androidx.appcompat.widget.Toolbar>
 
     <ScrollView
         android:id="@+id/createpost_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="15dp"
+        android:layout_height="0dp"
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/createpost_toolbar"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/createpost_main_linearlayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:orientation="vertical">
+            android:layout_marginEnd="15dp">
 
             <LinearLayout
+                android:id="@+id/createpost_title_input_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:orientation="vertical"
-                android:layout_margin="10dp" >
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins"
-                    android:textColor="#000000"
-                    android:text="Title" />
+                    android:text="Title"
+                    android:textColor="#000000" />
 
                 <EditText
                     android:id="@+id/createpost_title_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
                     android:background="@drawable/rounded_white_inputfield"
+                    android:inputType="text"
                     android:textColor="@color/black" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/createpost_description_input_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:orientation="vertical"
-                android:layout_margin="10dp" >
+                app:layout_constraintTop_toBottomOf="@id/createpost_title_input_row"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins"
-                    android:textColor="#000000"
-                    android:text="Description" />
+                    android:text="Description"
+                    android:textColor="#000000" />
 
                 <EditText
                     android:id="@+id/createpost_description_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:singleLine="false"
                     android:background="@drawable/rounded_white_inputfield"
-                    android:textColor="@color/black" 
-                    android:inputType="text|textMultiLine" />
+                    android:inputType="text|textMultiLine"
+                    android:singleLine="false"
+                    android:textColor="@color/black" />
 
             </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/createpost_categories_input_panel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/createpost_description_input_row"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
                 android:id="@+id/createpost_add_image_button"
@@ -131,15 +145,21 @@
                 android:backgroundTint="@color/pink"
                 android:fontFamily="@font/poppins_bold"
                 android:text="Add Image"
-                android:textSize="7pt" />
+                android:textSize="7pt"
+                app:layout_constraintTop_toBottomOf="@id/createpost_categories_input_panel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <LinearLayout
                 android:id="@+id/createpost_images_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/createpost_add_image_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

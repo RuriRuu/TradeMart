@@ -1,5 +1,8 @@
 package com.realeyez.trademart.user;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class User {
 
     private int id;
@@ -35,6 +38,14 @@ public class User {
 
     public String getPassword(){
         return password;
+    }
+
+    public JSONObject parseJson() throws JSONException {
+        return new JSONObject()
+            .put("id", id)
+            .put("username", username)
+            .put("email", email)
+            .put("verified", false);
     }
 
     public static class UserBuilder {
@@ -77,6 +88,14 @@ public class User {
 
         public User build(){
             return new User(this);
+        }
+
+        public User fromJSON(JSONObject json) throws JSONException {
+            return new UserBuilder()
+                .setId(json.getInt("id"))
+                .setUsername(json.getString("username"))
+                .setEmail(json.getString("email"))
+                .build();
         }
 
     }

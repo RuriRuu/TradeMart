@@ -89,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void searchButtonAction(){
+        Intent explicitActivity = new Intent(MainActivity.this, SearchActivity.class);
+        startActivity(explicitActivity);
+        bottomNav.setSelectedItemId(R.id.main_action_home);
+    }
+
     private void createButtonAction(){
         displayCreateOptions();
         bottomNav.setSelectedItemId(R.id.main_action_home);
@@ -115,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
             if(item.getItemId() == R.id.main_action_search){
                 currentFrag = 2;
                 homepageFrag.unfocus();
+                searchButtonAction();
                 return true;
             }
             if(item.getItemId() == R.id.main_action_create) {

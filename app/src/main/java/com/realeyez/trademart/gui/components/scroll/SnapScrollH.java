@@ -1,6 +1,6 @@
 package com.realeyez.trademart.gui.components.scroll;
 
-import com.realeyez.trademart.gui.components.event.OnChangeChildListener;
+import com.realeyez.trademart.gui.components.scroll.event.OnChangeChildListener;
 
 import android.view.MotionEvent;
 import android.widget.HorizontalScrollView;

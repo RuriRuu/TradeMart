@@ -33,7 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class PostViewerActivity extends AppCompatActivity {
+public class ServiceViewerActivity extends AppCompatActivity {
 
     private HorizontalScrollView mediaScroll;
     private SnapScrollH snapScroll;
@@ -46,13 +46,14 @@ public class PostViewerActivity extends AppCompatActivity {
     private TextView descLabel;
     private TextView nameLabel;
     private TextView likesLabel;
+    private TextView priceLabel;
 
     private ImageButton likeButton;
     private ImageButton backButton;
 
     private String username;
 
-    private int postId;
+    private int serviceId;
     private ArrayList<Integer> mediaIds;
     private ArrayList<MediaPanel> mediaPanels;
 
@@ -60,41 +61,42 @@ public class PostViewerActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        postId = intent.getIntExtra("post_id", -1);
+        serviceId = intent.getIntExtra("service_id", -1);
         mediaIds = intent.getIntegerArrayListExtra("media_ids");
         username = intent.getStringExtra("username");
         mediaPanels = new ArrayList<>();
-        setContentView(R.layout.activity_post_viewer);
+        setContentView(R.layout.activity_service_viewer);
         initComponents();
         loadPost();
     }
 
     private void initComponents(){
-        mediaScroll = findViewById(R.id.postviewer_media_scroll);
-        mediaScrollPanel = findViewById(R.id.postviewer_media_scroll_panel);
-        mediaCountPanel = findViewById(R.id.postviewer_media_dots_panel);
-        titleLabel = findViewById(R.id.postviewer_title_view);
-        descLabel = findViewById(R.id.postviewer_desc_view);
-        nameLabel = findViewById(R.id.postviewer_name_view);
-        likesLabel = findViewById(R.id.postviewer_like_count);
+        mediaScroll = findViewById(R.id.serviceviewer_media_scroll);
+        mediaScrollPanel = findViewById(R.id.serviceviewer_media_scroll_panel);
+        mediaCountPanel = findViewById(R.id.serviceviewer_media_dots_panel);
+        titleLabel = findViewById(R.id.serviceviewer_title_view);
+        descLabel = findViewById(R.id.serviceviewer_desc_view);
+        nameLabel = findViewById(R.id.serviceviewer_name_view);
+        likesLabel = findViewById(R.id.serviceviewer_like_count);
+        priceLabel = findViewById(R.id.serviceviewer_price);
 
-        likeButton = findViewById(R.id.postviewer_like_button);
-        backButton = findViewById(R.id.postviewer_back_button);
-        mediaDots = findViewById(R.id.postviewer_media_dots_panel);
+        likeButton = findViewById(R.id.serviceviewer_like_button);
+        backButton = findViewById(R.id.serviceviewer_back_button);
+        mediaDots = findViewById(R.id.serviceviewer_media_dots_panel);
 
         snapScroll = new SnapScrollH(mediaScroll);
         addActionListeners();
     }
 
     private void loadPost(){
-        ExecutorService postDataExecutor = Executors.newSingleThreadExecutor();
+        ExecutorService serviceDataExecutor = Executors.newSingleThreadExecutor();
         ExecutorService mediaExecutor = Executors.newSingleThreadExecutor();
-        postDataExecutor.execute(() -> {
+        serviceDataExecutor.execute(() -> {
             try {
                 loadPostData();
             } catch (IOException e) {
                 e.printStackTrace();
-                Logger.log("unable to load post data", LogLevel.WARNING);
+                Logger.log("unable to load service data", LogLevel.WARNING);
                 finish();
             }
         });
@@ -136,6 +138,13 @@ public class PostViewerActivity extends AppCompatActivity {
         });
     }
 
+    private String generatePriceString(double price){
+        String text = new StringBuilder()
+            .append(String.format("₱ %.2f", price))
+            .toString();
+        return text;
+    }
+
     private String generateLikeString(int likes){
         String text = new StringBuilder()
             .append(likes)
@@ -145,15 +154,16 @@ public class PostViewerActivity extends AppCompatActivity {
 
     private void loadPostData() throws IOException {
         String path = new StringBuilder()
-            .append("/post/").append(postId).toString();
+            .append("/service/").append(serviceId).toString();
         Response response = RequestUtil.sendGetRequest(path);
         try {
             JSONObject json = response.getContentJson();
             runOnUiThread(() -> {
                 try{ 
-                    titleLabel.setText(json.getString("title"));
+                    titleLabel.setText(json.getString("service_title"));
+                    priceLabel.setText(generatePriceString(json.getDouble("service_price")));
                     nameLabel.setText(username);
-                    descLabel.setText(json.getString("description"));
+                    descLabel.setText(json.getString("service_description"));
                     likesLabel.setText(generateLikeString(json.getInt("likes")));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -203,3 +213,4 @@ public class PostViewerActivity extends AppCompatActivity {
         });
     }
 };
+

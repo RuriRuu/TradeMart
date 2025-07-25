@@ -7,10 +7,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_white"
-    tools:context=".CreatePostActivity">
+    tools:context=".CreateJobActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/create_job_list_toolbar"
+        android:id="@+id/createjob_list_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/grey"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/create_job_list_back_button"
+            android:id="@+id/createjob_list_back_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@android:color/transparent"
@@ -42,7 +42,7 @@
             tools:layout_editor_absoluteY="15dp"/>
 
         <Button
-            android:id="@+id/create_job_list_post_button"
+            android:id="@+id/createjob_list_post_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center"
@@ -58,27 +58,30 @@
     </androidx.appcompat.widget.Toolbar>
 
     <ScrollView
-        android:id="@+id/createpost_scrollview"
+        android:id="@+id/createjob_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:paddingTop="15dp"
         android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/create_job_list_toolbar"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/createjob_list_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
-            android:id="@+id/createpost_main_linearlayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/createjob_main_linearlayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:orientation="vertical">
+            android:layout_marginEnd="15dp">
 
             <LinearLayout
+                android:id="@+id/createjob_title_input_row"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -88,7 +91,7 @@
                     android:textColor="#000000" />
 
                 <EditText
-                    android:id="@+id/create_job_list_title_field"
+                    android:id="@+id/createjob_list_title_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_white_inputfield"
@@ -98,10 +101,13 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/createjob_description_input_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/createjob_title_input_row"
+                app:layout_constraintStart_toStartOf="parent" >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -111,7 +117,7 @@
                     android:textColor="#000000" />
 
                 <EditText
-                    android:id="@+id/create_job_list_description_field"
+                    android:id="@+id/createjob_list_description_field"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_white_inputfield"
@@ -122,55 +128,44 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/createjob_price_input_row"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:orientation="vertical"
                 android:layout_margin="10dp"
-                android:orientation="vertical">
+                app:layout_constraintTop_toBottomOf="@id/createjob_description_input_row"
+                app:layout_constraintStart_toStartOf="parent">
 
-                <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="Estimated Price"
+                    android:textColor="#000000" />
+
+                <EditText
+                    android:id="@+id/createjob_price"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins"
-                        android:text="Tags"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:id="@+id/TextView"
-                        android:layout_width="83dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text=" (choose a category)" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <Spinner
-                        android:id="@+id/tag_spinner"
-                        android:layout_width="168dp"
-                        android:layout_height="wrap_content" />
-
-                    <ImageButton
-                        android:id="@+id/imageButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/baseline_add_24" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_white_inputfield"
+                    android:inputType="number"
+                    android:singleLine="false"
+                    android:textColor="@color/black" />
 
             </LinearLayout>
 
+
+            <FrameLayout
+                android:id="@+id/createjob_categories_input_panel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/createjob_price_input_row"
+            app:layout_constraintStart_toStartOf="parent"/>
+
             <Button
-                android:id="@+id/create_job_list_add_image_button"
+                android:id="@+id/createjob_list_add_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -179,15 +174,21 @@
                 android:backgroundTint="@color/pink"
                 android:fontFamily="@font/poppins_bold"
                 android:text="Add Image"
-                android:textSize="7pt" />
+                android:textSize="7pt" 
+                app:layout_constraintTop_toBottomOf="@id/createjob_categories_input_panel"
+                app:layout_constraintEnd_toEndOf="parent" 
+                app:layout_constraintStart_toStartOf="parent" />
 
             <LinearLayout
-                android:id="@+id/create_job_list_images_panel"
+                android:id="@+id/createjob_list_images_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical" 
+                app:layout_constraintTop_toBottomOf="@id/createjob_list_add_image_button"
+                app:layout_constraintEnd_toEndOf="parent" 
+                app:layout_constraintStart_toStartOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

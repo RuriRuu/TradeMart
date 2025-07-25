@@ -16,6 +16,9 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".SearchActivity"
+            android:exported="true" />
+        <activity
             android:name=".MessagingActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true" />
@@ -26,10 +29,20 @@
             android:name=".PostViewerActivity"
             android:exported="true" />
         <activity
+            android:name=".JobViewerActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ServiceViewerActivity"
+            android:exported="true" />
+        <activity
             android:name=".ImageViewerActivity"
             android:exported="true" />
         <activity
             android:name=".CreatePostActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true" />
+        <activity
+            android:name=".CreateJobActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true" />
         <activity

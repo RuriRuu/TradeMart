@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.gui.components.categorychooser.CategoryChooser;
 import com.realeyez.trademart.gui.components.createpost.ImagePanel;
 import com.realeyez.trademart.gui.dialogs.LoadingDialog;
 import com.realeyez.trademart.request.Content;
@@ -19,24 +20,30 @@ import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Encoder;
+import com.realeyez.trademart.util.FileUtil;
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.VideoThumbnailer;
+import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 
 public class CreatePostActivity extends AppCompatActivity {
 
@@ -47,6 +54,10 @@ public class CreatePostActivity extends AppCompatActivity {
     private EditText descField;
 
     private LinearLayout image_parent_panel;
+    
+    private FrameLayout categoryPanel;
+
+    private CategoryChooser categoryChooser;
 
     private ArrayList<ImagePanel> imagePanels;
 
@@ -65,7 +76,16 @@ public class CreatePostActivity extends AppCompatActivity {
         titleField = findViewById(R.id.createpost_title_field);
         descField = findViewById(R.id.createpost_description_field);
         image_parent_panel = findViewById(R.id.createpost_images_panel);
+        categoryPanel = findViewById(R.id.createpost_categories_input_panel);
+
+        categoryChooser = CategoryChooser.inflate(this,
+                new LayoutParams(LayoutParams.MATCH_PARENT, 
+                    LayoutParams.WRAP_CONTENT));
+
+        categoryPanel.addView(categoryChooser);
+
         imagePanels = new ArrayList<>();
+
         addOnClickListeners();
     }
 
@@ -77,6 +97,9 @@ public class CreatePostActivity extends AppCompatActivity {
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
             Response response = sendPublishPostRequest();
+            if(response == null){
+                return;
+            }
             int postId = -1;
             try {
                 JSONObject json = response.getContentJson();
@@ -116,16 +139,33 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
 
         Uri imageUri = data.getData();
-        addImageRow(imageUri);
+        try {
+            addImageRow(imageUri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void addImageRow(Uri imageUri){
-        ImagePanel imagePanel = new ImagePanel(this, image_parent_panel, imageUri, imagePanels);
+    private void addImageRow(Uri imageUri) throws FileNotFoundException {
+        ImagePanel imagePanel = null;
+        if(FileUtil.getExtension(imageUri.getPath()).equals("mp4")){
+            ParcelFileDescriptor fd = getContentResolver().openFileDescriptor(imageUri, "r");
+            Bitmap thumbnail = VideoThumbnailer.generateThumbnailBitmap(fd.getFileDescriptor());
+            imagePanel = new ImagePanel(this, image_parent_panel, imageUri, thumbnail, imagePanels);
+        } else {
+            imagePanel = new ImagePanel(this, image_parent_panel, imageUri, imagePanels);
+        }
         imagePanels.add(imagePanel);
         image_parent_panel.addView(imagePanel.getLayout());
     }
 
     private Response sendPublishPostRequest(){
+        if (imagePanels.size() == 0) {
+            runOnUiThread(() -> {
+                Dialogs.showWarningDialog("Please select media to upload", this);
+            });
+            return null;
+        }
         String title = titleField.getText().toString();
         String description = descField.getText().toString();
 
@@ -133,7 +173,9 @@ public class CreatePostActivity extends AppCompatActivity {
             .put("title", title)
             .put("description", description)
             .put("user_id", ResourceRepository.getResources().getCurrentUser().getId())
+            .put("categories", categoryChooser.getChosenCategoriesString())
             .build();
+        Logger.log(content.getContentString(), LogLevel.INFO);
         Response response = null;
         try {
             response = RequestUtil.sendPostRequest("/post/publish", content);

@@ -2,13 +2,14 @@ package com.realeyez.trademart.service;
 
 import java.time.LocalDateTime;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Service {
 
     private int serviceId;
     private String serviceTitle;
-    private ServiceCategory serviceCategory;
+    private FeedCategory serviceCategory;
     private String serviceDescription;
     private LocalDateTime datePosted;
     private double servicePrice;
@@ -34,7 +35,7 @@ public class Service {
         return serviceTitle;
     }
 
-    public ServiceCategory getServiceCategory() {
+    public FeedCategory getFeedCategory() {
         return serviceCategory;
     }
 
@@ -74,7 +75,7 @@ public class Service {
 
         private int serviceId;
         private String serviceTitle;
-        private ServiceCategory serviceCategory;
+        private FeedCategory serviceCategory;
         private String serviceDescription;
         private LocalDateTime datePosted;
         private double servicePrice;
@@ -85,7 +86,7 @@ public class Service {
             serviceId = ownerId = -1;
             serviceTitle = serviceDescription = "";
             serviceCurrency = "PHP";
-            serviceCategory = ServiceCategory.NONE;
+            serviceCategory = FeedCategory.NONE;
             servicePrice = 0;
             datePosted = null;
         }
@@ -100,7 +101,7 @@ public class Service {
             return this;
         }
 
-        public ServiceBuilder setServiceCategory(ServiceCategory serviceCategory) {
+        public ServiceBuilder setFeedCategory(FeedCategory serviceCategory) {
             this.serviceCategory = serviceCategory;
             return this;
         }
@@ -134,6 +135,19 @@ public class Service {
         public Service build(){
             return new Service(this);
         }
+
+        public Service fromJSON(JSONObject json) throws JSONException {
+            return new ServiceBuilder()
+                .setServiceId(json.getInt("service_id"))
+                .setServiceTitle(json.getString("service_title"))
+                .setServiceDescription(json.getString("service_description"))
+                .setDatePosted(LocalDateTime.parse(json.getString("date_posted")))
+                .setServicePrice(json.getDouble("service_price"))
+                .setServiceCurrency(json.getString("service_currency"))
+                .setOwnerId(json.getInt("owner_id"))
+                .build();
+        }
+
 
     }
 }

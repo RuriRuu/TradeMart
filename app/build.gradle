@@ -52,6 +52,7 @@ dependencies {
     implementation "androidx.media3:media3-common:1.7.1"
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
+    implementation libs.viewpager2
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
