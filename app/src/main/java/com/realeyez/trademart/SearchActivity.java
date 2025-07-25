@@ -1,5 +1,6 @@
 package com.realeyez.trademart;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,11 +18,15 @@ import com.realeyez.trademart.gui.components.search.ServiceResultFragment;
 import com.realeyez.trademart.gui.components.search.UserResultFragment;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
-import com.realeyez.trademart.search.SearchResult;
+import com.realeyez.trademart.search.MediaSearchResult;
+import com.realeyez.trademart.search.UserSearchResult;
+import com.realeyez.trademart.user.User;
+import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -81,14 +86,13 @@ public class SearchActivity extends AppCompatActivity {
         addOnClickListeners();
     }
 
-    private ArrayList<SearchResult> requestUserSearch(String query) {
-        ArrayList<SearchResult> results = new ArrayList<>();
+    private ArrayList<UserSearchResult> requestUserSearch(String query) {
+        ArrayList<UserSearchResult> results = new ArrayList<>();
         HashMap<String, String> params = new HashMap<>();
         params.put("query", query);
         try {
             Response response = RequestUtil.sendGetRequest("/search/user", params);
             JSONObject json = response.getContentJson();
-            Logger.log("got user search response: " + json.toString(), LogLevel.INFO);
             if(json.getString("status").equals("failed")){
                 String errorMessage = json.getString("message");
                 runOnUiThread(() -> Dialogs.showErrorDialog(errorMessage, this));
@@ -101,11 +105,17 @@ public class SearchActivity extends AppCompatActivity {
                 int id = resultJson.getInt("id");
                 double relPoints = resultJson.getDouble("relevance");
                 JSONObject entity = resultJson.getJSONObject("entity");
-                results.add(new SearchResult.Builder()
+                Uri profilePicture = requestProfilePicture(entity.getInt("id"));
+                // JSONArray mediaIdsJson = resultJson.getJSONArray("media_ids");
+                // ArrayList<Integer> mediaIds = new ArrayList<>();
+                // for (int j = 0; j < mediaIdsJson.length(); j++)
+                //     mediaIds.add(mediaIdsJson.getInt(j));
+                results.add(new UserSearchResult.Builder()
                         .setId(id)
                         .setTerm(result)
                         .setRelPoints(relPoints)
                         .setEntity(entity)
+                        .setProfilePictureUri(profilePicture)
                         .build());
             }
 
@@ -117,11 +127,142 @@ public class SearchActivity extends AppCompatActivity {
         return results;
     }
 
-    private void showUserResults(String query){
-        Logger.log("I'm trying" , LogLevel.INFO);
+    private ArrayList<MediaSearchResult> requestPostSearch(String query){
+        return requestMediaSearch(query, "/search/post");
+    }
+
+    private ArrayList<MediaSearchResult> requestServiceSearch(String query){
+        return requestMediaSearch(query, "/search/service");
+    }
+
+    private ArrayList<MediaSearchResult> requestJobSearch(String query){
+        return requestMediaSearch(query, "/search/job");
+    }
+
+    private ArrayList<MediaSearchResult> requestMediaSearch(String query, String path) {
+        ArrayList<MediaSearchResult> results = new ArrayList<>();
+        HashMap<String, String> params = new HashMap<>();
+        params.put("query", query);
+        try {
+            Response response = RequestUtil.sendGetRequest(path, params);
+            JSONObject json = response.getContentJson();
+            if(json.getString("status").equals("failed")){
+                String errorMessage = json.getString("message");
+                runOnUiThread(() -> Dialogs.showErrorDialog(errorMessage, this));
+                return null;
+            }
+            JSONArray resultsJson = json.getJSONObject("data").getJSONArray("results");
+            for (int i = 0; i < resultsJson.length(); i++) {
+                JSONObject resultJson = resultsJson.getJSONObject(i);
+                String result = resultJson.getString("result");
+                int id = resultJson.getInt("id");
+                double relPoints = resultJson.getDouble("relevance");
+
+                JSONObject entity = resultJson.getJSONObject("entity");
+                JSONObject userJson = entity.getJSONObject("user");
+                JSONArray mediaIdsJson = resultJson.getJSONArray("media_ids");
+                ArrayList<Integer> mediaIds = new ArrayList<>();
+                for (int j = 0; j < mediaIdsJson.length(); j++)
+                    mediaIds.add(mediaIdsJson.getInt(j));
+
+                Uri profilePicture = requestProfilePicture(userJson.getInt("id"));
+                Uri thumbnailUri = null;
+                if(mediaIds.size() > 0)
+                    thumbnailUri = requestThumbnail(mediaIds.get(0));
+
+                results.add(new MediaSearchResult.Builder()
+                        .setId(id)
+                        .setTerm(result)
+                        .setRelPoints(relPoints)
+                        .setEntity(entity)
+                        .setUser(new User.UserBuilder().fromJSON(userJson))
+                        .setMediaIds(mediaIds)
+                        .setProfilePictureUri(profilePicture)
+                        .setThumbnailUri(thumbnailUri)
+                        .build());
+            }
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+            runOnUiThread(() -> Dialogs.showErrorDialog("Unable to search", this));
+            return null;
+        }
+        return results;
+    }
+
+    private Uri requestProfilePicture(int userId){
+        try {
+            String path = new StringBuilder()
+                .append("/user/")
+                .append(userId)
+                .append("/avatar")
+                .toString();
+            Response response = RequestUtil.sendGetRequest(path);
+            String filename = response.getContentDispositionField("filename");
+            byte[] profilePictureData = response.getContentBytes();
+
+            CacheFile cache = CacheFile.cache(getCacheDir(), filename, profilePictureData);
+
+            return Uri.fromFile(cache.getFile());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Uri requestThumbnail(int mediaId){
+        try {
+            String path = new StringBuilder()
+                .append("/media/thumbnail/")
+                .append(mediaId)
+                .toString();
+            Response response = RequestUtil.sendGetRequest(path);
+            String filename = response.getContentDispositionField("filename");
+            byte[] thumbnailData = response.getContentBytes();
+
+            CacheFile cache = CacheFile.cache(getCacheDir(), filename, thumbnailData);
+
+            return Uri.fromFile(cache.getFile());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void showServiceResults(String query){
         ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.execute(() -> {
-            ArrayList<SearchResult> results = requestUserSearch(query);
+            ArrayList<MediaSearchResult> results = requestServiceSearch(query);
+            runOnUiThread(() -> serviceFrag.loadResults(results));
+        });
+    }
+
+    private void showJobResults(String query){
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            ArrayList<MediaSearchResult> results = requestJobSearch(query);
+            runOnUiThread(() -> jobFrag.loadResults(results));
+        });
+    }
+
+    private void showPostResults(String query){
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            ArrayList<MediaSearchResult> results = requestPostSearch(query);
+            runOnUiThread(() -> postFrag.loadResults(results));
+        });
+    }
+
+    private void showUserResults(String query){
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            ArrayList<UserSearchResult> results = requestUserSearch(query);
             runOnUiThread(() -> userFrag.loadResults(results));
         });
     }
@@ -200,7 +341,10 @@ public class SearchActivity extends AppCompatActivity {
             if(query.isEmpty()){
                 return;
             }
-            showUserResults(query);
+            showPostResults(query); // TODO: go to post viewer
+            showUserResults(query); // TODO: go to profile page
+            showServiceResults(query);
+            showJobResults(query);
             prevSearch = query;
         });
     }

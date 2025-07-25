@@ -2,6 +2,9 @@ package com.realeyez.trademart.service;
 
 import java.time.LocalDateTime;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Service {
 
     private int serviceId;
@@ -132,6 +135,19 @@ public class Service {
         public Service build(){
             return new Service(this);
         }
+
+        public Service fromJSON(JSONObject json) throws JSONException {
+            return new ServiceBuilder()
+                .setServiceId(json.getInt("service_id"))
+                .setServiceTitle(json.getString("service_title"))
+                .setServiceDescription(json.getString("service_description"))
+                .setDatePosted(LocalDateTime.parse(json.getString("date_posted")))
+                .setServicePrice(json.getDouble("service_price"))
+                .setServiceCurrency(json.getString("service_currency"))
+                .setOwnerId(json.getInt("owner_id"))
+                .build();
+        }
+
 
     }
 }

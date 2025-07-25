@@ -3,7 +3,6 @@ package com.realeyez.trademart.gui.components.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -15,8 +14,6 @@ import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.search.SearchResult;
 import com.realeyez.trademart.search.UserSearchResult;
 import com.realeyez.trademart.util.CacheFile;
-import com.realeyez.trademart.util.Logger;
-import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -30,14 +27,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 
 public class UserResultFragment extends Fragment {
 
     private ScrollView scrollView;
     private LinearLayout resultPanel;
     private SwipeRefreshLayout refreshLayout;
-    private TextView temp;
 
     private ArrayList<UserSearchResult> results;
     private Runnable onRefreshEvent;
@@ -55,7 +50,8 @@ public class UserResultFragment extends Fragment {
         refreshLayout = layout.findViewById(R.id.searchresult_refresh);
 
         refreshLayout.setOnRefreshListener(() -> {
-            onRefreshEvent.run();
+            if(onRefreshEvent != null)
+                onRefreshEvent.run();
             refreshLayout.setRefreshing(false);
         });
 
@@ -64,8 +60,7 @@ public class UserResultFragment extends Fragment {
         return layout;
     }
 
-    public void loadResults(ArrayList<SearchResult> results){
-        Logger.log("I'm in" , LogLevel.INFO);
+    public void loadResults(ArrayList<UserSearchResult> results){
         resultPanel.removeAllViews();
         this.results.clear();
 
@@ -73,22 +68,18 @@ public class UserResultFragment extends Fragment {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         exec.execute(() -> {
             if(results == null || results.size() == 0){
-                Logger.log("empty search set", LogLevel.INFO);
                 return;
             }
-            Logger.log("Locking in :|" , LogLevel.INFO);
-            for (int i = 0; i < results.size(); i++) {
-                Uri pfpUri = requestProfilePicture(results.get(i));
-                UserSearchResult userResult = new UserSearchResult(results.get(i), pfpUri);
+            for (UserSearchResult result : results) {
                 activity.runOnUiThread(() -> {
-                    Logger.log("Adding panels..." , LogLevel.INFO);
-                    this.results.add(userResult);
-                    addUserResultPanels(userResult);
+                    this.results.add(result);
+                    addUserResultPanels(result);
                 });
             }
         });
     }
 
+    // TODO: open convo here
     private void addUserResultPanels(UserSearchResult result){
         UserSearchResultDialog panel = UserSearchResultDialog.inflate(getLayoutInflater(), result);
         panel.setOnSearchItemClickedListener(searchResult -> {
