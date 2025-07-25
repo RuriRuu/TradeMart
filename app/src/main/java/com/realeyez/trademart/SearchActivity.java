@@ -335,6 +335,27 @@ public class SearchActivity extends AppCompatActivity {
             searchField.setText(prevSearch);
             showUserResults(prevSearch);
         });
+        postFrag.setOnRefreshEvent(() -> {
+            if(prevSearch.isEmpty()){
+                return;
+            }
+            searchField.setText(prevSearch);
+            showPostResults(prevSearch);
+        });
+        jobFrag.setOnRefreshEvent(() -> {
+            if(prevSearch.isEmpty()){
+                return;
+            }
+            searchField.setText(prevSearch);
+            showJobResults(prevSearch);
+        });
+        serviceFrag.setOnRefreshEvent(() -> {
+            if(prevSearch.isEmpty()){
+                return;
+            }
+            searchField.setText(prevSearch);
+            showServiceResults(prevSearch);
+        });
 
         submitButton.setOnClickListener(view -> {
             String query = searchField.getText().toString();
