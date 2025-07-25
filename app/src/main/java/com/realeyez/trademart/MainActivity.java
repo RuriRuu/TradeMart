@@ -119,17 +119,17 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
             if(item.getItemId() == R.id.main_action_search){
-                currentFrag = 2;
+                currentFrag = 1;
                 homepageFrag.unfocus();
                 searchButtonAction();
-                return true;
+                return false;
             }
             if(item.getItemId() == R.id.main_action_create) {
                 createButtonAction();
                 return false;
             }
             if(item.getItemId() == R.id.main_action_chats) {
-                currentFrag = 3;
+                currentFrag = 2;
                 homepageFrag.unfocus();
                 chatButtonAction();
                 return true;

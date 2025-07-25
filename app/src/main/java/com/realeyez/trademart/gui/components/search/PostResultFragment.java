@@ -53,6 +53,9 @@ public class PostResultFragment extends Fragment {
     }
 
     public void loadResults(ArrayList<MediaSearchResult> results){
+        if(this.results == null || resultPanel == null){
+            return;
+        }
         resultPanel.removeAllViews();
         this.results.clear();
 

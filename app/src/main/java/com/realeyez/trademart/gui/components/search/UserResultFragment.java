@@ -63,6 +63,9 @@ public class UserResultFragment extends Fragment {
     }
 
     public void loadResults(ArrayList<UserSearchResult> results){
+        if(this.results == null || resultPanel == null){
+            return;
+        }
         resultPanel.removeAllViews();
         this.results.clear();
 

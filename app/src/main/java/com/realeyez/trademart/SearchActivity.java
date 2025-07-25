@@ -60,6 +60,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initComponents(){
+        prevSearch = "";
+
         backButton = findViewById(R.id.search_back_button);
         searchField = findViewById(R.id.search_query_field);
         submitButton = findViewById(R.id.search_submit_button);
@@ -362,11 +364,15 @@ public class SearchActivity extends AppCompatActivity {
             if(query.isEmpty()){
                 return;
             }
-            showPostResults(query); // TODO: go to post viewer
-            showUserResults(query); // TODO: go to profile page
+            showPostResults(query);
+            showUserResults(query);
             showServiceResults(query);
             showJobResults(query);
             prevSearch = query;
+        });
+
+        backButton.setOnClickListener(view -> {
+            finish();
         });
     }
     

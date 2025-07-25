@@ -19,6 +19,7 @@ import com.realeyez.trademart.post.PostData;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.user.User;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
@@ -301,6 +302,9 @@ public class ProfilePageActivity extends AppCompatActivity {
             newPostButtonAction();
         });
         profileImageView.setOnClickListener(view -> {
+            if(userId != ResourceRepository.getResources().getCurrentUser().getId()){
+                return;
+            }
             showProfilePictureSheet();
         });
     }
