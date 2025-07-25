@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_post_viewer"
@@ -8,7 +9,7 @@
     android:background="@color/background_main"
     tools:context=".PostViewerActivity">
 
-<Toolbar
+    <Toolbar
         android:id="@+id/postviewer_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +31,17 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <TextView
+            android:id="@+id/postviewer_title_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Post"
+            android:textStyle="bold"
+            android:textSize="12pt" />
+
     </Toolbar>
+
     <ScrollView
         android:id="@+id/postviewer_main_scroll"
         android:layout_width="match_parent"
@@ -82,6 +93,7 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/postviewer_user_panel"
                 android:layout_width="wrap_content"
@@ -98,7 +110,7 @@
                     android:layout_margin="5dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:cardCornerRadius="70dp">
+                    app:cardCornerRadius="40dp">
 
                     <ImageView
                         android:id="@+id/postviewer_user_image"
@@ -116,60 +128,56 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:layout_marginEnd="15dp"
-                        android:text="Person, Human"
-                        android:textColor="@color/white"
-                        android:textSize="8pt"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/postviewer_user_image_cardview"
-                        app:layout_constraintTop_toTopOf="parent"/>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/postviewer_control_panel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/postviewer_media_dots">
-
-                    <ImageButton
-                        android:id="@+id/postviewer_like_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@android:color/transparent"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/heart"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <TextView
-                        android:id="@+id/postviewer_like_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:text="5.4K"
-                        android:textAlignment="center"
-                        android:textColor="@color/pink"
-                        android:textSize="11pt"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/postviewer_like_button"
-                        app:layout_constraintTop_toTopOf="parent" />
-
+                    android:text="Person, Human"
+                    android:textColor="@color/white"
+                    android:textSize="8pt"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/postviewer_user_image_cardview"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/postviewer_control_panel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/postviewer_media_dots">
+
+                <ImageButton
+                    android:id="@+id/postviewer_like_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/heart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/postviewer_like_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:text="5.4K"
+                    android:textAlignment="center"
+                    android:textColor="@color/pink"
+                    android:textSize="11pt"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/postviewer_like_button"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/postviewer_title_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/postviewer_control_panel"
-            app:layout_constraintEnd_toStartOf="parent"
-            >
+                app:layout_constraintTop_toBottomOf="@id/postviewer_control_panel"
+                app:layout_constraintEnd_toStartOf="parent">
 
                 <TextView
                     android:id="@+id/postviewer_title_view"
@@ -177,12 +185,13 @@
                     android:layout_height="wrap_content"
                     android:text="Title"
                     android:textSize="11pt"
-                android:layout_marginStart="15dp"
-                        android:textColor="@color/white"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/white"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/postviewer_desc_panel"
                 android:layout_width="match_parent"
@@ -208,7 +217,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     </ScrollView>
 
