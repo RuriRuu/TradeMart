@@ -1,4 +1,4 @@
-package com.realeyez.trademart.gui.components.post;
+package com.realeyez.trademart.gui.components.profile.panels;
 
 import android.app.ActionBar.LayoutParams;
 import android.content.Context;
@@ -7,20 +7,20 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
-public class PostMediaPanelVideo implements PostMediaPanel {
+public class MediaPanelVideo implements MediaPanel {
 
     private PlayerView playerView;
     private ExoPlayer player;
     private Uri videoUri;
 
-    public PostMediaPanelVideo(Context context, LayoutParams layoutParams){
+    public MediaPanelVideo(Context context, LayoutParams layoutParams){
         playerView = new PlayerView(context);
         player = new ExoPlayer.Builder(context).build();
         playerView.setLayoutParams(layoutParams);
         playerView.setPlayer(player);
     }
 
-    public PostMediaPanelVideo(Context context, int width, int height){
+    public MediaPanelVideo(Context context, int width, int height){
         playerView = new PlayerView(context);
         player = new ExoPlayer.Builder(context).build();
         LayoutParams params = new LayoutParams(width, height);

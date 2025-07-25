@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.realeyez.trademart.JobViewerActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.search.MediaSearchResult;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,6 +81,11 @@ public class JobListingResultFragment extends Fragment {
             return;
         }
         panel.setOnSearchItemClickedListener(searchResult -> {
+            Intent intent = new Intent(getContext(), JobViewerActivity.class);
+            intent.putExtra("job_id", result.getId());
+            intent.putExtra("media_ids", result.getMediaIds());
+            intent.putExtra("username", result.getUser().getUsername());
+            startActivity(intent);
         });
         resultPanel.addView(panel);
     }

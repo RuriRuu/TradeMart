@@ -5,9 +5,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.realeyez.trademart.R;
+import com.realeyez.trademart.ServiceViewerActivity;
 import com.realeyez.trademart.search.MediaSearchResult;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,6 +75,11 @@ public class ServiceResultFragment extends Fragment {
     private void addServiceResultPanels(MediaSearchResult result){
         ServiceSearchResultDialog panel = ServiceSearchResultDialog.inflate(getLayoutInflater(), result);
         panel.setOnSearchItemClickedListener(searchResult -> {
+            Intent intent = new Intent(getContext(), ServiceViewerActivity.class);
+            intent.putExtra("service_id", result.getId());
+            intent.putExtra("media_ids", result.getMediaIds());
+            intent.putExtra("username", result.getUser().getUsername());
+            startActivity(intent);
         });
         resultPanel.addView(panel);
     }

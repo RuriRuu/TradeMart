@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_post_viewer"
+    android:id="@+id/activity_job_viewer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFAFAFA"
-    tools:context=".PostViewerActivity">
+    android:background="@color/background_white"
+    tools:context=".JobViewerActivity">
 
-<Toolbar
-        android:id="@+id/postviewer_toolbar"
+    <Toolbar
+        android:id="@+id/jobviewer_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/postviewer_back_button"
+            android:id="@+id/jobviewer_back_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/arrow_left_darker"
@@ -32,23 +32,24 @@
             app:layout_constraintStart_toStartOf="parent" />
 
     </Toolbar>
+
     <ScrollView
-        android:id="@+id/postviewer_main_scroll"
+        android:id="@+id/jobviewer_main_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/postviewer_toolbar"
+        app:layout_constraintTop_toBottomOf="@id/jobviewer_toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/postviewer_scroll_panel"
+            android:id="@+id/jobviewer_scroll_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp">
 
             <HorizontalScrollView
-                android:id="@+id/postviewer_media_scroll"
+                android:id="@+id/jobviewer_media_scroll"
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
                 android:layout_marginStart="15dp"
@@ -57,7 +58,7 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <LinearLayout
-                    android:id="@+id/postviewer_media_scroll_panel"
+                    android:id="@+id/jobviewer_media_scroll_panel"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal" />
@@ -65,17 +66,17 @@
             </HorizontalScrollView>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/postviewer_media_dots"
+                android:id="@+id/jobviewer_media_dots"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                app:layout_constraintTop_toBottomOf="@id/postviewer_media_scroll"
+                app:layout_constraintTop_toBottomOf="@id/jobviewer_media_scroll"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <LinearLayout
-                    android:id="@+id/postviewer_media_dots_panel"
+                    android:id="@+id/jobviewer_media_dots_panel"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
@@ -85,17 +86,17 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/postviewer_title_panel"
+                android:id="@+id/jobviewer_title_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                app:layout_constraintTop_toBottomOf="@id/postviewer_media_dots"
+                app:layout_constraintTop_toBottomOf="@id/jobviewer_media_dots"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
-                    android:id="@+id/postviewer_title_view"
+                    android:id="@+id/jobviewer_title_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Title"
@@ -104,27 +105,59 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/postviewer_user_panel"
+                android:id="@+id/jobviewer_income_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                app:layout_constraintTop_toBottomOf="@id/postviewer_title_panel"
+                app:layout_constraintTop_toBottomOf="@id/jobviewer_title_panel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@+id/jobviewer_income_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Income: "
+                    android:textSize="8pt"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/jobviewer_income"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:textSize="8pt"
+                    app:layout_constraintStart_toEndOf="@id/jobviewer_income_label"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/jobviewer_user_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                app:layout_constraintTop_toBottomOf="@id/jobviewer_income_panel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/postviewer_user_image_cardview"
+                    android:id="@+id/jobviewer_user_image_cardview"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:layout_margin="5dp"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:cardCornerRadius="70dp">
 
                     <ImageView
-                        android:id="@+id/postviewer_user_image"
+                        android:id="@+id/jobviewer_user_image"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="fitCenter"
@@ -134,7 +167,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <TextView
-                    android:id="@+id/postviewer_name_view"
+                    android:id="@+id/jobviewer_name_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Person, Human"
@@ -142,24 +175,22 @@
                     android:layout_marginStart="5dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/postviewer_user_image_cardview" />
+                    app:layout_constraintStart_toEndOf="@id/jobviewer_user_image_cardview" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/postviewer_control_panel"
+                android:id="@+id/jobviewer_control_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                app:layout_constraintTop_toBottomOf="@id/postviewer_user_panel"
+                app:layout_constraintTop_toBottomOf="@id/jobviewer_user_panel"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <ImageButton
-                    android:id="@+id/postviewer_like_button"
+                    android:id="@+id/jobviewer_like_button"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@drawable/heart"
@@ -169,7 +200,7 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                    android:id="@+id/postviewer_like_count"
+                    android:id="@+id/jobviewer_like_count"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
@@ -180,23 +211,23 @@
                     android:text="5.4K"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/postviewer_like_button" />
+                    app:layout_constraintStart_toEndOf="@id/jobviewer_like_button" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/postviewer_desc_panel"
+                android:id="@+id/jobviewer_desc_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                app:layout_constraintTop_toBottomOf="@id/postviewer_control_panel"
+                app:layout_constraintTop_toBottomOf="@id/jobviewer_control_panel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
-                    android:id="@+id/postviewer_desc_view"
+                    android:id="@+id/jobviewer_desc_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Lorem ipsum dolor sit amet"

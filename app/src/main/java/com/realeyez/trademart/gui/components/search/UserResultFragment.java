@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.json.JSONException;
 
+import com.realeyez.trademart.ProfilePageActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
@@ -16,6 +17,7 @@ import com.realeyez.trademart.search.UserSearchResult;
 import com.realeyez.trademart.util.CacheFile;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -79,10 +81,13 @@ public class UserResultFragment extends Fragment {
         });
     }
 
-    // TODO: open convo here
     private void addUserResultPanels(UserSearchResult result){
         UserSearchResultDialog panel = UserSearchResultDialog.inflate(getLayoutInflater(), result);
         panel.setOnSearchItemClickedListener(searchResult -> {
+            int userId = result.getId();
+            Intent intent = new Intent(getContext(), ProfilePageActivity.class);
+            intent.putExtra("user_id", userId);
+            startActivity(intent);
         });
         resultPanel.addView(panel);
     }

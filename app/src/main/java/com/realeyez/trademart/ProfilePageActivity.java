@@ -58,6 +58,7 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     private ArrayList<Integer> loadedPostIds;
 
+    // TODO: add chat button and probably put back the tool bar
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);

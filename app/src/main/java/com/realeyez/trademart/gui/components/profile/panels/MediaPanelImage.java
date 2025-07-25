@@ -1,4 +1,4 @@
-package com.realeyez.trademart.gui.components.post;
+package com.realeyez.trademart.gui.components.profile.panels;
 
 import android.app.ActionBar.LayoutParams;
 import android.content.Context;
@@ -6,13 +6,13 @@ import android.net.Uri;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
-public class PostMediaPanelImage implements PostMediaPanel {
+public class MediaPanelImage implements MediaPanel {
 
     private Uri uri;
     private ImageView imageView;
     private Context context;
 
-    public PostMediaPanelImage(Context context, LayoutParams params, Uri uri){
+    public MediaPanelImage(Context context, LayoutParams params, Uri uri){
         this.uri = uri;
         this.context = context;
         initComponents(params);

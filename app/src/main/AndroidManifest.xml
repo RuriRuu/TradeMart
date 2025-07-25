@@ -29,6 +29,12 @@
             android:name=".PostViewerActivity"
             android:exported="true" />
         <activity
+            android:name=".JobViewerActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ServiceViewerActivity"
+            android:exported="true" />
+        <activity
             android:name=".ImageViewerActivity"
             android:exported="true" />
         <activity
