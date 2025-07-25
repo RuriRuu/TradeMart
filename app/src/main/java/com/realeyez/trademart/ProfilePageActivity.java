@@ -29,6 +29,7 @@ import com.realeyez.trademart.util.Logger.LogLevel;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -45,6 +46,9 @@ public class ProfilePageActivity extends AppCompatActivity {
     private ImageView profileImageView;
     private ScrollView scrollView;
 
+    private ImageButton chatButton;
+    private ImageButton backButton;
+
     private LinearLayout mediaPanel;
 
     private ShowcasePanel showcasePanel;
@@ -56,6 +60,7 @@ public class ProfilePageActivity extends AppCompatActivity {
     private int postCount;
     private int completedJobCount;
     private double rating;
+    private String username;
 
     private ArrayList<Integer> loadedPostIds;
 
@@ -244,9 +249,10 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     private void initUser(JSONObject json){
         try {
+            username = json.getString("username");
             user = new User.UserBuilder()
                 .setId(json.getInt("user_id"))
-                .setUsername(json.getString("username"))
+                .setUsername(username)
                 .setEmail(json.getString("email"))
                 .build();
         } catch (JSONException e) {
@@ -271,6 +277,9 @@ public class ProfilePageActivity extends AppCompatActivity {
         profileImageView = findViewById(R.id.profile_image_view);
         mediaPanel = findViewById(R.id.media_panel);
         scrollView = findViewById(R.id.profile_media_scroll_view);
+        backButton = findViewById(R.id.profile_back_button);
+        chatButton = findViewById(R.id.profile_chat_button);
+
         rating = postCount = completedJobCount = 0;
         showcaseRows = new ArrayList<>();
         showcasePanel = new ShowcasePanel(this, mediaPanel);
@@ -306,6 +315,19 @@ public class ProfilePageActivity extends AppCompatActivity {
                 return;
             }
             showProfilePictureSheet();
+        });
+
+        backButton.setOnClickListener(view -> {
+            finish();
+        });
+
+        chatButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, MessagingActivity.class);
+            //userId, convoId, username
+            intent.putExtra("user_id", userId);
+            intent.putExtra("convo_id", -1);
+            intent.putExtra("username", username);
+            startActivity(intent);
         });
     }
 
