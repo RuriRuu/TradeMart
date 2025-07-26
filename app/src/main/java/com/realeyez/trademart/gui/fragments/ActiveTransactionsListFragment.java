@@ -77,12 +77,9 @@ public class ActiveTransactionsListFragment extends Fragment {
                     }
                     refresh.setRefreshing(false);
                 });
-            } catch (JSONException e){
+            } catch (JSONException | IOException e){
                 e.printStackTrace();
-            } catch (FileNotFoundException e){
-                e.printStackTrace();
-            } catch (IOException e){
-                e.printStackTrace();
+                refresh.setRefreshing(false);
             }
         });
     }
@@ -108,7 +105,12 @@ public class ActiveTransactionsListFragment extends Fragment {
             int employeeId = appJson.getInt("employee_id");
             int employerId = appJson.getInt("employer_id");
             JobTransactionType type = JobTransactionType.valueOf(appJson.getString("type"));
-            Uri pfpUri = ProfilePictureRequestor.sendRequest(type == JobTransactionType.APPLICATION ? employerId : employeeId, context.getCacheDir());
+            Uri pfpUri = null;
+            try {
+                pfpUri = ProfilePictureRequestor.sendRequest(type == JobTransactionType.APPLICATION ? employerId : employeeId, context.getCacheDir());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
             activeJobs.add(new JobItemMixed(
                         type,
                         appJson.getString("employee_username"), 

@@ -106,7 +106,12 @@ public class ApplicationsListFragment extends Fragment {
         for (int i = 0; i < applicationsJson.length(); i++) {
             JSONObject appJson = applicationsJson.getJSONObject(i);
             int employerId = appJson.getInt("employer_id");
-            Uri pfpUri = ProfilePictureRequestor.sendRequest(employerId, context.getCacheDir());
+            Uri pfpUri = null;
+            try {
+                pfpUri = ProfilePictureRequestor.sendRequest(employerId, context.getCacheDir());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
             applications.add(new JobItem(
                         appJson.getString("employer_username"), 
                         appJson.getString("job_title"), 
