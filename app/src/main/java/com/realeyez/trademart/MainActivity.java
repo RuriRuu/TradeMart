@@ -99,12 +99,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void searchButtonAction(){
-        Intent explicitActivity = new Intent(MainActivity.this, SearchActivity.class);
-        startActivity(explicitActivity);
-        bottomNav.setSelectedItemId(R.id.main_action_home);
-    }
-
     private void createButtonAction(){
         displayCreateOptions();
         bottomNav.setSelectedItemId(R.id.main_action_home);

@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.realeyez.trademart.R;
+import com.realeyez.trademart.SearchActivity;
 import com.realeyez.trademart.feed.FeedItem;
 import com.realeyez.trademart.feed.FeedType;
 import com.realeyez.trademart.gui.components.feed.FeedView;
@@ -25,13 +26,15 @@ import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -42,6 +45,7 @@ public class HomepageFragment extends Fragment {
     private SnapScroll snapScroll;
     private LinearLayout contentPanel;
     private SwipeRefreshLayout refreshLayout;
+    private ImageButton searchButton;
 
     ArrayList<FeedView> feedViews;
     ArrayList<FeedItem> feedItems;
@@ -67,11 +71,12 @@ public class HomepageFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.fragment_homepage, container, false);
+        ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.fragment_homepage, container, false);
 
         scrollView = layout.findViewById(R.id.homepage_scroll);
         contentPanel = layout.findViewById(R.id.homepage_scroll_panel);
         refreshLayout = layout.findViewById(R.id.homepage_refresh);
+        searchButton = layout.findViewById(R.id.homepage_search_button);
 
         snapScroll = new SnapScroll(scrollView);
 
@@ -87,6 +92,10 @@ public class HomepageFragment extends Fragment {
 
         snapScroll.setOnChangeChildListener((lastChild, curChild) -> {
             onChangeChildAction(lastChild, curChild);
+        });
+
+        searchButton.setOnClickListener(view -> {
+            searchButtonAction();
         });
 
 
@@ -123,6 +132,11 @@ public class HomepageFragment extends Fragment {
                 loadFeed(false);
             }
         }
+    }
+
+    private void searchButtonAction(){
+        Intent explicitActivity = new Intent(getContext(), SearchActivity.class);
+        startActivity(explicitActivity);
     }
 
     private void loadFeed(boolean clear){
