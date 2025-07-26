@@ -9,9 +9,13 @@ import java.util.concurrent.Executors;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.gui.components.job.JobItemPanel;
+import com.realeyez.trademart.gui.sheets.HiringsJobSheet;
+import com.realeyez.trademart.gui.sheets.ProfilePictureSheet;
 import com.realeyez.trademart.job.JobItem;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
@@ -19,11 +23,10 @@ import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Logger;
-import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class HiringsListFragment extends Fragment {
@@ -52,6 +56,9 @@ public class HiringsListFragment extends Fragment {
             reset(inflater);
         });
 
+        FragmentManager fragman = requireActivity().getSupportFragmentManager();
+        registerHireResultAction(fragman);
+
         reset(inflater);
 
         return layout;
@@ -62,9 +69,21 @@ public class HiringsListFragment extends Fragment {
         loadHirings(inflater);
     }
 
+    private void registerHireResultAction(FragmentManager fragman){
+        fragman.setFragmentResultListener("hire_result", this, (key, result) -> {
+            if(result.getBoolean("success")){
+                reset(getLayoutInflater());
+            }
+        });
+    }
+
     private void addPanel(LayoutInflater inflater, JobItem jobItem){
-        Logger.logi("adding panel");
         JobItemPanel panel = JobItemPanel.inflate(inflater, jobItem);
+
+        panel.setOnJobItemClickedListener((item) -> {
+            HiringsJobSheet sheet = new HiringsJobSheet(jobItem);
+            sheet.show(getParentFragmentManager(), HiringsJobSheet.TAG);
+        });
         contentPanel.addView(panel);
     }
 
@@ -74,11 +93,8 @@ public class HiringsListFragment extends Fragment {
         exec.execute(() -> {
             try {
                 ArrayList<JobItem> items = sendFetchRequest();
-                Logger.logi("about to start ui thread for adding ponels");
                 activity.runOnUiThread(() -> {
-                    Logger.logi("entered the thread!");
                     for (JobItem item : items) {
-                        Logger.logi("looping job items");
                         addPanel(inflater, item);
                     }
                     refresh.setRefreshing(false);
@@ -98,7 +114,6 @@ public class HiringsListFragment extends Fragment {
             .build();
         Response response = RequestUtil.sendPostRequest("/jobs/hirings", content);
         JSONObject responseJson = response.getContentJson();
-        Logger.log(responseJson.toString(), LogLevel.INFO);
         if(responseJson.getString("status").equals("failed")){
             String error = responseJson.getString("message");
             requireActivity().runOnUiThread(() -> {
@@ -108,7 +123,6 @@ public class HiringsListFragment extends Fragment {
         }
         JSONArray hiringsJson = responseJson.getJSONObject("data").getJSONArray("hirings");
         for (int i = 0; i < hiringsJson.length(); i++) {
-            Logger.logi("adding job items");
             JSONObject appJson = hiringsJson.getJSONObject(i);
             int employeeId = appJson.getInt("employee_id");
             Uri pfpUri = null;
@@ -117,11 +131,15 @@ public class HiringsListFragment extends Fragment {
             } catch (Exception e){
                 e.printStackTrace();
             }
-            hirings.add(new JobItem(
-                        appJson.getString("employee_username"), 
-                        appJson.getString("job_title"), 
-                        pfpUri));
-            Logger.logi("job item added!");
+            hirings.add(new JobItem.Builder()
+                    .setTransactionId(appJson.getInt("id"))
+                    .setEmployeeId(employeeId)
+                    .setEmployerId(employerId)
+                    .setTransactionId(appJson.getInt("id"))
+                    .setUsername(appJson.getString("employee_username"))
+                    .setTitle(appJson.getString("job_title"))
+                    .setProfilePictureUri(pfpUri)
+                    .build());
         }
         return hirings;
     }

@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.gui.components.job.JobItemPanelMixed;
 import com.realeyez.trademart.job.JobItemMixed;
@@ -23,6 +24,7 @@ import com.realeyez.trademart.util.Dialogs;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -62,6 +64,13 @@ public class CompletedTransactionsListFragment extends Fragment {
 
     private void addPanel(LayoutInflater inflater, JobItemMixed jobItem){
         JobItemPanelMixed panel = JobItemPanelMixed.inflate(inflater, jobItem);
+        panel.setOnJobItemClickedListener(item -> {
+            Intent intent = new Intent(getContext(), MessagingActivity.class);
+            intent.putExtra("user_id", item.getEmployerId());
+            intent.putExtra("convo_id", -1);
+            intent.putExtra("username", item.getUsername());
+            startActivity(intent);
+        });
         contentPanel.addView(panel);
     }
 
@@ -102,20 +111,33 @@ public class CompletedTransactionsListFragment extends Fragment {
         JSONArray completedTransactionsJson = responseJson.getJSONObject("data").getJSONArray("completed_transactions");
         for (int i = 0; i < completedTransactionsJson.length(); i++) {
             JSONObject appJson = completedTransactionsJson.getJSONObject(i);
+            JobTransactionType type = JobTransactionType.valueOf(appJson.getString("type"));
             int employeeId = appJson.getInt("employee_id");
             int employerId = appJson.getInt("employer_id");
-            JobTransactionType type = JobTransactionType.valueOf(appJson.getString("type"));
+            String displayName = "";
+            int displayUserId = -1;
+            if(userId == employeeId){ 
+                displayName = appJson.getString("employer_username");
+                displayUserId = employerId;
+            } else if(userId == employerId){
+                displayName = appJson.getString("employee_username");
+                displayUserId = employeeId;
+            }
             Uri pfpUri = null;
             try {
-                pfpUri = ProfilePictureRequestor.sendRequest(type == JobTransactionType.APPLICATION ? employerId : employeeId, context.getCacheDir());
+                pfpUri = ProfilePictureRequestor.sendRequest(displayUserId, context.getCacheDir());
             } catch (Exception e){
                 e.printStackTrace();
             }
-            completedTransactions.add(new JobItemMixed(
-                        type,
-                        appJson.getString("employee_username"), 
-                        appJson.getString("job_title"), 
-                        pfpUri));
+            completedTransactions.add(new JobItemMixed.Builder()
+                    .setEmployeeId(employeeId)
+                    .setEmployerId(employerId)
+                    .setType(type)
+                    .setTransactionId(appJson.getInt("id"))
+                    .setUsername(displayName)
+                    .setTitle(appJson.getString("job_title"))
+                    .setProfilePictureUri(pfpUri)
+                    .build());
         }
         return completedTransactions;
     }

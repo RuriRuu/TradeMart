@@ -1,6 +1,7 @@
 package com.realeyez.trademart.gui.components.job;
 
 import com.realeyez.trademart.R;
+import com.realeyez.trademart.gui.components.job.event.OnJobItemClickedListener;
 import com.realeyez.trademart.job.JobItem;
 import com.realeyez.trademart.job.JobItemMixed;
 import com.realeyez.trademart.job.JobTransactionType;
@@ -24,6 +25,8 @@ public class JobItemPanelMixed extends ConstraintLayout {
     private TextView typeLabel;
 
     private JobItemMixed jobItem;
+    
+    private OnJobItemClickedListener onJobItemClickedListener;
 
     public JobItemPanelMixed(@NonNull Context context) {
         super(context);
@@ -52,6 +55,11 @@ public class JobItemPanelMixed extends ConstraintLayout {
         usernameLabel = findViewById(R.id.jobitemmixed_username_view);
         titleLabel = findViewById(R.id.jobitemmixed_job_title_view);
         typeLabel = findViewById(R.id.jobitemmixed_job_type_view);
+
+        setOnClickListener(view -> {
+            if(onJobItemClickedListener != null)
+                onJobItemClickedListener.onJobItemClicked(jobItem);
+        });
     }
 
     private void loadData(JobItemMixed jobItem){
@@ -70,6 +78,10 @@ public class JobItemPanelMixed extends ConstraintLayout {
         JobItemPanelMixed view = (JobItemPanelMixed) inflater.inflate(R.layout.layout_job_item_mixed, null);
         view.loadData(item);
         return view;
+    }
+
+    public void setOnJobItemClickedListener(OnJobItemClickedListener onJobItemClickedListener){
+        this.onJobItemClickedListener = onJobItemClickedListener;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.realeyez.trademart.gui.components.job;
 
 import com.realeyez.trademart.R;
+import com.realeyez.trademart.gui.components.job.event.OnJobItemClickedListener;
 import com.realeyez.trademart.job.JobItem;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
@@ -21,6 +22,8 @@ public class JobItemPanel extends ConstraintLayout {
     private TextView titleLabel;
 
     private JobItem jobItem;
+
+    private OnJobItemClickedListener onJobItemClickedListener;
 
     public JobItemPanel(@NonNull Context context) {
         super(context);
@@ -48,6 +51,11 @@ public class JobItemPanel extends ConstraintLayout {
         profileImage = findViewById(R.id.jobitem_profile_view);
         usernameLabel = findViewById(R.id.jobitem_username_view);
         titleLabel = findViewById(R.id.jobitem_job_title_view);
+
+        setOnClickListener(view -> {
+            if(onJobItemClickedListener != null)
+                onJobItemClickedListener.onJobItemClicked(jobItem);
+        });
     }
 
     private void loadData(JobItem jobItem){
@@ -65,6 +73,10 @@ public class JobItemPanel extends ConstraintLayout {
         JobItemPanel view = (JobItemPanel) inflater.inflate(R.layout.layout_job_item, null);
         view.loadData(item);
         return view;
+    }
+
+    public void setOnJobItemClickedListener(OnJobItemClickedListener onJobItemClickedListener) {
+        this.onJobItemClickedListener = onJobItemClickedListener;
     }
 
 }

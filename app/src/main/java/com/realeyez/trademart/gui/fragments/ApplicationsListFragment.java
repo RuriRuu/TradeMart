@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.gui.components.job.JobItemPanel;
 import com.realeyez.trademart.job.JobItem;
@@ -22,6 +23,7 @@ import com.realeyez.trademart.util.Dialogs;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -62,6 +64,13 @@ public class ApplicationsListFragment extends Fragment {
 
     private void addPanel(LayoutInflater inflater, JobItem jobItem){
         JobItemPanel panel = JobItemPanel.inflate(inflater, jobItem);
+        panel.setOnJobItemClickedListener(item -> {
+            Intent intent = new Intent(getContext(), MessagingActivity.class);
+            intent.putExtra("user_id", item.getEmployerId());
+            intent.putExtra("convo_id", -1);
+            intent.putExtra("username", item.getUsername());
+            startActivity(intent);
+        });
         contentPanel.addView(panel);
     }
 
@@ -77,12 +86,9 @@ public class ApplicationsListFragment extends Fragment {
                     }
                     refresh.setRefreshing(false);
                 });
-            } catch (JSONException e){
+            } catch (JSONException | IOException e){
                 e.printStackTrace();
-            } catch (FileNotFoundException e){
-                e.printStackTrace();
-            } catch (IOException e){
-                e.printStackTrace();
+                refresh.setRefreshing(false);
             }
         });
     }
@@ -112,10 +118,14 @@ public class ApplicationsListFragment extends Fragment {
             } catch (Exception e){
                 e.printStackTrace();
             }
-            applications.add(new JobItem(
-                        appJson.getString("employer_username"), 
-                        appJson.getString("job_title"), 
-                        pfpUri));
+            applications.add(new JobItem.Builder()
+                    .setTransactionId(appJson.getInt("id"))
+                    .setEmployeeId(employeeId)
+                    .setEmployerId(employerId)
+                    .setUsername(appJson.getString("employer_username"))
+                    .setTitle(appJson.getString("job_title"))
+                    .setProfilePictureUri(pfpUri)
+                    .build());
         }
         return applications;
     }
