@@ -6,6 +6,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.realeyez.trademart.gui.components.feed.FeedView;
 import com.realeyez.trademart.gui.fragments.ConvosMenuFragment;
 import com.realeyez.trademart.gui.fragments.HomepageFragment;
+import com.realeyez.trademart.gui.fragments.JobTransactionsFragment;
 import com.realeyez.trademart.gui.sheets.HomepageCreateSheet;
 import com.realeyez.trademart.resource.ResourceRepository;
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout contentPanel;
     private ConvosMenuFragment convosFrag;
     private HomepageFragment homepageFrag;
+    private JobTransactionsFragment jobsFrag;
 
     private BottomNavigationView bottomNav;
 
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private void initComponents(){
         convosFrag = new ConvosMenuFragment();
         homepageFrag = new HomepageFragment(); 
+        jobsFrag = new JobTransactionsFragment();
 
         contentPanel = findViewById(R.id.main_content_panel);
         bottomNav = findViewById(R.id.main_nav_bar);
@@ -81,6 +84,13 @@ public class MainActivity extends AppCompatActivity {
             .commit();
     }
 
+    private void showJobsFragment(){
+        fragman.beginTransaction()
+            .replace(R.id.main_content_panel, jobsFrag)
+            .setReorderingAllowed(true)
+            .commit();
+    }
+
     private void homeButtonAction(){
         if(currentFrag == 0){
             homepageFrag.scrollToTop();
@@ -121,8 +131,9 @@ public class MainActivity extends AppCompatActivity {
             if(item.getItemId() == R.id.main_action_search){
                 currentFrag = 1;
                 homepageFrag.unfocus();
-                searchButtonAction();
-                return false;
+                // searchButtonAction();
+                showJobsFragment();
+                return true;
             }
             if(item.getItemId() == R.id.main_action_create) {
                 createButtonAction();

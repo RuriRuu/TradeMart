@@ -109,6 +109,9 @@ public class PostViewerActivity extends AppCompatActivity {
             }
         });
         mediaExecutor.execute(() -> {
+            if(mediaIds.size() == 0){
+                return;
+            }
             runOnUiThread(() -> {
                 dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
             });

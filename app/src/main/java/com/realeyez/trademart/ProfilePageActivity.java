@@ -323,7 +323,6 @@ public class ProfilePageActivity extends AppCompatActivity {
 
         chatButton.setOnClickListener(view -> {
             Intent intent = new Intent(this, MessagingActivity.class);
-            //userId, convoId, username
             intent.putExtra("user_id", userId);
             intent.putExtra("convo_id", -1);
             intent.putExtra("username", username);

@@ -9,8 +9,12 @@ import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.realeyez.trademart.JobViewerActivity;
 import com.realeyez.trademart.MessagingActivity;
+import com.realeyez.trademart.PostViewerActivity;
+import com.realeyez.trademart.ProfilePageActivity;
 import com.realeyez.trademart.R;
+import com.realeyez.trademart.ServiceViewerActivity;
 import com.realeyez.trademart.feed.FeedItem;
 import com.realeyez.trademart.gui.components.scroll.SnapScrollH;
 import com.realeyez.trademart.gui.media.VideoPlayer;
@@ -48,6 +52,7 @@ public class FeedView extends ConstraintLayout {
     private SnapScrollH snapScroll;
 
     private LinearLayout contentPanel;
+    private ConstraintLayout profilePanel;
 
     private ImageView userImage;
     private TextView titleField;
@@ -95,6 +100,7 @@ public class FeedView extends ConstraintLayout {
         likeButton = findViewById(R.id.feedview_like_button);
         messageButton = findViewById(R.id.feedview_message_button);
 
+        profilePanel = findViewById(R.id.feedview_user_panel);
         // setOnFocusChangeListener((view, focused) -> {
         //     if(focused){
         //         preparePlayers();
@@ -349,6 +355,29 @@ public class FeedView extends ConstraintLayout {
         getContext().startActivity(intent);
     }
 
+    private void openViewerAction(){
+        Intent intent = null;
+        switch (feed.getType()) {
+            case POST:
+                intent = new Intent(getContext(), PostViewerActivity.class);
+                intent.putExtra("post_id", feed.getId());
+                break;
+            case SERVICE:
+                intent = new Intent(getContext(), ServiceViewerActivity.class);
+                intent.putExtra("service_id", feed.getId());
+                break;
+            case JOB_LISTING:
+                intent = new Intent(getContext(), JobViewerActivity.class);
+                intent.putExtra("job_id", feed.getId());
+                break;
+            default:
+                break;
+        }
+        intent.putExtra("media_ids", feed.getMediaIds());
+        intent.putExtra("username", feed.getUsername());
+        activity.startActivity(intent);
+    }
+
     private void addOnClickListeners(){
         likeButton.setOnClickListener(view -> {
             ExecutorService exec = Executors.newSingleThreadExecutor();
@@ -362,6 +391,14 @@ public class FeedView extends ConstraintLayout {
             exec.execute(() -> {
                 messageButtonAction();
             });
+        });
+        profilePanel.setOnClickListener(view -> {
+            Intent intent = new Intent(activity, ProfilePageActivity.class);
+            intent.putExtra("user_id", feed.getOwnerId());
+            activity.startActivity(intent);
+        });
+        titleField.setOnClickListener(view -> {
+            openViewerAction();
         });
     }
 

@@ -1,6 +1,7 @@
 package com.realeyez.trademart;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -32,11 +33,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class JobViewerActivity extends AppCompatActivity {
@@ -56,6 +59,7 @@ public class JobViewerActivity extends AppCompatActivity {
 
     private ImageButton likeButton;
     private ImageButton backButton;
+    private Button applyButton;
 
     private ImageView profilePictureView;
 
@@ -90,6 +94,7 @@ public class JobViewerActivity extends AppCompatActivity {
 
         likeButton = findViewById(R.id.jobviewer_like_button);
         backButton = findViewById(R.id.jobviewer_back_button);
+        applyButton = findViewById(R.id.jobviewer_apply_button);
         mediaDots = findViewById(R.id.jobviewer_media_dots_panel);
 
         profilePictureView = findViewById(R.id.jobviewer_user_image);
@@ -271,6 +276,45 @@ public class JobViewerActivity extends AppCompatActivity {
         likesLabel.setText(generateLikeString(likeCount));
     }
 
+    private void applyAction(){
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            try {
+                boolean success = sendApplicationRequest();
+                if(success){
+                    runOnUiThread(() -> Toast.makeText(this, "Application successfully sent!", Toast.LENGTH_LONG).show());
+                }
+            } catch (JSONException e){
+                e.printStackTrace();
+            } catch (FileNotFoundException e){
+                e.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private boolean sendApplicationRequest() throws FileNotFoundException, IOException, JSONException {
+        int employeeId = ResourceRepository.getResources().getCurrentUser().getId();
+        Content content = new Content.ContentBuilder()
+            .put("employee_id", employeeId)
+            .build();
+        String path = new StringBuilder()
+            .append("/jobs/")
+            .append(jobId)
+            .append("/apply")
+            .toString();
+        Response response = RequestUtil.sendPostRequest(path, content);
+        if(response.getContentJson().getString("status").equals("success")){
+            return true;
+        }
+        String error = response.getContentJson().getString("message");
+        runOnUiThread(() -> {
+            Dialogs.showErrorDialog(error, this);
+        });
+        return false;
+    }
+
     private void addActionListeners(){
         backButton.setOnClickListener(view -> {
             finish();
@@ -280,6 +324,9 @@ public class JobViewerActivity extends AppCompatActivity {
             exec.execute(() -> {
                 likeClickAction();
             });
+        });
+        applyButton.setOnClickListener(view -> {
+            applyAction();
         });
         snapScroll.setOnChangeChildListener((lastChild, curChild) -> {
             dotsPanel.setActive(curChild);
