@@ -21,6 +21,7 @@ import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
+import com.realeyez.trademart.request.requestor.UserRequestor;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
@@ -100,6 +101,7 @@ public class JobViewerActivity extends AppCompatActivity {
         profilePictureView = findViewById(R.id.jobviewer_user_image);
 
         snapScroll = new SnapScrollH(mediaScroll);
+        setApplyButtonEnabled(false);
         addActionListeners();
     }
 
@@ -157,6 +159,9 @@ public class JobViewerActivity extends AppCompatActivity {
         });
     }
 
+    private void loadEmployerData(){
+    }
+
     private String generatePriceString(double price){
         String text = new StringBuilder()
             .append(String.format("₱ %.2f", price))
@@ -171,6 +176,15 @@ public class JobViewerActivity extends AppCompatActivity {
         return text;
     }
 
+    private void setApplyButtonEnabled(boolean enabled){
+        applyButton.setEnabled(enabled);
+        if(enabled){
+            applyButton.setBackgroundColor(getResources().getColor(R.color.pink, null));
+            return;
+        }
+        applyButton.setBackgroundColor(getResources().getColor(R.color.grey, null));
+    }
+
     private void loadPostData() throws IOException {
         String path = new StringBuilder()
             .append("/jobs/find/").append(jobId).toString();
@@ -178,6 +192,7 @@ public class JobViewerActivity extends AppCompatActivity {
         try {
             JSONObject json = response.getContentJson().getJSONObject("data");
             int userId = json.getInt("employer_id");
+            String username = UserRequestor.sendRequest(userId).getUsername();
             runOnUiThread(() -> {
                 try{ 
                     titleLabel.setText(json.getString("job_title"));
@@ -185,7 +200,9 @@ public class JobViewerActivity extends AppCompatActivity {
                     nameLabel.setText(username);
                     descLabel.setText(json.getString("job_description"));
                     likesLabel.setText(generateLikeString(json.getInt("likes")));
-
+                    if(userId != ResourceRepository.getResources().getCurrentUser().getId()){
+                        setApplyButtonEnabled(true);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

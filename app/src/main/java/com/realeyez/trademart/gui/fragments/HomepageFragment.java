@@ -22,8 +22,6 @@ import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Logger;
-import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -148,7 +146,6 @@ public class HomepageFragment extends Fragment {
                 for (FeedItem feedItem : feedItems) {
                     addFeedView(activity, feedItem);
                 }
-                Logger.log("this is insulting, please", LogLevel.INFO);
                 ((FeedView) contentPanel.getChildAt(0)).preparePlayers();
             });
         });
@@ -189,7 +186,6 @@ public class HomepageFragment extends Fragment {
     }
 
     private void addFeedView(Activity activity, FeedItem feed){
-        Logger.log("adding feed...", LogLevel.INFO);
         LayoutParams params = new LayoutParams(
                 scrollView.getWidth(),
                 scrollView.getHeight());
@@ -202,9 +198,7 @@ public class HomepageFragment extends Fragment {
 
     private JSONArray feedsToJSON() throws JSONException {
         JSONArray arr = new JSONArray();
-            Logger.log("feedItems length: " +  feedItems.size(), LogLevel.INFO);
         for (FeedItem feedItem : feedItems) {
-            Logger.log("adding loaded feed...", LogLevel.INFO);
             arr.put(new JSONObject()
                     .put("id", feedItem.getId())
                     .put("type", feedItem.getType().toString()));
@@ -223,11 +217,9 @@ public class HomepageFragment extends Fragment {
                 feedItems.clear();
                 feedViews.clear();
             }
-            Logger.log(json.toString(), LogLevel.INFO);
             Response response = RequestUtil.sendPostRequest("/feed",
                     new Content.ContentBuilder().parseJson(json.toString()));
             JSONObject responseJson = response.getContentJson();
-            Logger.log(responseJson.toString(), LogLevel.INFO);
             if(responseJson.getString("status").equals("failed")){
                 String errMessage = responseJson.getString("message");
                 requireActivity().runOnUiThread(() -> {
@@ -238,20 +230,17 @@ public class HomepageFragment extends Fragment {
             }
             JSONArray feedsJson = responseJson.getJSONObject("data").getJSONArray("feeds");
             for (int i = 0; i < feedsJson.length(); i++) {
-                Logger.log("FEEDS INIT #" + i, LogLevel.INFO);
                 JSONObject feedJson = feedsJson.getJSONObject(i);
                 FeedItem.Builder builder = new FeedItem.Builder();
                 JSONArray mediaIdsJson = feedJson.getJSONArray("media_ids");
                 ArrayList<Integer> mediaIds = new ArrayList<>();
                 for (int j = 0; j < mediaIdsJson.length(); j++){
-                    Logger.log("adding media id on: " + j, LogLevel.INFO);
                     mediaIds.add(mediaIdsJson.getInt(j));
                 }
 
                 JSONArray mediaTypesJson = feedJson.getJSONArray("media_types");
                 ArrayList<MediaType> mediaTypes = new ArrayList<>();
                 for (int j = 0; j < mediaTypesJson.length(); j++){
-                    Logger.log("adding media type on: " + j, LogLevel.INFO);
                     mediaTypes.add(MediaType.valueOf(mediaTypesJson.getString(j)));
                 }
 

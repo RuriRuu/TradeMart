@@ -20,10 +20,10 @@ public class ScrollDot {
 
     private void initComponents(){
         image = new ImageView(context);
-        int density = DimensionsUtil.getScreenDensity(context);
-        LayoutParams params = new LayoutParams(density * 10, density * 10);
-        params.setMarginStart(density * 2);
-        params.setMarginEnd(density * 2);
+        float density = DimensionsUtil.getScreenDensity(context);
+        LayoutParams params = new LayoutParams((int)(density * 10), (int)(density * 10));
+        params.setMarginStart((int)(density * 2));
+        params.setMarginEnd((int)(density * 2));
         image.setLayoutParams(params);
         image.setScaleType(ScaleType.FIT_CENTER);
         setDotImage(false);
