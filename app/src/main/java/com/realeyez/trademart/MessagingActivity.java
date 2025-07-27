@@ -103,6 +103,8 @@ public class MessagingActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.messaging_chat_scroll);
         contentPanel = findViewById(R.id.messaging_chat_panel);
 
+        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+
         addActionListeners();
     }
 
@@ -157,7 +159,7 @@ public class MessagingActivity extends AppCompatActivity {
         }
         chats.sort(Comparator.comparing((chat) -> ((Chat)chat).getTimeSent()));
         for (Chat chat : chats) {
-            addChatPanel(chat);
+            runOnUiThread(() -> addChatPanel(chat));
         }
         setup = true;
     }
@@ -277,46 +279,42 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     private void addMessageUserChatPanel(Chat chat){
-        runOnUiThread(() -> {
-            MessageUserChatPanel panel = MessageUserChatPanel.inflate(
-                    getLayoutInflater(),
-                    (MessageChat) chat);
-            panel.setImageUri(selfUri);
-            addChatView(panel);
-        });
+        MessageUserChatPanel panel = MessageUserChatPanel.inflate(
+                getLayoutInflater(),
+                (MessageChat) chat);
+        panel.setImageUri(selfUri);
+        addChatView(panel);
+        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
 
     private void addPaymentSenderChatPanel(Chat chat){
-        runOnUiThread(() -> {
-            PaymentSenderChatPanel panel = PaymentSenderChatPanel.inflate(
-                    getLayoutInflater(),
-                    (PaymentChat) chat);
-            addChatView(panel);
-        });
+        PaymentSenderChatPanel panel = PaymentSenderChatPanel.inflate(
+                getLayoutInflater(),
+                (PaymentChat) chat);
+        addChatView(panel);
+        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
 
     private void addPaymentReceiverChatPanel(Chat chat){
-        runOnUiThread(() -> {
-            PaymentReceiverChatPanel panel = PaymentReceiverChatPanel.inflate(
-                    getLayoutInflater(),
-                    (PaymentChat) chat);
-            panel.setOnConfirmListener(view -> {
-                ExecutorService exec = Executors.newSingleThreadExecutor();
-                exec.execute(() -> {
-                    sendSetConfirmed((Button) view, (PaymentChat)chat);
-                });
+        PaymentReceiverChatPanel panel = PaymentReceiverChatPanel.inflate(
+                getLayoutInflater(),
+                (PaymentChat) chat);
+        panel.setOnConfirmListener(view -> {
+            ExecutorService exec = Executors.newSingleThreadExecutor();
+            exec.execute(() -> {
+                sendSetConfirmed((Button) view, (PaymentChat)chat);
             });
-            addChatView(panel);
         });
+        addChatView(panel);
+        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
 
     private void addMessageSenderChatPanel(Chat chat){
-        runOnUiThread(() -> {
-            MessageSenderChatPanel panel = MessageSenderChatPanel.inflate(
-                    getLayoutInflater(),
-                    (MessageChat) chat);
-            addChatView(panel);
-        });
+        MessageSenderChatPanel panel = MessageSenderChatPanel.inflate(
+                getLayoutInflater(),
+                (MessageChat) chat);
+        addChatView(panel);
+        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
 
     private void addChatView(View view){
