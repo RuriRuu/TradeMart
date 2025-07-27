@@ -105,7 +105,7 @@ public class JobViewerActivity extends AppCompatActivity {
         profilePictureView = findViewById(R.id.jobviewer_user_image);
 
         snapScroll = new SnapScrollH(mediaScroll);
-        setApplyButtonEnabled(false);
+        setApplyButtonEnabled(true);
         addActionListeners();
     }
 
@@ -153,8 +153,9 @@ public class JobViewerActivity extends AppCompatActivity {
         jobDataExecutor.execute(() -> {
             try {
                 initLikeButton();
+                initApplyButton();
                 loadPostData();
-            } catch (IOException e) {
+            } catch (JSONException | IOException e) {
                 e.printStackTrace();
                 Logger.log("unable to load job data", LogLevel.WARNING);
                 finish();
@@ -227,6 +228,19 @@ public class JobViewerActivity extends AppCompatActivity {
         applyButton.setBackgroundColor(getResources().getColor(R.color.grey, null));
     }
 
+    private void initApplyButton() throws JSONException, IOException {
+        int userId = ResourceRepository.getResources().getCurrentUser().getId();
+        Content content = new Content.ContentBuilder()
+            .put("applicant_id", userId)
+            .build();
+        String path = new StringBuilder()
+            .append("/jobs/").append(jobId).append("/applicationstatus").toString();
+        Response response = RequestUtil.sendPostRequest(path, content);
+        boolean isEmployed = response.getContentJson().getBoolean("is_employed");
+        if(isEmployed)
+            runOnUiThread(() -> setApplyButtonEnabled(false));
+    }
+
     private void loadPostData() throws IOException {
         String path = new StringBuilder()
             .append("/jobs/find/").append(jobId).toString();
@@ -243,8 +257,8 @@ public class JobViewerActivity extends AppCompatActivity {
                     nameLabel.setText(username);
                     descLabel.setText(json.getString("job_description"));
                     likesLabel.setText(generateLikeString(json.getInt("likes")));
-                    if(userId != ResourceRepository.getResources().getCurrentUser().getId()){
-                        setApplyButtonEnabled(true);
+                    if(userId == ResourceRepository.getResources().getCurrentUser().getId()){
+                        setApplyButtonEnabled(false);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -342,7 +356,10 @@ public class JobViewerActivity extends AppCompatActivity {
             try {
                 boolean success = sendApplicationRequest();
                 if(success){
-                    runOnUiThread(() -> Toast.makeText(this, "Application successfully sent!", Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "Application successfully sent!", Toast.LENGTH_LONG).show();
+                        setApplyButtonEnabled(false);
+                    });
                 }
             } catch (JSONException e){
                 e.printStackTrace();
