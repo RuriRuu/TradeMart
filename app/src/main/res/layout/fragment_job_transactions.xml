@@ -10,58 +10,82 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/jobtransactions_tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tabIndicatorFullWidth="true"
-        app:tabTextColor="@color/pink"
-        app:tabIndicatorColor="@color/pink">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/jobtransactions_active_tab"
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/job_transactions_toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Active" />
+            android:background="@color/pink"
+            android:gravity="center|top"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/jobtransactions_applications_tab"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|start"
+                android:paddingStart="15dp"
+                android:text="Jobs Tracking"
+                android:textColor="@color/white"
+                android:textSize="11pt" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/jobtransactions_tabs"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Applications" />
+            android:background="@color/white"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/job_transactions_toolbar"
+            app:tabIndicatorFullWidth="true"
+            app:tabTextColor="@color/pink"
+            app:tabIndicatorColor="@color/pink">
 
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/jobtransactions_hirings_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hirings" />
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/jobtransactions_active_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Active" />
 
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/jobtransactions_completed_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Completed" />
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/jobtransactions_applications_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Applications" />
 
-    </com.google.android.material.tabs.TabLayout>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/jobtransactions_hirings_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hirings" />
 
-    <FrameLayout
-        android:id="@+id/jobtransactions_content_panel"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/background_white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/jobtransactions_tabs"
-        app:layout_constraintBottom_toBottomOf="parent" />
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/jobtransactions_completed_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Completed" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <FrameLayout
+            android:id="@+id/jobtransactions_content_panel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/background_white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/jobtransactions_tabs"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
 </FrameLayout>
+
+

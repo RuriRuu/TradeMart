@@ -24,15 +24,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/convo_menu_back_button"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center|start"
-                android:background="@android:color/transparent"
-                android:scaleType="centerInside"
-                android:src="@drawable/arrow_left_dark" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

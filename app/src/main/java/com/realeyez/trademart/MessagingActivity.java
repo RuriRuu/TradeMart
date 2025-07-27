@@ -417,6 +417,12 @@ public class MessagingActivity extends AppCompatActivity {
         bottomSheet.show(getSupportFragmentManager(), AttachmentOptionSheet.TAG);
     }
 
+    private void viewProfilePage(){
+        Intent intent = new Intent(this, ProfilePageActivity.class);
+        intent.putExtra("user_id", mateId);
+        startActivity(intent);
+    }
+
     private void sendSetConfirmed(Button view, PaymentChat payment){
         Content content = new ContentBuilder()
             .put("payment_id", payment.getPaymentId())
@@ -455,6 +461,8 @@ public class MessagingActivity extends AppCompatActivity {
                 sendMessageAction();
             return true;
         });
+        convoLabel.setOnClickListener(view -> viewProfilePage());
+        profilePicture.setOnClickListener(view -> viewProfilePage());
     }
 
 }
