@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -15,6 +16,7 @@ public class JobTransactionsFragment extends Fragment {
 
     private TabLayout tabs;
     private FrameLayout contentPanel;
+    private TextView headerLabel;
 
     private FragmentManager fragman;
 
@@ -30,6 +32,7 @@ public class JobTransactionsFragment extends Fragment {
 
         tabs = layout.findViewById(R.id.jobtransactions_tabs);
         contentPanel = layout.findViewById(R.id.jobtransactions_content_panel);
+        headerLabel = layout.findViewById(R.id.jobtransactions_header_label);
 
         activeFrag = new ActiveTransactionsListFragment();
         appsFrag = new ApplicationsListFragment();
@@ -46,6 +49,7 @@ public class JobTransactionsFragment extends Fragment {
     }
 
     private void showActivesFragment(){
+        headerLabel.setText("Active Jobs");
         fragman.beginTransaction()
             .replace(contentPanel.getId(), activeFrag)
             .setReorderingAllowed(true)
@@ -53,6 +57,7 @@ public class JobTransactionsFragment extends Fragment {
     }
 
     private void showApplicationsFragment(){
+        headerLabel.setText("Job Applications");
         fragman.beginTransaction()
             .replace(contentPanel.getId(), appsFrag)
             .setReorderingAllowed(true)
@@ -60,6 +65,7 @@ public class JobTransactionsFragment extends Fragment {
     }
 
     private void showHiringsFragment(){
+        headerLabel.setText("Pending Applications");
         fragman.beginTransaction()
             .replace(contentPanel.getId(), hiringFrag)
             .setReorderingAllowed(true)
@@ -67,6 +73,7 @@ public class JobTransactionsFragment extends Fragment {
     }
 
     private void showCompletedFragment(){
+        headerLabel.setText("Completed");
         fragman.beginTransaction()
             .replace(contentPanel.getId(), completedFrag)
             .setReorderingAllowed(true)

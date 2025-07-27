@@ -25,11 +25,12 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/jobtransactions_header_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|start"
                 android:paddingStart="15dp"
-                android:text="Jobs Tracking"
+                android:text="Active Jobs"
                 android:textColor="@color/white"
                 android:textSize="11pt" />
 
@@ -52,25 +53,29 @@
                 android:id="@+id/jobtransactions_active_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Active" />
+                android:icon="@drawable/outline_assignment_24"
+                android:tooltipText="Active" />
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/jobtransactions_applications_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Applications" />
+                android:icon="@drawable/pending_action"
+                android:tooltipText="Applications"/>
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/jobtransactions_hirings_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hirings" />
+                android:icon="@drawable/assignment"
+                android:tooltipText="Hirings" />
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/jobtransactions_completed_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completed" />
+                android:icon="@drawable/history"
+                android:tooltipText="Completed" />
 
         </com.google.android.material.tabs.TabLayout>
 

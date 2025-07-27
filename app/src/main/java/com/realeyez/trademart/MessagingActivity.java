@@ -31,8 +31,6 @@ import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Logger;
-import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.content.Intent;
 import android.net.Uri;
