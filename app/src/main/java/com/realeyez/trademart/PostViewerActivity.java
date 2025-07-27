@@ -38,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class PostViewerActivity extends AppCompatActivity {
 
@@ -47,6 +48,7 @@ public class PostViewerActivity extends AppCompatActivity {
     private LinearLayout mediaDots;
     private LinearLayout mediaScrollPanel;
     private LinearLayout mediaCountPanel;
+    private ConstraintLayout userPanel;
     private ImageView profilePictureView;
 
     private TextView titleLabel;
@@ -59,6 +61,7 @@ public class PostViewerActivity extends AppCompatActivity {
 
     private String username;
 
+    private int ownerId;
     private int postId;
     private ArrayList<Integer> mediaIds;
     private ArrayList<MediaPanel> mediaPanels;
@@ -80,6 +83,7 @@ public class PostViewerActivity extends AppCompatActivity {
         mediaScroll = findViewById(R.id.postviewer_media_scroll);
         mediaScrollPanel = findViewById(R.id.postviewer_media_scroll_panel);
         mediaCountPanel = findViewById(R.id.postviewer_media_dots_panel);
+        userPanel = findViewById(R.id.postviewer_user_panel);
         titleLabel = findViewById(R.id.postviewer_title_view);
         descLabel = findViewById(R.id.postviewer_desc_view);
         nameLabel = findViewById(R.id.postviewer_name_view);
@@ -93,6 +97,44 @@ public class PostViewerActivity extends AppCompatActivity {
 
         snapScroll = new SnapScrollH(mediaScroll);
         addActionListeners();
+    }
+
+    private void stopPlayers(){
+        for (MediaPanel panel : mediaPanels) {
+            if(panel instanceof MediaPanelVideo){
+                ((MediaPanelVideo) panel).reset();
+            }
+        }
+    }
+
+    private void pausePlayers(){
+        for (MediaPanel panel : mediaPanels) {
+            if(panel instanceof MediaPanelVideo){
+                ((MediaPanelVideo) panel).pause();
+            }
+        }
+    }
+
+    private void playActivePlayer(){
+        if(mediaPanels == null || mediaPanels.size() == 0){
+            return;
+        }
+        MediaPanel panel = mediaPanels.get(snapScroll.getCurChild());
+        if(panel instanceof MediaPanelVideo){
+            ((MediaPanelVideo)panel).play();
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        playActivePlayer();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        pausePlayers();
     }
 
     private void loadPost(){
@@ -109,6 +151,9 @@ public class PostViewerActivity extends AppCompatActivity {
             }
         });
         mediaExecutor.execute(() -> {
+            if(mediaIds.size() == 0){
+                return;
+            }
             runOnUiThread(() -> {
                 dotsPanel = new ScrollDotPanel(this, mediaDots, mediaIds.size());
             });
@@ -178,6 +223,7 @@ public class PostViewerActivity extends AppCompatActivity {
         try {
             JSONObject json = response.getContentJson();
             int userId = json.getInt("user_id");
+            ownerId = userId;
             runOnUiThread(() -> {
                 try{ 
                     titleLabel.setText(json.getString("title"));
@@ -277,6 +323,11 @@ public class PostViewerActivity extends AppCompatActivity {
             if(panel instanceof MediaPanelVideo){
                 ((MediaPanelVideo)panel).start();
             }
+        });
+        userPanel.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ProfilePageActivity.class);
+            intent.putExtra("user_id", ownerId);
+            startActivity(intent);
         });
     }
 };

@@ -1,8 +1,7 @@
 package com.realeyez.trademart.profile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import com.realeyez.trademart.media.MediaPicker;
 import com.realeyez.trademart.request.ContentDisposition;
@@ -19,10 +18,10 @@ public class ProfilePictureUpdater {
     }
 
     public void update(){
-        picker.show();
+        picker.show("image/*");
     }
 
-    public void sendUpdateRequest(MediaPicker picker){
+    public void sendUpdateRequest(MediaPicker picker) throws FileNotFoundException, IOException{
         String path = new StringBuilder()
             .append("/user/")
             .append(userId)
@@ -31,16 +30,9 @@ public class ProfilePictureUpdater {
         String filename = picker.getFilename();
         byte[] data = picker.readBytes();
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            try {
-                ContentDisposition disposition = ContentDisposition.attachment()
-                    .addDisposition("filename", filename);
-                RequestUtil.sendPostRequest(path, data, disposition);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        ContentDisposition disposition = ContentDisposition.attachment()
+            .addDisposition("filename", filename);
+        RequestUtil.sendPostRequest(path, data, disposition);
     }
 
 }

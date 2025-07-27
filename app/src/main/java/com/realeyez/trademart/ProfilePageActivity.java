@@ -19,21 +19,26 @@ import com.realeyez.trademart.post.PostData;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.user.User;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
+import com.realeyez.trademart.util.DimensionsUtil;
 import com.realeyez.trademart.util.Logger;
 import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 import androidx.appcompat.app.AppCompatActivity;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfilePageActivity extends AppCompatActivity {
 
@@ -45,7 +50,11 @@ public class ProfilePageActivity extends AppCompatActivity {
     private ImageView profileImageView;
     private ScrollView scrollView;
 
+    private ImageButton chatButton;
+    private ImageButton backButton;
+
     private LinearLayout mediaPanel;
+    private LinearLayout completedJobsPanel;
 
     private ShowcasePanel showcasePanel;
     private ArrayList<ShowcaseRow> showcaseRows;
@@ -56,8 +65,10 @@ public class ProfilePageActivity extends AppCompatActivity {
     private int postCount;
     private int completedJobCount;
     private double rating;
+    private String username;
 
     private ArrayList<Integer> loadedPostIds;
+    private ArrayList<Integer> loadedEmployerIds;
 
     // TODO: add chat button and probably put back the tool bar
     @Override
@@ -70,6 +81,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_profile_page);
         initComponents();
+        registerUpdateSheetResultAction();
         // initProfile();
     }
 
@@ -79,16 +91,152 @@ public class ProfilePageActivity extends AppCompatActivity {
         initProfile();
     }
 
+    private void registerUpdateSheetResultAction(){
+        getSupportFragmentManager().setFragmentResultListener("update_result", 
+                this, (key, result) -> {
+                    if(!result.getBoolean("success")){
+                        return;
+                    }
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(() -> {
+                        loadProfilePicture();
+                    });
+                });
+    }
+
+    private void initComponents(){
+        newPostButton = findViewById(R.id.profile_post_fab);
+        usernameLabel = findViewById(R.id.profile_name_view);
+        postsLabel = findViewById(R.id.profile_posts_count_view);
+        ratingLabel = findViewById(R.id.profile_rating_view);
+        completedJobLabel = findViewById(R.id.profile_jobs_completed_count);
+        profileImageView = findViewById(R.id.profile_image_view);
+        mediaPanel = findViewById(R.id.media_panel);
+        scrollView = findViewById(R.id.profile_media_scroll_view);
+        backButton = findViewById(R.id.profile_back_button);
+        chatButton = findViewById(R.id.profile_chat_button);
+        completedJobsPanel = findViewById(R.id.profile_completed_jobs_panel);
+
+        rating = postCount = completedJobCount = 0;
+        showcaseRows = new ArrayList<>();
+        showcasePanel = new ShowcasePanel(this, mediaPanel);
+        loadedPostIds = new ArrayList<>();
+        loadedEmployerIds = new ArrayList<>();
+        addOnClickListeners();
+    }
+
     private void initProfile(){
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             loadProfile();
             loadProfilePicture();
             runOnUiThread(() -> { initProfileComponents(); });
-
+            loadUserRating();
+            loadCompletedJobs();
             loadPosts();
         });
+    }
 
+    private void loadCompletedJobs(){
+        String path = new StringBuilder()
+            .append("/jobs/user/")
+            .append(userId)
+            .append("/completedjobs")
+            .toString();
+        try {
+            Response response = RequestUtil.sendGetRequest(path);
+            JSONObject json = response.getContentJson();
+            JSONObject data = json.getJSONObject("data");
+            JSONArray arr = data.getJSONArray("completed_jobs");
+            int count = arr.length();
+            String countText = new StringBuilder().append(count).toString();
+            Logger.logi("count: " + count);
+            runOnUiThread(() -> completedJobLabel.setText(countText));
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject job = arr.getJSONObject(i);
+                int employerId = job.getInt("employer_id");
+                if(loadedEmployerIds.contains(employerId)) continue;
+                addCompleteJobProfileImage(employerId);
+                loadedEmployerIds.add(employerId);
+                // JobViewerData jobViewerData = JobViewerDataRequestor.sendRequest(jobId, employerId);
+                // addCompleteJobProfileImage(jobViewerData, employerId);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadUserRating(){
+        try {
+            String path = new StringBuilder()
+                .append("/rate/user/")
+                .append(userId)
+                .append("/jobs/rating")
+                .toString();
+
+            Response response = RequestUtil.sendGetRequest(path);
+            JSONObject json = response.getContentJson();
+            double rating = json.getJSONObject("data").getDouble("rating");
+            String ratingStr = String.format("%.2f", rating);
+            runOnUiThread(() -> ratingLabel.setText(ratingStr));
+        } catch(JSONException | IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private LayoutParams buildCompletedJobProfileView(){
+        float density = DimensionsUtil.getScreenDensity(this);
+        int width = (int) (70*density);
+        int height = (int) (70*density);
+        int margin = (int) (5*density);
+        LayoutParams params = new LayoutParams(width, height, 1);
+        params.setMargins(margin, margin, margin, margin);
+        return params;
+    }
+
+    private void addCompleteJobProfileImage(int employerId){
+        try {
+            Uri pfpUri = ProfilePictureRequestor.sendRequest(employerId, getCacheDir());
+            runOnUiThread(() -> {
+                CircleImageView pfp = new CircleImageView(this);
+                pfp.setLayoutParams(buildCompletedJobProfileView());
+                pfp.setImageURI(pfpUri);
+                pfp.setOnClickListener(view -> {
+                    onCompletedJobProfileImageClicked(employerId);
+                });
+                completedJobsPanel.addView(pfp);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // private void addCompleteJobProfileImage(JobViewerData data, int userId){
+    //     try {
+    //         Uri pfpUri = ProfilePictureRequestor.sendRequest(userId, getCacheDir());
+    //         runOnUiThread(() -> {
+    //             CircleImageView pfp = new CircleImageView(this);
+    //             pfp.setLayoutParams(buildCompletedJobProfileView());
+    //             pfp.setImageURI(pfpUri);
+    //             pfp.setOnClickListener(view -> {
+    //                 onCompletedJobProfileImageClicked(data);
+    //             });
+    //             completedJobsPanel.addView(pfp);
+    //         });
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
+    private void onCompletedJobProfileImageClicked(int employerId){
+        Intent intent = new Intent(this, ProfilePageActivity.class);
+        intent.putExtra("user_id", employerId);
+        // intent.putExtra("job_id", data.getJobId());
+        // intent.putExtra("media_ids", data.getMediaIds());
+        // intent.putExtra("username", data.getUsername());
+        startActivity(intent);
     }
 
     private void loadProfile(){
@@ -244,9 +392,10 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     private void initUser(JSONObject json){
         try {
+            username = json.getString("username");
             user = new User.UserBuilder()
                 .setId(json.getInt("user_id"))
-                .setUsername(json.getString("username"))
+                .setUsername(username)
                 .setEmail(json.getString("email"))
                 .build();
         } catch (JSONException e) {
@@ -262,38 +411,13 @@ public class ProfilePageActivity extends AppCompatActivity {
         });
     }
 
-    private void initComponents(){
-        newPostButton = findViewById(R.id.profile_post_fab);
-        usernameLabel = findViewById(R.id.profile_name_view);
-        postsLabel = findViewById(R.id.profile_posts_count_view);
-        ratingLabel = findViewById(R.id.profile_rating_view);
-        completedJobLabel = findViewById(R.id.profile_jobs_completed_count);
-        profileImageView = findViewById(R.id.profile_image_view);
-        mediaPanel = findViewById(R.id.media_panel);
-        scrollView = findViewById(R.id.profile_media_scroll_view);
-        rating = postCount = completedJobCount = 0;
-        showcaseRows = new ArrayList<>();
-        showcasePanel = new ShowcasePanel(this, mediaPanel);
-        loadedPostIds = new ArrayList<>();
-        // scrollY = scrollView.getScrollY();
-
-        // ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#E91E63"));
-
-        addOnClickListeners();
-        // scrollView.setOnScrollChangeListener((view, x, y, ox, oy) -> {
-        //     if(!scrollView.canScrollVertically(1)){
-        //         loadPosts();
-        //     }
-        // });
-    }
-
     private void newPostButtonAction(){
         Intent explicitActivity = new Intent(ProfilePageActivity.this, CreatePostActivity.class);
         startActivity(explicitActivity);
     }
 
     private void showProfilePictureSheet(){
-        ProfilePictureSheet sheet = new ProfilePictureSheet(this, userId);
+        ProfilePictureSheet sheet = new ProfilePictureSheet(userId);
         sheet.show(getSupportFragmentManager(), ProfilePictureSheet.TAG);
     }
 
@@ -306,6 +430,18 @@ public class ProfilePageActivity extends AppCompatActivity {
                 return;
             }
             showProfilePictureSheet();
+        });
+
+        backButton.setOnClickListener(view -> {
+            finish();
+        });
+
+        chatButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, MessagingActivity.class);
+            intent.putExtra("user_id", userId);
+            intent.putExtra("convo_id", -1);
+            intent.putExtra("username", username);
+            startActivity(intent);
         });
     }
 

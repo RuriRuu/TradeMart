@@ -1,6 +1,7 @@
 package com.realeyez.trademart;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -20,6 +21,7 @@ import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
+import com.realeyez.trademart.request.requestor.UserRequestor;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
@@ -32,12 +34,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class JobViewerActivity extends AppCompatActivity {
 
@@ -47,6 +52,7 @@ public class JobViewerActivity extends AppCompatActivity {
     private LinearLayout mediaDots;
     private LinearLayout mediaScrollPanel;
     private LinearLayout mediaCountPanel;
+    private ConstraintLayout userPanel;
 
     private TextView titleLabel;
     private TextView descLabel;
@@ -56,11 +62,13 @@ public class JobViewerActivity extends AppCompatActivity {
 
     private ImageButton likeButton;
     private ImageButton backButton;
+    private Button applyButton;
 
     private ImageView profilePictureView;
 
     private String username;
 
+    private int ownerId;
     private int jobId;
     private ArrayList<Integer> mediaIds;
     private ArrayList<MediaPanel> mediaPanels;
@@ -82,6 +90,7 @@ public class JobViewerActivity extends AppCompatActivity {
         mediaScroll = findViewById(R.id.jobviewer_media_scroll);
         mediaScrollPanel = findViewById(R.id.jobviewer_media_scroll_panel);
         mediaCountPanel = findViewById(R.id.jobviewer_media_dots_panel);
+        userPanel = findViewById(R.id.jobviewer_user_panel);
         titleLabel = findViewById(R.id.jobviewer_title_view);
         descLabel = findViewById(R.id.jobviewer_desc_view);
         nameLabel = findViewById(R.id.jobviewer_name_view);
@@ -90,12 +99,52 @@ public class JobViewerActivity extends AppCompatActivity {
 
         likeButton = findViewById(R.id.jobviewer_like_button);
         backButton = findViewById(R.id.jobviewer_back_button);
+        applyButton = findViewById(R.id.jobviewer_apply_button);
         mediaDots = findViewById(R.id.jobviewer_media_dots_panel);
 
         profilePictureView = findViewById(R.id.jobviewer_user_image);
 
         snapScroll = new SnapScrollH(mediaScroll);
+        setApplyButtonEnabled(false);
         addActionListeners();
+    }
+
+    private void stopPlayers(){
+        for (MediaPanel panel : mediaPanels) {
+            if(panel instanceof MediaPanelVideo){
+                ((MediaPanelVideo) panel).reset();
+            }
+        }
+    }
+
+    private void pausePlayers(){
+        for (MediaPanel panel : mediaPanels) {
+            if(panel instanceof MediaPanelVideo){
+                ((MediaPanelVideo) panel).pause();
+            }
+        }
+    }
+
+    private void playActivePlayer(){
+        if(mediaPanels == null || mediaPanels.size() == 0){
+            return;
+        }
+        MediaPanel panel = mediaPanels.get(snapScroll.getCurChild());
+        if(panel instanceof MediaPanelVideo){
+            ((MediaPanelVideo)panel).play();
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        playActivePlayer();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        pausePlayers();
     }
 
     private void loadPost(){
@@ -152,6 +201,9 @@ public class JobViewerActivity extends AppCompatActivity {
         });
     }
 
+    private void loadEmployerData(){
+    }
+
     private String generatePriceString(double price){
         String text = new StringBuilder()
             .append(String.format("₱ %.2f", price))
@@ -166,6 +218,15 @@ public class JobViewerActivity extends AppCompatActivity {
         return text;
     }
 
+    private void setApplyButtonEnabled(boolean enabled){
+        applyButton.setEnabled(enabled);
+        if(enabled){
+            applyButton.setBackgroundColor(getResources().getColor(R.color.pink, null));
+            return;
+        }
+        applyButton.setBackgroundColor(getResources().getColor(R.color.grey, null));
+    }
+
     private void loadPostData() throws IOException {
         String path = new StringBuilder()
             .append("/jobs/find/").append(jobId).toString();
@@ -173,6 +234,8 @@ public class JobViewerActivity extends AppCompatActivity {
         try {
             JSONObject json = response.getContentJson().getJSONObject("data");
             int userId = json.getInt("employer_id");
+            ownerId = userId;
+            String username = UserRequestor.sendRequest(userId).getUsername();
             runOnUiThread(() -> {
                 try{ 
                     titleLabel.setText(json.getString("job_title"));
@@ -180,7 +243,9 @@ public class JobViewerActivity extends AppCompatActivity {
                     nameLabel.setText(username);
                     descLabel.setText(json.getString("job_description"));
                     likesLabel.setText(generateLikeString(json.getInt("likes")));
-
+                    if(userId != ResourceRepository.getResources().getCurrentUser().getId()){
+                        setApplyButtonEnabled(true);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -271,6 +336,45 @@ public class JobViewerActivity extends AppCompatActivity {
         likesLabel.setText(generateLikeString(likeCount));
     }
 
+    private void applyAction(){
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            try {
+                boolean success = sendApplicationRequest();
+                if(success){
+                    runOnUiThread(() -> Toast.makeText(this, "Application successfully sent!", Toast.LENGTH_LONG).show());
+                }
+            } catch (JSONException e){
+                e.printStackTrace();
+            } catch (FileNotFoundException e){
+                e.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private boolean sendApplicationRequest() throws FileNotFoundException, IOException, JSONException {
+        int employeeId = ResourceRepository.getResources().getCurrentUser().getId();
+        Content content = new Content.ContentBuilder()
+            .put("employee_id", employeeId)
+            .build();
+        String path = new StringBuilder()
+            .append("/jobs/")
+            .append(jobId)
+            .append("/apply")
+            .toString();
+        Response response = RequestUtil.sendPostRequest(path, content);
+        if(response.getContentJson().getString("status").equals("success")){
+            return true;
+        }
+        String error = response.getContentJson().getString("message");
+        runOnUiThread(() -> {
+            Dialogs.showErrorDialog(error, this);
+        });
+        return false;
+    }
+
     private void addActionListeners(){
         backButton.setOnClickListener(view -> {
             finish();
@@ -280,6 +384,9 @@ public class JobViewerActivity extends AppCompatActivity {
             exec.execute(() -> {
                 likeClickAction();
             });
+        });
+        applyButton.setOnClickListener(view -> {
+            applyAction();
         });
         snapScroll.setOnChangeChildListener((lastChild, curChild) -> {
             dotsPanel.setActive(curChild);
@@ -291,6 +398,11 @@ public class JobViewerActivity extends AppCompatActivity {
             if(panel instanceof MediaPanelVideo){
                 ((MediaPanelVideo)panel).start();
             }
+        });
+        userPanel.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ProfilePageActivity.class);
+            intent.putExtra("user_id", ownerId);
+            startActivity(intent);
         });
     }
 };

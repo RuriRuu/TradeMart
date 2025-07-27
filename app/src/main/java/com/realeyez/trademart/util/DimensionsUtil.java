@@ -5,9 +5,9 @@ import android.util.DisplayMetrics;
 
 public class DimensionsUtil {
 
-    public static int getScreenDensity(Context context){
+    public static float getScreenDensity(Context context){
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        return (int)(metrics.density);
+        return metrics.density;
     }
     
 }

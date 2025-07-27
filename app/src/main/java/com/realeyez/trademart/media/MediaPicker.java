@@ -12,18 +12,16 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class MediaPicker {
 
-    private AppCompatActivity activity;
+    private Activity activity;
     private Uri pickedUri;
 
 
     private ActivityResultLauncher<Intent> pickerLauncher;
 
-    public MediaPicker(AppCompatActivity activity, ActivityResultLauncher<Intent> launcher){
+    public MediaPicker(Activity activity, ActivityResultLauncher<Intent> launcher){
         this.activity = activity;
         pickerLauncher = launcher;
     }
@@ -39,8 +37,23 @@ public class MediaPicker {
         pickedUri = data.getData();
     }
 
+    public void show(String mimetype) {
+        Intent pickerIntent = new Intent(Intent.ACTION_PICK);
+        pickerIntent.setType(mimetype);
+        pickerLauncher.launch(pickerIntent);
+    }
+
+    public void show(String[] mimetypes) {
+        Intent pickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        pickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        pickerIntent.setType("*/*");
+        pickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+        pickerLauncher.launch(pickerIntent);
+    }
+
     public void show() {
         Intent pickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        pickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
         pickerIntent.setType("*/*");
         String[] mimetypes = {"image/*", "video/*"};
         pickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);

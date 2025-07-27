@@ -9,8 +9,8 @@
 
     <item
         android:id="@+id/main_action_search"
-        android:title="search"
-        android:icon="@drawable/search_24" />
+        android:title="jobs"
+        android:icon="@drawable/outline_assignment_24" />
 
     <item
         android:id="@+id/main_action_create"

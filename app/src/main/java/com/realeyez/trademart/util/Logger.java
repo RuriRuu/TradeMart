@@ -8,6 +8,12 @@ public class Logger {
         CRITICAL,
     }
 
+    public static void logi(String message){
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.format("[%s] %s", LogLevel.INFO, message));
+        System.out.printf("%s\n", builder.toString());
+    }
+
     public static void log(String message, LogLevel level){
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("[%s] %s", level, message));
