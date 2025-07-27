@@ -15,10 +15,12 @@
 
         <ImageButton
             android:id="@+id/Prof_Pic_Back_Button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/arrow_left_dark" />
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:src="@drawable/arrow_left_dark" />
     </LinearLayout>
 
     <ImageView

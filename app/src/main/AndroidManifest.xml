@@ -65,6 +65,9 @@
             android:name=".ProfilePageActivity"
             android:exported="true" />
         <activity
+            android:name=".ProfilePictureViewActivity"
+            android:exported="true" />
+        <activity
             android:name=".MainActivity"
             android:exported="true" />
         <activity

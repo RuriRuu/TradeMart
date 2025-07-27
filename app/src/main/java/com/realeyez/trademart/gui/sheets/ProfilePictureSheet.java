@@ -1,5 +1,6 @@
 package com.realeyez.trademart.gui.sheets;
 
+import com.realeyez.trademart.ProfilePictureViewActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.media.MediaPicker;
 import com.realeyez.trademart.profile.ProfilePictureUpdater;
@@ -86,6 +87,9 @@ public class ProfilePictureSheet extends BottomSheetDialogFragment {
 
     private void addOnClickListeners(){
         viewButton.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), ProfilePictureViewActivity.class);
+            intent.putExtra("USER_ID", userId);
+            startActivity(intent);
         });
         updateButton.setOnClickListener(view -> {
             if(updater == null) {
