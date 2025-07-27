@@ -16,13 +16,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.realeyez.trademart.encryption.Encryptor;
+import com.realeyez.trademart.gui.dialogs.LoadingDialog;
 import com.realeyez.trademart.request.Content;
-import com.realeyez.trademart.request.Request;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.util.Dialogs;
-import com.realeyez.trademart.util.Logger;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -66,6 +65,8 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void signupButtonAction(){
+        LoadingDialog dialog = new LoadingDialog(this);
+        dialog.show();
         String name = nameField.getText().toString();
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
@@ -79,6 +80,7 @@ public class SignUpActivity extends AppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             Response response = sendSignupRequest(name, password, email);
+            dialog.close();
             try {
                 JSONObject json = response.getContentJson();
                 String status = json.getString("status");
