@@ -15,12 +15,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.realeyez.trademart.gui.components.profile.ShowcasePanel;
 import com.realeyez.trademart.gui.components.profile.ShowcaseRow;
 import com.realeyez.trademart.gui.sheets.ProfilePictureSheet;
-import com.realeyez.trademart.model.profile.JobViewerData;
 import com.realeyez.trademart.post.PostData;
 import com.realeyez.trademart.request.Content;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
-import com.realeyez.trademart.request.requestor.JobViewerDataRequestor;
 import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.user.User;
@@ -133,14 +131,10 @@ public class ProfilePageActivity extends AppCompatActivity {
             loadProfile();
             loadProfilePicture();
             runOnUiThread(() -> { initProfileComponents(); });
-
+            loadUserRating();
+            loadCompletedJobs();
             loadPosts();
         });
-        ExecutorService executor2 = Executors.newSingleThreadExecutor();
-        executor2.execute(() -> {
-            loadCompletedJobs();
-        });
-
     }
 
     private void loadCompletedJobs(){
@@ -156,6 +150,7 @@ public class ProfilePageActivity extends AppCompatActivity {
             JSONArray arr = data.getJSONArray("completed_jobs");
             int count = arr.length();
             String countText = new StringBuilder().append(count).toString();
+            Logger.logi("count: " + count);
             runOnUiThread(() -> completedJobLabel.setText(countText));
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject job = arr.getJSONObject(i);
@@ -169,6 +164,24 @@ public class ProfilePageActivity extends AppCompatActivity {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadUserRating(){
+        try {
+            String path = new StringBuilder()
+                .append("/rate/user/")
+                .append(userId)
+                .append("/jobs/rating")
+                .toString();
+
+            Response response = RequestUtil.sendGetRequest(path);
+            JSONObject json = response.getContentJson();
+            double rating = json.getJSONObject("data").getDouble("rating");
+            String ratingStr = String.format("%.2f", rating);
+            runOnUiThread(() -> ratingLabel.setText(ratingStr));
+        } catch(JSONException | IOException e){
             e.printStackTrace();
         }
     }
