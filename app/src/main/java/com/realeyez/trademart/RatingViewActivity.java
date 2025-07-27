@@ -13,7 +13,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -21,15 +21,29 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.slider.Slider;
+import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.RequestUtil;
+import com.realeyez.trademart.request.Response;
+import com.realeyez.trademart.resource.ResourceRepository;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RatingViewActivity extends AppCompatActivity {
 
-    LinearLayout sliderContainer;
-    RatingSet rating;
+    private LinearLayout sliderContainer;
+    private RatingSet rating;
+    private Button submitRating;
+    private ImageButton exitMenu;
+
+    private int transactionId;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -43,14 +57,14 @@ public class RatingViewActivity extends AppCompatActivity {
             return insets;
         });
 
-        ImageButton ExitMenu = findViewById(R.id.ExitRatingView);
-        Button SubmitRating = findViewById(R.id.SubmitRating);
+        Intent intent = getIntent();
+        transactionId = intent.getIntExtra("transaction_id", -1);
 
-
+        submitRating = findViewById(R.id.SubmitRating);
+        exitMenu = findViewById(R.id.ExitRatingView);
         //Rating View > Home
-        ExitMenu.setOnClickListener(view -> {
-            Intent explicitActivity = new Intent(RatingViewActivity.this, LoginPageActivity.class);
-            startActivity(explicitActivity);
+        exitMenu.setOnClickListener(view -> {
+            finish();
         });
 
         //Set Slider
@@ -74,7 +88,7 @@ public class RatingViewActivity extends AppCompatActivity {
             sliderContainer.addView(sliderCard);
         }
 
-        SubmitRating.setOnClickListener(view -> {
+        submitRating.setOnClickListener(view -> {
             int childCount = sliderContainer.getChildCount();
             if (childCount < 4) return; // Safety check
 
@@ -86,9 +100,37 @@ public class RatingViewActivity extends AppCompatActivity {
             rating = new RatingSet((float) communication, (float) speed, (float) quality, (float) value);
             System.out.println(rating);
 
-            showRating();
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                try {
+                    if(sendRatingRequest(rating.getOverall())){
+                        runOnUiThread(() -> {
+                            showRating();
+                        });
+                        return;
+                    }
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                }
+                runOnUiThread(() -> Toast.makeText(this, "Unable to send rating!", Toast.LENGTH_LONG));
+            });
         });
 
+    }
+
+    private boolean sendRatingRequest(double rating) throws JSONException, IOException{
+        int raterId = ResourceRepository.getResources().getCurrentUser().getId();
+        Content content = new Content.ContentBuilder()
+            .put("transaction_id", transactionId)
+            .put("rater_id", raterId)
+            .put("rating",rating)
+            .build();
+        Response response = RequestUtil.sendPostRequest("/rate/jobs", content);
+        JSONObject responseJson = response.getContentJson();
+        if(responseJson.getString("status").equals("failed")){
+            return false;
+        }
+        return true;
     }
 
     private double getSliderValue(View sliderCard) {
@@ -110,7 +152,12 @@ public class RatingViewActivity extends AppCompatActivity {
         ratingNumber.setText(String.format("%.1f", rating.getOverall()));
 
 
-        dialog.findViewById(R.id.closeButton).setOnClickListener(v -> dialog.dismiss());
+        dialog.setOnDismissListener((dialogInterface) -> {
+            finish();
+        });
+        dialog.findViewById(R.id.closeButton).setOnClickListener(v -> {
+            dialog.dismiss();
+        });
     }
 
 }

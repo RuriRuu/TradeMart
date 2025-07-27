@@ -75,6 +75,7 @@ public class ActiveJobSheet extends BottomSheetDialogFragment {
             intent.putExtra("convo_id", -1);
             intent.putExtra("username", jobItem.getUsername());
             startActivity(intent);
+            dismiss();
         });
         completeButton.setOnClickListener(view -> {
             activity = requireActivity();
@@ -85,6 +86,7 @@ public class ActiveJobSheet extends BottomSheetDialogFragment {
                 try {
                     boolean success = sendCompleteRequest();
                     result.putBoolean("success", success);
+                    result.putInt("transaction_id", jobItem.getTransactionId());
                 } catch (JSONException | IOException e){
                     e.printStackTrace();
                     result.putBoolean("success", false);

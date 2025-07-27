@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
+import com.realeyez.trademart.RatingViewActivity;
 import com.realeyez.trademart.gui.components.job.JobItemPanelMixed;
 import com.realeyez.trademart.gui.sheets.ActiveJobSheet;
 import com.realeyez.trademart.job.JobItem;
@@ -72,6 +73,9 @@ public class ActiveTransactionsListFragment extends Fragment {
         fragman.setFragmentResultListener("complete_result", this, (key, result) -> {
             if(result.getBoolean("success")){
                 reset(getLayoutInflater());
+                Intent intent = new Intent(getContext(), RatingViewActivity.class);
+                intent.putExtra("transaction_id", result.getInt("transaction_id"));
+                startActivity(intent);
             }
         });
     }

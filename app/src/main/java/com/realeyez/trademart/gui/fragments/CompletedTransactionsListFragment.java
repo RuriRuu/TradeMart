@@ -13,6 +13,9 @@ import org.json.JSONObject;
 import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.gui.components.job.JobItemPanelMixed;
+import com.realeyez.trademart.gui.components.job.event.OnJobItemClickedListener;
+import com.realeyez.trademart.gui.sheets.CompletedJobSheet;
+import com.realeyez.trademart.job.JobItem;
 import com.realeyez.trademart.job.JobItemMixed;
 import com.realeyez.trademart.job.JobTransactionType;
 import com.realeyez.trademart.request.Content;
@@ -32,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -65,13 +69,57 @@ public class CompletedTransactionsListFragment extends Fragment {
     private void addPanel(LayoutInflater inflater, JobItemMixed jobItem){
         JobItemPanelMixed panel = JobItemPanelMixed.inflate(inflater, jobItem);
         panel.setOnJobItemClickedListener(item -> {
-            Intent intent = new Intent(getContext(), MessagingActivity.class);
-            intent.putExtra("user_id", item.getEmployerId());
-            intent.putExtra("convo_id", -1);
-            intent.putExtra("username", item.getUsername());
-            startActivity(intent);
+            onPanelClickedAction(item);
         });
         contentPanel.addView(panel);
+    }
+
+    private boolean sendCheckRatedRequest(JobItem jobItem)throws FileNotFoundException, IOException, JSONException{
+        String path = new StringBuilder()
+            .append("/rate/rated/transaction/")
+            .append(jobItem.getTransactionId())
+            .toString();
+        Response response = RequestUtil.sendGetRequest(path);
+        return response.getContentJson().getBoolean("rated");
+
+    }
+
+    private void onPanelClickedAction(JobItem jobItem){
+        int userId = ResourceRepository.getResources().getCurrentUser().getId();
+        if(userId == jobItem.getEmployeeId()){
+            showMessagingActivity(jobItem);
+            return;
+        }
+        Activity activity = requireActivity();
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            boolean rated = false;
+            try {
+                rated = sendCheckRatedRequest(jobItem);
+            } catch(JSONException | IOException e){
+                e.printStackTrace();
+                activity.runOnUiThread(() -> Toast.makeText(context, "An error occured", Toast.LENGTH_SHORT));
+                return;
+            }
+            if(!rated)
+                activity.runOnUiThread(() -> showSheet(jobItem));
+            else 
+                activity.runOnUiThread(() -> showMessagingActivity(jobItem));
+        });
+    }
+
+    private void showMessagingActivity(JobItem jobItem){
+        Intent intent = new Intent(getContext(), MessagingActivity.class);
+        intent.putExtra("user_id", jobItem.getEmployerId());
+        intent.putExtra("convo_id", -1);
+        intent.putExtra("username", jobItem.getUsername());
+        startActivity(intent);
+        return;
+    }
+
+    private void showSheet(JobItem jobItem){
+        CompletedJobSheet sheet = new CompletedJobSheet(jobItem);
+        sheet.show(getParentFragmentManager(), CompletedJobSheet.TAG);
     }
 
     private void loadCompletedTransactions(LayoutInflater inflater){
