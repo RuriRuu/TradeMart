@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import com.realeyez.trademart.MessagingActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.messaging.ConvoInfo;
+import com.realeyez.trademart.resource.ResourceRepository;
 
 import android.content.Context;
 import android.content.Intent;
@@ -77,9 +78,15 @@ public class ConvoPanel extends ConstraintLayout {
     }
 
     private String generateLastMessage(){
+        StringBuilder builder = new StringBuilder();
+        int curUser = ResourceRepository.getResources().getCurrentUser().getId();
+        if(curUser == convoInfo.getSenderId())
+            builder.append("You: ");
+        else
+            builder.append(convoInfo.getUsername()).append(": ");
         switch(convoInfo.getType()){
             case MESSAGE:
-                return convoInfo.getLastMessage();
+                return builder.append(convoInfo.getLastMessage()).toString();
             case MEDIA:
                 return "Sent a media file!";
             case PAYMENT:

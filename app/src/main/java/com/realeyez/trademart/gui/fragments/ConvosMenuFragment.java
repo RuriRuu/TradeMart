@@ -109,6 +109,7 @@ public class ConvosMenuFragment extends Fragment {
                     .setConvoId(convo.getInt("convo_id"))
                     .setTimestamp(LocalDateTime.parse(lastChat.getString("time_sent")))
                     .setType(type)
+                    .setSenderId(lastChat.getInt("sender_id"))
                     .setLastMessage(type == ChatType.MESSAGE ?
                             lastChat.getString("message") : null)
                     .build();

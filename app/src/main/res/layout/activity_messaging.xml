@@ -55,6 +55,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:descendantFocusability="blocksDescendants"
         app:layout_constraintBottom_toTopOf="@id/materialToolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,6 +65,9 @@
 
         <LinearLayout
             android:id="@+id/messaging_chat_panel"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:descendantFocusability="blocksDescendants"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
@@ -100,6 +106,9 @@
             android:fontFamily="@font/poppins"
             android:hint="Message..."
             android:inputType="text"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            android:imeOptions="actionSend"
             android:text=""
             android:textColor="#FFFFFF"
             android:textColorHint="#FFFFFF"

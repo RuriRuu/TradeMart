@@ -108,6 +108,8 @@ public class MessagingActivity extends AppCompatActivity {
         contentPanel = findViewById(R.id.messaging_chat_panel);
 
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+        scrollView.setFocusable(false);
+        scrollView.setFocusableInTouchMode(false);
 
         addActionListeners();
     }
@@ -237,6 +239,7 @@ public class MessagingActivity extends AppCompatActivity {
 
     private void sendMessage(){
         String message = inputField.getText().toString();
+        if(message.isBlank()) return;
         Content content = new Content.ContentBuilder()
             .put("user1_id", userId)
             .put("user2_id", mateId)
@@ -264,7 +267,10 @@ public class MessagingActivity extends AppCompatActivity {
                 .setMessage(chatJson.getString("message"))
                 .build();
 
-            inputField.setText("");
+            runOnUiThread(() -> {
+                inputField.setText("");
+                inputField.requestFocus();
+            });
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             runOnUiThread(() -> Dialogs.showErrorDialog("unable to send messages", this));
@@ -313,6 +319,8 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     private void addChatView(View view){
+        view.setFocusable(false);
+        view.setFocusableInTouchMode(false);
         if(setup)
             contentPanel.addView(view);
         else
@@ -449,9 +457,13 @@ public class MessagingActivity extends AppCompatActivity {
         });
         inputField.setOnEditorActionListener((view, action, event) -> {
             if (action == EditorInfo.IME_ACTION_SEND || event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                    && event.getAction() == KeyEvent.ACTION_DOWN)
+                    && event.getAction() == KeyEvent.ACTION_DOWN){
                 sendMessageAction();
-            return true;
+                inputField.requestFocus();
+                return true;
+            }
+            inputField.requestFocus();
+            return false;
         });
         convoLabel.setOnClickListener(view -> viewProfilePage());
         profilePicture.setOnClickListener(view -> viewProfilePage());

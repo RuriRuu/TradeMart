@@ -16,9 +16,11 @@ import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.user.User;
 import com.realeyez.trademart.util.Dialogs;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -52,7 +54,13 @@ public class LoginPageActivity extends AppCompatActivity {
         });
     }
 
+    private void hideKeyoard(View view){
+        InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     private void loginButtonAction() {
+        hideKeyoard(loginButton);
         String username = enteredName.getText().toString();
         String password = enteredPassword.getText().toString();
 
