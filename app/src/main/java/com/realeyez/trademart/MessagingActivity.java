@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -445,6 +446,8 @@ public class MessagingActivity extends AppCompatActivity {
         }
     }
 
+    private int prevY;
+
     private void addActionListeners() {
         backButton.setOnClickListener(view -> finish());
         attachButton.setOnClickListener(view -> {
@@ -461,6 +464,21 @@ public class MessagingActivity extends AppCompatActivity {
         });
         convoLabel.setOnClickListener(view -> viewProfilePage());
         profilePicture.setOnClickListener(view -> viewProfilePage());
+
+        scrollView.setOnTouchListener((view, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                prevY = scrollView.getScrollY();
+                return true;
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                int curY = scrollView.getScrollY();
+                if(curY < prevY && curY < 100){
+                }
+                return true;
+            }
+            return false;
+        });
     }
+
 
 }
