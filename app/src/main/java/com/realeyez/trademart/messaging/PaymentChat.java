@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import com.realeyez.trademart.payment.PaymentType;
 
+import android.net.Uri;
+
 public class PaymentChat extends Chat {
 
     private int paymentId;
@@ -111,6 +113,11 @@ public class PaymentChat extends Chat {
             return this;
         }
 
+        @Override
+        public Builder setProfilePictureUri(Uri profilePictureUri) {
+            return (Builder) super.setProfilePictureUri(profilePictureUri);
+        }
+
         public static Builder of(Chat.Builder builder){
             Chat chat = builder.build();
 
@@ -118,6 +125,7 @@ public class PaymentChat extends Chat {
                 .setChatId(chat.getChatId())
                 .setTimeSent(chat.getTimeSent())
                 .setType(chat.getType())
+                .setProfilePictureUri(chat.getProfilePictureUri())
                 .setSenderId(chat.getSenderId())
                 .setConvoId(chat.getConvoId());
         }

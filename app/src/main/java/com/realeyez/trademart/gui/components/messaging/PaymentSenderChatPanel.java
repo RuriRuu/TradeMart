@@ -10,6 +10,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -19,7 +20,8 @@ public class PaymentSenderChatPanel extends ConstraintLayout {
     private TextView amountLabel;
     private TextView reasonLabel;
 
-    private Button receivedButton;
+    private ImageView receivedIcon;
+    private TextView receivedLabel;
 
     private PaymentChat chat;
 
@@ -49,8 +51,8 @@ public class PaymentSenderChatPanel extends ConstraintLayout {
         timestampLabel = findViewById(R.id.payment_sender_timestamp);
         amountLabel = findViewById(R.id.payment_sender_amount);
         reasonLabel = findViewById(R.id.payment_sender_reason);
-
-        receivedButton = findViewById(R.id.payment_sender_sent);
+        receivedIcon = findViewById(R.id.payment_sender_received_icon);
+        receivedLabel = findViewById(R.id.payment_sender_received_prompt);
     }
 
     private void loadData(){
@@ -59,6 +61,8 @@ public class PaymentSenderChatPanel extends ConstraintLayout {
         amountLabel.setText(new StringBuilder().append(chat.getAmount()).toString());
         timestampLabel.setText(chat.getTimeSent().format(formatter));
         reasonLabel.setText(chat.getPaidFor());
+        receivedLabel.setText(chat.isConfirmed() ? "Payment Confirmed!" : "Waiting for confirmation...");
+        receivedIcon.setImageDrawable(getResources().getDrawable(chat.isConfirmed() ? R.drawable.circle_check : R.drawable.grayed_circle, null));
     }
 
     private void setChat(PaymentChat chat){

@@ -54,27 +54,40 @@ android:id="@+id/payment_message_sender"
 
             <!-- Timestamp -->
 
-            <Button
-                android:id="@+id/payment_sender_sent"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:text="Payment Sent"
+                android:layout_gravity="center" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:backgroundTint="#FFFFFF"
-                android:backgroundTintMode="add"
-                android:text="Payment Sent"
-                android:textColor="#333333"
-                app:cornerRadius="25px" />
+                >
 
-            <TextView
-                android:id="@+id/payment_sender_received_prompt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/poppins"
-                android:text="Payment_Received Prompt"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
+                <ImageView
+                    android:id="@+id/payment_sender_received_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/grayed_circle"
+                    android:layout_gravity="center"
+                    />
+
+                <TextView
+                    android:id="@+id/payment_sender_received_prompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/poppins"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:text="Waiting for confirmation..."
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/payment_sender_timestamp"

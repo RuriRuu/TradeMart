@@ -1,6 +1,8 @@
 package com.realeyez.trademart.gui.components.messaging;
 
 import com.realeyez.trademart.messaging.MessageChat;
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.Logger.LogLevel;
 
 import java.time.format.DateTimeFormatter;
 
@@ -54,10 +56,14 @@ public class MessageSenderChatPanel extends ConstraintLayout{
     private void loadData(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
 
+        if(chat.getProfilePictureUri() == null)
+            Logger.log("profile picture is null", LogLevel.INFO);
+        else
+            Logger.log(chat.getProfilePictureUri().toString(), LogLevel.INFO);
         usernameLabel.setText(chat.getUsername());
         messageLabel.setText(chat.getMessage());
         timestampLabel.setText(chat.getTimeSent().format(formatter));
-        profilePicture.setImageURI(chat.getProfilePictureUri());
+        profilePicture.post(() -> profilePicture.setImageURI(chat.getProfilePictureUri()));
     }
 
     private void setChat(MessageChat chat){

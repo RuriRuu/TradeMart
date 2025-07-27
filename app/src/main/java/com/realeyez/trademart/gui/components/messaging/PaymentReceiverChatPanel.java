@@ -56,6 +56,9 @@ public class PaymentReceiverChatPanel extends ConstraintLayout {
 
         receivedButton.setOnClickListener(view -> {
             onConfirmListener.onClick(view);
+            receivedButton.setText("Payment Confirmed");
+            receivedButton.setEnabled(false);
+            receivedButton.setBackgroundColor(getResources().getColor(R.color.grey, null));
         });
     }
 

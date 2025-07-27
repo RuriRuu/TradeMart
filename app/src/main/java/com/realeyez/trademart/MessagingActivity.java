@@ -31,6 +31,8 @@ import com.realeyez.trademart.request.Content.ContentBuilder;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
+import com.realeyez.trademart.util.Logger;
+import com.realeyez.trademart.util.Logger.LogLevel;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -83,7 +85,11 @@ public class MessagingActivity extends AppCompatActivity {
         initComponents();
         loadIntentExtras();
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> fetchMessages());
+        executor.execute(() -> {
+            requestMateProfilePicture();
+            requestUserProfilePicture();
+            fetchMessages();
+        });
     }
 
     private void initComponents() {
@@ -118,9 +124,6 @@ public class MessagingActivity extends AppCompatActivity {
 
         mateId = user_id;
         convoId = convo_id;
-
-        requestMateProfilePicture();
-        requestUserProfilePicture();
 
         convoLabel.setText(username);
 
@@ -165,18 +168,12 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     private void requestMateProfilePicture(){
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            mateUri = requestProfilePicture(mateId);
-            runOnUiThread(() -> profilePicture.setImageURI(mateUri));
-        });
+        mateUri = requestProfilePicture(mateId);
+        runOnUiThread(() -> profilePicture.setImageURI(mateUri));
     }
 
     private void requestUserProfilePicture(){
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            selfUri = requestProfilePicture(userId);
-        });
+        selfUri = requestProfilePicture(userId);
     }
 
     private Uri requestProfilePicture(int userId){
@@ -331,8 +328,7 @@ public class MessagingActivity extends AppCompatActivity {
                     .setChatId(json.getInt("chat_id"))
                     .setSenderId(json.getInt("sender_id"))
                     .setConvoId(json.getInt("convo_id"))
-                    .setProfilePictureUri(json.getInt("sender_id") == curUserId ? mateUri : selfUri)
-                    // .setUsername(json.getString("username"))
+                    .setProfilePictureUri(json.getInt("sender_id") == curUserId ? selfUri : mateUri)
                     .setTimeSent(LocalDateTime.parse(json.getString("time_sent")))
                     .setType(type);
         Chat chat = null;
@@ -435,10 +431,10 @@ public class MessagingActivity extends AppCompatActivity {
                 runOnUiThread(() -> Dialogs.showErrorDialog(rMessage, this));
                 return;
             }
-            runOnUiThread(() -> {
-                view.setText("Payment Confirmed");
-                view.setEnabled(false);
-            });
+            // runOnUiThread(() -> {
+            //     view.setText("Payment Confirmed");
+            //     view.setEnabled(false);
+            // });
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             runOnUiThread(() -> Dialogs.showErrorDialog("Unable to confirm payment, try agan later!", this));

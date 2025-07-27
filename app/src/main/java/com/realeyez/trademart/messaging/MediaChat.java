@@ -2,6 +2,8 @@ package com.realeyez.trademart.messaging;
 
 import java.time.LocalDateTime;
 
+import android.net.Uri;
+
 public class MediaChat extends Chat {
 
     protected int mediaId;
@@ -57,12 +59,18 @@ public class MediaChat extends Chat {
             return (Builder) super.setType(type);
         }
 
+        @Override
+        public Builder setProfilePictureUri(Uri profilePictureUri) {
+            return (Builder) super.setProfilePictureUri(profilePictureUri);
+        }
+
         public static Builder of(Chat.Builder builder){
             Chat chat = builder.build();
 
             return new Builder()
                 .setChatId(chat.getChatId())
                 .setTimeSent(chat.getTimeSent())
+                .setProfilePictureUri(chat.getProfilePictureUri())
                 .setType(chat.getType())
                 .setSenderId(chat.getSenderId())
                 .setConvoId(chat.getConvoId());
