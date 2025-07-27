@@ -426,9 +426,6 @@ public class ProfilePageActivity extends AppCompatActivity {
             newPostButtonAction();
         });
         profileImageView.setOnClickListener(view -> {
-            if(userId != ResourceRepository.getResources().getCurrentUser().getId()){
-                return;
-            }
             showProfilePictureSheet();
         });
 

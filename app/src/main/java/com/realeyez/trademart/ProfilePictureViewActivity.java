@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.realeyez.trademart.request.requestor.ProfilePictureRequestor;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,8 +46,16 @@ public class ProfilePictureViewActivity extends AppCompatActivity {
         executorService.execute(() -> {
             try {
                 Uri profilePictureUri = ProfilePictureRequestor.sendRequest(userId, cacheDir);
-                runOnUiThread(() -> profilePicture.setImageURI(profilePictureUri));
+                runOnUiThread(() -> {
+                    if(profilePictureUri == null)
+                        profilePicture.setImageDrawable(getResources().getDrawable(R.drawable.profile_picture_placeholder, null));
+                    else
+                        profilePicture.setImageURI(profilePictureUri);
+                });
+            } catch (FileNotFoundException e) {
+                profilePicture.setImageDrawable(getResources().getDrawable(R.drawable.profile_picture_placeholder, null));
             } catch (Exception e) {
+                profilePicture.setImageDrawable(getResources().getDrawable(R.drawable.profile_picture_placeholder, null));
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Failed to load profile picture", Toast.LENGTH_SHORT).show();
                 });

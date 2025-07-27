@@ -4,6 +4,7 @@ import com.realeyez.trademart.ProfilePictureViewActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.media.MediaPicker;
 import com.realeyez.trademart.profile.ProfilePictureUpdater;
+import com.realeyez.trademart.resource.ResourceRepository;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -58,6 +59,10 @@ public class ProfilePictureSheet extends BottomSheetDialogFragment {
                 });
 
         mediaPicker = new MediaPicker(requireActivity(), pickerLauncher);
+
+        if(userId != ResourceRepository.getResources().getCurrentUser().getId()){
+            panel.removeView(updateButton);
+        }
 
         return panel;
     }
