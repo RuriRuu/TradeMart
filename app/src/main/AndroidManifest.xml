@@ -1,96 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.INTERNET" />
+
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/trademart_app_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
+
         <activity
             android:name=".SearchActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".MessagingActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:exported="true" />
+
         <activity
             android:name=".SkillCardView"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".PostViewerActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".JobViewerActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".ServiceViewerActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".ImageViewerActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".CreatePostActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:exported="true" />
+
         <activity
             android:name=".CreateJobActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:exported="true" />
+
         <activity
             android:name=".CreateServiceActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:exported="true" />
+
         <activity
             android:name=".request.RequestTestActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".JobListEditing"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".InterestViewActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".RatingViewActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".ProfilePageActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".ProfilePictureViewActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".SignUpActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:exported="true" />
+
         <activity
             android:name=".VideoPlayerActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
+
         <activity
             android:name=".LoginPageActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+            <intent-filter>
+
+                <action
+                    android:name="android.intent.action.MAIN" />
+
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+
         </activity>
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
     </application>
 
 </manifest>
+
+
