@@ -42,6 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class JobViewerActivity extends AppCompatActivity {
 
@@ -51,6 +52,7 @@ public class JobViewerActivity extends AppCompatActivity {
     private LinearLayout mediaDots;
     private LinearLayout mediaScrollPanel;
     private LinearLayout mediaCountPanel;
+    private ConstraintLayout userPanel;
 
     private TextView titleLabel;
     private TextView descLabel;
@@ -66,6 +68,7 @@ public class JobViewerActivity extends AppCompatActivity {
 
     private String username;
 
+    private int ownerId;
     private int jobId;
     private ArrayList<Integer> mediaIds;
     private ArrayList<MediaPanel> mediaPanels;
@@ -87,6 +90,7 @@ public class JobViewerActivity extends AppCompatActivity {
         mediaScroll = findViewById(R.id.jobviewer_media_scroll);
         mediaScrollPanel = findViewById(R.id.jobviewer_media_scroll_panel);
         mediaCountPanel = findViewById(R.id.jobviewer_media_dots_panel);
+        userPanel = findViewById(R.id.jobviewer_user_panel);
         titleLabel = findViewById(R.id.jobviewer_title_view);
         descLabel = findViewById(R.id.jobviewer_desc_view);
         nameLabel = findViewById(R.id.jobviewer_name_view);
@@ -103,6 +107,44 @@ public class JobViewerActivity extends AppCompatActivity {
         snapScroll = new SnapScrollH(mediaScroll);
         setApplyButtonEnabled(false);
         addActionListeners();
+    }
+
+    private void stopPlayers(){
+        for (MediaPanel panel : mediaPanels) {
+            if(panel instanceof MediaPanelVideo){
+                ((MediaPanelVideo) panel).reset();
+            }
+        }
+    }
+
+    private void pausePlayers(){
+        for (MediaPanel panel : mediaPanels) {
+            if(panel instanceof MediaPanelVideo){
+                ((MediaPanelVideo) panel).pause();
+            }
+        }
+    }
+
+    private void playActivePlayer(){
+        if(mediaPanels == null || mediaPanels.size() == 0){
+            return;
+        }
+        MediaPanel panel = mediaPanels.get(snapScroll.getCurChild());
+        if(panel instanceof MediaPanelVideo){
+            ((MediaPanelVideo)panel).play();
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        playActivePlayer();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        pausePlayers();
     }
 
     private void loadPost(){
@@ -192,6 +234,7 @@ public class JobViewerActivity extends AppCompatActivity {
         try {
             JSONObject json = response.getContentJson().getJSONObject("data");
             int userId = json.getInt("employer_id");
+            ownerId = userId;
             String username = UserRequestor.sendRequest(userId).getUsername();
             runOnUiThread(() -> {
                 try{ 
@@ -355,6 +398,11 @@ public class JobViewerActivity extends AppCompatActivity {
             if(panel instanceof MediaPanelVideo){
                 ((MediaPanelVideo)panel).start();
             }
+        });
+        userPanel.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ProfilePageActivity.class);
+            intent.putExtra("user_id", ownerId);
+            startActivity(intent);
         });
     }
 };

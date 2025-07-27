@@ -38,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class ServiceViewerActivity extends AppCompatActivity {
 
@@ -48,6 +49,7 @@ public class ServiceViewerActivity extends AppCompatActivity {
     private LinearLayout mediaScrollPanel;
     private LinearLayout mediaCountPanel;
     private ImageView profilePictureView;
+    private ConstraintLayout userPanel;
 
     private TextView titleLabel;
     private TextView descLabel;
@@ -61,6 +63,7 @@ public class ServiceViewerActivity extends AppCompatActivity {
     private String username;
 
     private int serviceId;
+    private int ownerId;
     private ArrayList<Integer> mediaIds;
     private ArrayList<MediaPanel> mediaPanels;
 
@@ -81,6 +84,7 @@ public class ServiceViewerActivity extends AppCompatActivity {
         mediaScroll = findViewById(R.id.serviceviewer_media_scroll);
         mediaScrollPanel = findViewById(R.id.serviceviewer_media_scroll_panel);
         mediaCountPanel = findViewById(R.id.serviceviewer_media_dots_panel);
+        userPanel = findViewById(R.id.serviceviewer_user_panel);
         titleLabel = findViewById(R.id.serviceviewer_title_view);
         descLabel = findViewById(R.id.serviceviewer_desc_view);
         nameLabel = findViewById(R.id.serviceviewer_name_view);
@@ -95,6 +99,44 @@ public class ServiceViewerActivity extends AppCompatActivity {
 
         snapScroll = new SnapScrollH(mediaScroll);
         addActionListeners();
+    }
+
+    private void stopPlayers(){
+        for (MediaPanel panel : mediaPanels) {
+            if(panel instanceof MediaPanelVideo){
+                ((MediaPanelVideo) panel).reset();
+            }
+        }
+    }
+
+    private void pausePlayers(){
+        for (MediaPanel panel : mediaPanels) {
+            if(panel instanceof MediaPanelVideo){
+                ((MediaPanelVideo) panel).pause();
+            }
+        }
+    }
+
+    private void playActivePlayer(){
+        if(mediaPanels == null || mediaPanels.size() == 0){
+            return;
+        }
+        MediaPanel panel = mediaPanels.get(snapScroll.getCurChild());
+        if(panel instanceof MediaPanelVideo){
+            ((MediaPanelVideo)panel).play();
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        playActivePlayer();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        pausePlayers();
     }
 
     private void loadPost(){
@@ -172,6 +214,7 @@ public class ServiceViewerActivity extends AppCompatActivity {
         try {
             JSONObject json = response.getContentJson();
             int userId = json.getInt("owner_id");
+            ownerId = userId;
             runOnUiThread(() -> {
                 try{ 
                     titleLabel.setText(json.getString("service_title"));
@@ -289,6 +332,11 @@ public class ServiceViewerActivity extends AppCompatActivity {
             if(panel instanceof MediaPanelVideo){
                 ((MediaPanelVideo)panel).start();
             }
+        });
+        userPanel.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ProfilePageActivity.class);
+            intent.putExtra("user_id", ownerId);
+            startActivity(intent);
         });
     }
 };
