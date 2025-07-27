@@ -83,6 +83,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_profile_page);
         initComponents();
+        registerUpdateSheetResultAction();
         // initProfile();
     }
 
@@ -90,6 +91,19 @@ public class ProfilePageActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         initProfile();
+    }
+
+    private void registerUpdateSheetResultAction(){
+        getSupportFragmentManager().setFragmentResultListener("update_result", 
+                this, (key, result) -> {
+                    if(!result.getBoolean("success")){
+                        return;
+                    }
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(() -> {
+                        loadProfilePicture();
+                    });
+                });
     }
 
     private void initComponents(){
@@ -390,7 +404,7 @@ public class ProfilePageActivity extends AppCompatActivity {
     }
 
     private void showProfilePictureSheet(){
-        ProfilePictureSheet sheet = new ProfilePictureSheet(this, userId);
+        ProfilePictureSheet sheet = new ProfilePictureSheet(userId);
         sheet.show(getSupportFragmentManager(), ProfilePictureSheet.TAG);
     }
 

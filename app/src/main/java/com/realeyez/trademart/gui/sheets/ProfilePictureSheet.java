@@ -1,9 +1,14 @@
 package com.realeyez.trademart.gui.sheets;
 
-import com.realeyez.trademart.CreatePostActivity;
 import com.realeyez.trademart.R;
 import com.realeyez.trademart.media.MediaPicker;
 import com.realeyez.trademart.profile.ProfilePictureUpdater;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import android.content.Intent;
@@ -13,9 +18,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 public class ProfilePictureSheet extends BottomSheetDialogFragment {
 
@@ -28,17 +34,10 @@ public class ProfilePictureSheet extends BottomSheetDialogFragment {
     private MediaPicker mediaPicker;
     private ProfilePictureUpdater updater;
 
-    private ActivityResultLauncher<Intent> pickerLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                mediaPicker.pickedImageAction(result);
-                updater.sendUpdateRequest(mediaPicker);
-            });
+    private ActivityResultLauncher<Intent> pickerLauncher;
 
-
-    public ProfilePictureSheet(AppCompatActivity activity, int userId){
+    public ProfilePictureSheet(int userId){
         this.userId = userId;
-        mediaPicker = new MediaPicker(activity, pickerLauncher);
     }
 
     @Override
@@ -51,7 +50,38 @@ public class ProfilePictureSheet extends BottomSheetDialogFragment {
         updateButton = panel.findViewById(R.id.profilepic_edit_button);
 
         addOnClickListeners();
+        pickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    resultAction(result);
+                });
+
+        mediaPicker = new MediaPicker(requireActivity(), pickerLauncher);
+
         return panel;
+    }
+
+    private void resultAction(ActivityResult result){
+        FragmentActivity activity = requireActivity();
+        Bundle ret = new Bundle();
+
+        mediaPicker.pickedImageAction(result);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                updater.sendUpdateRequest(mediaPicker);
+                ret.putBoolean("success", true);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                ret.putBoolean("success", false);
+            } catch (IOException e) {
+                e.printStackTrace();
+                ret.putBoolean("success", false);
+            }
+            activity.getSupportFragmentManager().setFragmentResult("success", ret);
+            activity.runOnUiThread(() -> dismiss());
+        });
     }
 
     private void addOnClickListeners(){
@@ -62,7 +92,6 @@ public class ProfilePictureSheet extends BottomSheetDialogFragment {
                 updater = new ProfilePictureUpdater(userId, mediaPicker);
             }
             updater.update();
-            dismiss();
         });
     }
 
