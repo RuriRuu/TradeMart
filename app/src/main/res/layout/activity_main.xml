@@ -21,8 +21,9 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/main_nav_bar"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
+        app:itemActiveIndicatorStyle="@style/App.TradeMart.Indicator"
         app:menu="@menu/main_bottom_nav"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
