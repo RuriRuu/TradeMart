@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import com.realeyez.trademart.gui.components.messaging.MediaSenderChatPanel;
+import com.realeyez.trademart.gui.components.messaging.MediaUserChatPanel;
 import com.realeyez.trademart.gui.components.messaging.MessageSenderChatPanel;
 import com.realeyez.trademart.gui.components.messaging.MessageUserChatPanel;
 import com.realeyez.trademart.gui.components.messaging.PaymentReceiverChatPanel;
@@ -25,12 +27,15 @@ import com.realeyez.trademart.messaging.MessageChat;
 import com.realeyez.trademart.messaging.PaymentChat;
 import com.realeyez.trademart.payment.PaymentType;
 import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.request.ContentDisposition;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.request.Content.ContentBuilder;
+import com.realeyez.trademart.request.requestor.MediaRequestor;
 import com.realeyez.trademart.resource.ResourceRepository;
 import com.realeyez.trademart.util.CacheFile;
 import com.realeyez.trademart.util.Dialogs;
+import com.realeyez.trademart.util.Logger;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -213,6 +218,7 @@ public class MessagingActivity extends AppCompatActivity {
                 addMessageUserChatPanel(chat);
                 break;
             case MEDIA:
+                addMediaUserChatPanel((MediaChat) chat);
                 break;
             case PAYMENT:
                 addPaymentSenderChatPanel(chat);
@@ -228,6 +234,7 @@ public class MessagingActivity extends AppCompatActivity {
                 addMessageSenderChatPanel(chat);
                 break;
             case MEDIA:
+                addMediaSenderChatPanel((MediaChat) chat);
                 break;
             case PAYMENT:
                 addPaymentReceiverChatPanel(chat);
@@ -294,6 +301,34 @@ public class MessagingActivity extends AppCompatActivity {
                 (PaymentChat) chat);
         addChatView(panel);
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+    }
+
+    private void addMediaUserChatPanel(MediaChat chat){
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            Uri mediaUri = requestMedia(chat.getMediaId());
+            runOnUiThread(() -> {
+                MediaUserChatPanel panel = MediaUserChatPanel.inflate(
+                        getLayoutInflater(),
+                        chat, mediaUri);
+                addChatView(panel);
+                scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+            });
+        });
+    }
+
+    private void addMediaSenderChatPanel(MediaChat chat){
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            Uri mediaUri = requestMedia(chat.getMediaId());
+            runOnUiThread(() -> {
+                MediaSenderChatPanel panel = MediaSenderChatPanel.inflate(
+                        getLayoutInflater(),
+                        chat, mediaUri);
+                addChatView(panel);
+                scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+            });
+        });
     }
 
     private void addPaymentReceiverChatPanel(Chat chat){
@@ -370,6 +405,69 @@ public class MessagingActivity extends AppCompatActivity {
         executor.execute(() -> sendMessage());
     }
 
+    private void sendMediaMessage(String filename, byte[] data){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            Logger.logi("sending media message");
+            int mediaId = sendUploadImageRequest(filename, data);
+            if(mediaId == -1){
+                runOnUiThread(() -> Dialogs.showErrorDialog("Unable to upload image", this));
+                return;
+            }
+            Content content = new Content.ContentBuilder()
+                .put("user1_id", userId)
+                .put("user2_id", mateId)
+                .put("sender_id", userId)
+                .put("media_id", mediaId)
+                .put("type", ChatType.MEDIA.toString())
+                .build();
+            try {
+                Response response = RequestUtil.sendPostRequest("/message/send", content);
+                JSONObject responseJson = response.getContentJson();
+                if(responseJson.getString("status").equals("failed")){
+                    String rMessage = responseJson.getString("message");
+                    runOnUiThread(() -> Dialogs.showErrorDialog(rMessage, this));
+                    return;
+                }
+                Logger.logi("media chat sent successfully");
+                MediaChat chat2 =(MediaChat) createChatFromJson(responseJson.getJSONObject("data"));
+                runOnUiThread(() -> addMediaUserChatPanel(chat2));
+            } catch (JSONException | IOException e){
+                e.printStackTrace();
+                return;
+            }
+        });
+    }
+
+    public Uri requestMedia(int mediaId){
+        try {
+            Uri uri = MediaRequestor.sendRequest(mediaId, getCacheDir());
+            return uri;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private int sendUploadImageRequest(String filename, byte[] data){
+        int mediaId = -1;
+        String path = new StringBuilder()
+            .append("/media/")
+            .append(userId)
+            .append("/upload")
+            .toString();
+        ContentDisposition disposition = ContentDisposition.attachment()
+            .addDisposition("filename", filename);
+        try {
+            Response response = RequestUtil.sendPostRequest(path, data, disposition);
+            mediaId = response.getContentJson().getInt("media_id");
+        } catch (JSONException | IOException e){
+            e.printStackTrace();
+            return mediaId;
+        }
+        return mediaId;
+    }
+
     private void sendPaymenetMessage(JSONObject json) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
@@ -407,6 +505,12 @@ public class MessagingActivity extends AppCompatActivity {
             } catch (JSONException e){
                 e.printStackTrace();
             }
+        });
+        fragman.setFragmentResultListener("media_result", this, (key, result) -> {
+            Logger.logi("result received");
+            String filename = result.getString("filename");
+            byte[] data = result.getByteArray("media_data");
+            sendMediaMessage(filename, data);
         });
 
         AttachmentOptionSheet bottomSheet = new AttachmentOptionSheet();

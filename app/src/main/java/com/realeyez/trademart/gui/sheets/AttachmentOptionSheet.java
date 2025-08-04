@@ -1,12 +1,12 @@
 package com.realeyez.trademart.gui.sheets;
 
 import com.realeyez.trademart.R;
-import com.realeyez.trademart.request.Content;
+import com.realeyez.trademart.media.MediaPicker;
 import com.realeyez.trademart.request.RequestUtil;
 import com.realeyez.trademart.request.Response;
 import com.realeyez.trademart.resource.ResourceRepository;
-import com.realeyez.trademart.service.Service;
 import com.realeyez.trademart.util.Dialogs;
+import com.realeyez.trademart.util.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,13 +19,17 @@ import org.json.JSONObject;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.fragment.app.FragmentActivity;
 
 public class AttachmentOptionSheet extends BottomSheetDialogFragment {
 
@@ -36,6 +40,10 @@ public class AttachmentOptionSheet extends BottomSheetDialogFragment {
 
     private int mateId;
     private int convoId;
+
+    private MediaPicker picker;
+
+    private ActivityResultLauncher<Intent> pickerLauncher;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -53,6 +61,14 @@ public class AttachmentOptionSheet extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
+
+        pickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    Logger.logi("picked media");
+                    resultAction(result);
+                });
+
         addOnClickListeners();
     }
 
@@ -62,9 +78,25 @@ public class AttachmentOptionSheet extends BottomSheetDialogFragment {
         convoId = args.getInt("convo_id", -1);
     }
 
+    private void resultAction(ActivityResult result){
+        FragmentActivity activity = requireActivity();
+        Bundle ret = new Bundle();
+
+        picker.pickedImageAction(result);
+
+        ret.putString("filename", picker.getFilename());
+        ret.putByteArray("media_data", picker.readBytes());
+
+        Logger.logi("result set");
+        activity.getSupportFragmentManager().setFragmentResult("media_result", ret);
+        activity.runOnUiThread(() -> dismiss());
+    }
+
     private void addOnClickListeners(){
         mediaButton.setOnClickListener(view -> {
-            dismiss();
+            Logger.logi("clicked media button");
+            picker = new MediaPicker(requireActivity(), pickerLauncher);
+            picker.show(new String[]{"image/*"});
         });
         payButton.setOnClickListener(view -> {
             CreatePaymentSheet bottomSheet = new CreatePaymentSheet();

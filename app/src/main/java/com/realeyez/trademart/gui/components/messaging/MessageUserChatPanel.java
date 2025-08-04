@@ -1,16 +1,8 @@
 package com.realeyez.trademart.gui.components.messaging;
 
 import com.realeyez.trademart.messaging.MessageChat;
-import com.realeyez.trademart.request.RequestUtil;
-import com.realeyez.trademart.request.Response;
-import com.realeyez.trademart.util.CacheFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import com.realeyez.trademart.R;
 
