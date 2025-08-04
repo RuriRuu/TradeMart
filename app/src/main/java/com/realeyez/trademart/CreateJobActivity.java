@@ -106,7 +106,7 @@ import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
             int jobId = -1;
             try {
                 JSONObject json = response.getContentJson();
-                jobId = json.getInt("job_id");
+                jobId = json.getJSONObject("data").getInt("job_id");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -202,6 +202,8 @@ import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
         try {
             ContentDisposition disposition = ContentDisposition.attachment()
                     .addDisposition("filename", filename);
+            Logger.logi(filename);
+            Logger.logi("sending upload request");
             response = RequestUtil.sendPostRequest(String.format("/jobs/create/%d/media", jobId), bytes, disposition);
         } catch (IOException e) {
             e.printStackTrace();
